@@ -116,6 +116,67 @@ export function Hero() {
     { code: "IE", name: "أيرلندا" },
   ];
 
+  // Apple & Linear Signature Easing [0.16, 1, 0.3, 1]
+  const transitionEase = [0.16, 1, 0.3, 1] as const;
+
+  // Orchestrated Stagger Container for the Text Column
+  const heroTextContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.08,
+      },
+    },
+  };
+
+  // Cinematic Blur-Glide for H1, Paragraph, and Action Buttons
+  const heroItemVariants = {
+    hidden: { opacity: 0, y: 22, filter: "blur(10px)" },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        duration: 0.85,
+        ease: transitionEase,
+      },
+    },
+  };
+
+  // Visual Centerpiece (Student Image & Cloud shape)
+  const visualCardVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: 28, filter: "blur(12px)" },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        duration: 1.0,
+        ease: transitionEase,
+        delay: 0.22,
+      },
+    },
+  };
+
+  // Floating Glassmorphic Badges entrance variants
+  const badgeVariants = (delay: number) => ({
+    hidden: { opacity: 0, scale: 0.9, y: 16, filter: "blur(8px)" },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        duration: 0.75,
+        ease: transitionEase,
+        delay,
+      },
+    },
+  });
+
   return (
     <div id="hero" className="relative min-h-screen flex flex-col text-brand-navy overflow-x-clip scroll-mt-20">
       {/* Main Hero Body (Balanced Grid with Organic Glassmorphism) */}
@@ -127,13 +188,16 @@ export function Hero() {
             {/* Right Column (Text & Value Proposition)                  */}
             {/* ======================================================== */}
             <motion.div
-              initial={{ opacity: 0, x: 25 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
+              variants={heroTextContainerVariants}
+              initial="hidden"
+              animate="visible"
               className="lg:col-span-6 text-right space-y-5 lg:pr-2"
             >
               {/* H1 Heading in IBM Plex Sans Arabic with Dynamic Destination Morph */}
-              <h1 className="text-3xl sm:text-5xl lg:text-[52px] font-extrabold text-brand-navy tracking-tight leading-[1.3]">
+              <motion.h1
+                variants={heroItemVariants}
+                className="text-3xl sm:text-5xl lg:text-[52px] font-extrabold text-brand-navy tracking-tight leading-[1.3]"
+              >
                 <span className="block text-brand-navy">طريقك نحو الدراسة في</span>
                 <span className="relative inline-flex items-center min-h-[1.35em] mt-1 sm:mt-2">
                   <AnimatePresence mode="wait">
@@ -197,17 +261,23 @@ export function Hero() {
                     </motion.span>
                   </AnimatePresence>
                 </span>
-              </h1>
+              </motion.h1>
 
               {/* Subheading with generous line-height */}
-              <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-xl">
+              <motion.p
+                variants={heroItemVariants}
+                className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-xl"
+              >
                 مرافقة متكاملة لطلاب <strong>المغرب</strong> و<strong>الجزائر</strong>: 
                 من اختيار الجامعة المناسبة والتخصص، استخراج القبول المعتمد والمنح الدراسية، 
                 إلى غاية الحصول على التأشيرة والاستقرار في بلد الدراسة.
-              </p>
+              </motion.p>
 
               {/* Action Buttons (High-Conversion CTAs, strictly NO search bar) */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <motion.div
+                variants={heroItemVariants}
+                className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
+              >
                 <a
                   href="https://wa.me/212775496303"
                   target="_blank"
@@ -226,7 +296,7 @@ export function Hero() {
                   <Compass className="w-4 h-4 text-brand-electric" />
                   <span>استكشف الوجهات والمنح</span>
                 </a>
-              </div>
+              </motion.div>
             </motion.div>
 
             {/* ======================================================== */}
@@ -234,9 +304,9 @@ export function Hero() {
             {/* Clean Glassmorphic Cards + Ambient Luminous Aura Depth   */}
             {/* ======================================================== */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.15 }}
+              variants={visualCardVariants}
+              initial="hidden"
+              animate="visible"
               className="lg:col-span-6 relative flex items-center justify-center"
             >
               {/* Standalone Visual Unit with dedicated bounds - SCALED TO BALANCE WITH RIGHT COLUMN */}
@@ -265,9 +335,9 @@ export function Hero() {
 
                 {/* 3. Badge "قبول جامعي مضمون" (Glassmorphism with Inner Light Reflection) */}
                 <motion.div
-                  initial={{ opacity: 0, y: -14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
+                  variants={badgeVariants(0.4)}
+                  initial="hidden"
+                  animate="visible"
                   className="absolute top-[12%] -left-2 sm:-left-5 z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card text-right animate-float"
                 >
                   <div className="flex items-center gap-2.5">
@@ -287,9 +357,9 @@ export function Hero() {
 
                 {/* 4. Badge "7 وجهات أوروبية" (Glassmorphism with Clean 7 Flags) */}
                 <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
+                  variants={badgeVariants(0.5)}
+                  initial="hidden"
+                  animate="visible"
                   className="absolute top-[40%] -right-1 sm:-right-3 z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card text-right animate-float-delayed"
                 >
                   {/* Clean 7 Flags Row */}
@@ -305,9 +375,9 @@ export function Hero() {
 
                 {/* 5. Badge "نسبة قبول التأشيرة" (Glassmorphism with Luminous Sparkline) */}
                 <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.5 }}
+                  variants={badgeVariants(0.6)}
+                  initial="hidden"
+                  animate="visible"
                   className="absolute bottom-4 -left-1 sm:-left-3 z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card text-right"
                 >
                   <div className="flex items-center justify-between gap-2.5">
