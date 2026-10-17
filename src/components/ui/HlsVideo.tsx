@@ -53,8 +53,10 @@ const HlsVideo = forwardRef<HTMLVideoElement, HlsVideoProps>(
       if (isHls) {
         if (Hls.isSupported()) {
           hls = new Hls({
-            maxMaxBufferLength: 10,
-            maxBufferSize: 10 * 1000 * 1000, // 10MB limit
+            maxBufferLength: 10,
+            maxMaxBufferLength: 20,
+            maxBufferSize: 15 * 1000 * 1000, // 15MB RAM limit
+            capLevelToPlayerSize: true, // Cap stream resolution to actual screen size
           });
 
           hls.loadSource(src);
@@ -63,6 +65,22 @@ const HlsVideo = forwardRef<HTMLVideoElement, HlsVideoProps>(
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             if (autoPlay) {
               video.play().catch((err) => console.log("Auto-play prevented:", err));
+            }
+          });
+
+          hls.on(Hls.Events.ERROR, (_event, data) => {
+            if (data.fatal) {
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  hls?.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  hls?.recoverMediaError();
+                  break;
+                default:
+                  onLoadingChange?.(false);
+                  break;
+              }
             }
           });
         } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
@@ -108,6 +126,7 @@ const HlsVideo = forwardRef<HTMLVideoElement, HlsVideoProps>(
     return (
       <video
         ref={videoRef as React.Ref<HTMLVideoElement>}
+        preload="none"
         loop={loop}
         muted={muted}
         playsInline={playsInline}

@@ -144,4 +144,13 @@ body {
   transform: translateY(-2px);
 }
 
+/* Hide scrollbar utility for smooth native carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 

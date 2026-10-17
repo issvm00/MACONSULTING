@@ -237,12 +237,12 @@ export function ShaderBackground({
     if (pendingRelease !== undefined) window.clearTimeout(pendingRelease);
     pendingContextReleases.delete(canvas);
 
-    const isWeakDevice =
-      (typeof navigator !== "undefined" && (navigator.hardwareConcurrency ?? 4) <= 4) ||
-      (typeof window !== "undefined" && window.innerWidth < 480);
+    const isMobileOrWeak =
+      (typeof window !== "undefined" && (window.innerWidth < 768 || "ontouchstart" in window)) ||
+      (typeof navigator !== "undefined" && (navigator.hardwareConcurrency ?? 4) <= 4);
 
-    if (isWeakDevice) {
-      canvas.style.background = "linear-gradient(135deg, #071228, #0B1B3D)";
+    if (isMobileOrWeak) {
+      canvas.style.background = "linear-gradient(135deg, #071228 0%, #0B1B3D 60%, #071228 100%)";
       return;
     }
 
