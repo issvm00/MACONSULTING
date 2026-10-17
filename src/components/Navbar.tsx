@@ -81,7 +81,7 @@ export function Navbar() {
         >
           <div className="relative flex items-center">
             <Image
-              src="/logo/logo.PNG"
+              src="/logo/logo.png"
               alt="M&A OVERSEAS CONSULTING"
               width={352}
               height={163}

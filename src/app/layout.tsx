@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "مكتب معتمد للاستشارات التعليمية ومرافقة الطلاب للدراسة في أوروبا (المغرب والجزائر). توجيه جامعي، قبول مضمون، فيزا ومنح دراسية.",
   icons: {
-    icon: "/logo/logo.PNG",
+    icon: "/logo/logo.png",
   },
 };
 
