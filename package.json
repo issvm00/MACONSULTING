@@ -1,0 +1,31 @@
+{
+  "name": "ma-overseas-consulting",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node \"./node_modules/next/dist/bin/next\" dev --webpack",
+    "build": "node \"./node_modules/next/dist/bin/next\" build",
+    "start": "node \"./node_modules/next/dist/bin/next\" start",
+    "lint": "node \"./node_modules/next/dist/bin/next\" lint"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.43.0",
+    "hls.js": "^1.7.3",
+    "lucide-react": "^1.16.0",
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "swiper": "^14.3.0",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.19",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  }
+}
