@@ -62,7 +62,7 @@ export function PartnersMarquee() {
   ];
 
   return (
-    <section className="relative w-full pt-4 pb-12 sm:pb-16 overflow-hidden">
+    <section id="partners" className="relative w-full pt-4 pb-12 sm:pb-16 overflow-hidden scroll-mt-24 sm:scroll-mt-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 text-center">
         {/* Section Title */}
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-navy tracking-tight">

@@ -170,7 +170,7 @@ function StepMilestone({
 
 export function RegistrationSteps() {
   return (
-    <section id="processus" className="relative w-full pt-8 pb-16 lg:pt-12 lg:pb-24 overflow-hidden">
+    <section id="processus" className="relative w-full pt-8 pb-16 lg:pt-12 lg:pb-24 overflow-hidden scroll-mt-24 sm:scroll-mt-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

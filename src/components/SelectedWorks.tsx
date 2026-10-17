@@ -156,7 +156,7 @@ export const SelectedWorks: React.FC = () => {
     <section
       ref={sectionRef}
       id="results"
-      className="relative pt-4 md:pt-8 pb-12 md:pb-24 flex flex-col items-center overflow-hidden"
+      className="relative pt-4 md:pt-8 pb-16 md:pb-28 flex flex-col items-center overflow-hidden"
     >
       {/* Arch Background with Royal Navy & Electric Blue Shader */}
       <div className="absolute inset-x-0 top-0 bottom-0 overflow-hidden flex justify-center z-0 pointer-events-none">
@@ -165,6 +165,8 @@ export const SelectedWorks: React.FC = () => {
           style={{
             borderTopLeftRadius: "50% 120px",
             borderTopRightRadius: "50% 120px",
+            borderBottomLeftRadius: "50% 120px",
+            borderBottomRightRadius: "50% 120px",
           }}
         >
           <ShaderBackground className="absolute inset-0 w-full h-full object-cover opacity-90" />

@@ -9,9 +9,6 @@ import {
   GraduationCap,
   ArrowLeft,
   Compass,
-  MapPin,
-  Menu,
-  X,
 } from "lucide-react";
 
 // Crisp SVG Country Flag Tokens (Works 100% on Windows, Mac, iOS, Android)
@@ -90,18 +87,6 @@ function FlagCircle({ code, name }: { code: string; name: string }) {
 }
 
 export function Hero() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   // Dynamic rotating destination words for H1 requested by user:
   // "ليتوانيا " ➔ "إيطاليا " ➔ "رومانيا " ➔ "إسبانيا " ➔ "المجر " ➔ "أوروبا"
   const rotatingWords = [
@@ -133,167 +118,7 @@ export function Hero() {
   ];
 
   return (
-    <div className="relative min-h-screen flex flex-col text-brand-navy overflow-x-clip">
-      
-      {/* Top Navbar with Scroll-Adaptive Floating Pill Morphing */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-          isScrolled ? "pt-3 sm:pt-4 px-3 sm:px-6" : "pt-0 px-0"
-        }`}
-      >
-        <div
-          className={`mx-auto flex items-center justify-between pointer-events-auto transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] relative ${
-            isScrolled
-              ? "h-[64px] sm:h-[68px] max-w-[1040px] bg-white/80 backdrop-blur-2xl border border-white/85 shadow-[0_14px_35px_-8px_rgba(11,27,61,0.12),0_2px_8px_rgba(11,27,61,0.04)] rounded-full px-5 sm:px-7"
-              : "h-20 max-w-7xl bg-white/75 backdrop-blur-xl border-b border-white/60 px-4 sm:px-6 lg:px-8 shadow-[0_1px_3px_rgba(11,27,61,0.03)]"
-          }`}
-        >
-          {/* Logo & Identity */}
-          <Link href="/" className="flex items-center gap-3 sm:gap-3.5 group select-none">
-            <div className="relative flex items-center">
-              <Image
-                src="/logo/logo.PNG"
-                alt="M&A OVERSEAS CONSULTING"
-                width={352}
-                height={163}
-                className={`w-auto object-contain transition-all duration-500 group-hover:scale-[1.02] ${
-                  isScrolled ? "h-9 sm:h-10" : "h-11 sm:h-12 lg:h-[50px]"
-                }`}
-                priority
-              />
-            </div>
-
-            <div
-              className={`hidden sm:block w-[1px] bg-slate-200/80 transition-all duration-500 ${
-                isScrolled ? "h-5" : "h-7"
-              }`}
-            />
-
-            <div className="hidden sm:flex flex-col text-right justify-center">
-              <span
-                className={`font-bold text-brand-navy leading-tight transition-all duration-500 ${
-                  isScrolled ? "text-[10px]" : "text-[11px]"
-                }`}
-              >
-                مكتب معتمد
-              </span>
-              <span
-                className={`text-slate-500 font-medium leading-tight transition-all duration-500 ${
-                  isScrolled ? "text-[9px]" : "text-[10px]"
-                }`}
-              >
-                للدراسة في أوروبا
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop Nav Links */}
-          <nav
-            className={`hidden lg:flex items-center font-bold text-slate-700 transition-all duration-500 ${
-              isScrolled ? "gap-6 text-[13px]" : "gap-8 text-sm"
-            }`}
-          >
-            <a href="#destinations" className="hover:text-brand-electric transition-colors">
-              الوجهات الأوروبية
-            </a>
-            <a href="#services" className="hover:text-brand-electric transition-colors">
-              خدماتنا
-            </a>
-            <a href="#processus" className="hover:text-brand-electric transition-colors">
-              مراحل التسجيل
-            </a>
-            <a href="#about" className="hover:text-brand-electric transition-colors">
-              لماذا نحن؟
-            </a>
-            <a href="#contact" className="hover:text-brand-electric transition-colors">
-              اتصل بنا
-            </a>
-          </nav>
-
-          {/* Action Button & Location */}
-          <div className="hidden sm:flex items-center gap-3 sm:gap-4">
-            <div
-              className={`items-center gap-1.5 text-xs text-slate-500 font-medium transition-all duration-500 ${
-                isScrolled ? "hidden" : "hidden xl:flex"
-              }`}
-            >
-              <MapPin className="w-3.5 h-3.5 text-brand-electric" />
-              <span>إنزكان - شارع مراكش</span>
-            </div>
-            <a
-              href="https://wa.me/212775496303"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-2 rounded-full font-bold text-white bg-brand-navy hover:bg-brand-electric shadow-sm hover:shadow-glow-blue transition-all duration-300 ${
-                isScrolled ? "px-5 py-2 text-xs" : "px-6 py-2.5 text-xs"
-              }`}
-            >
-              <MessageCircle className="w-4 h-4 text-brand-electric-light" />
-              <span>استشارة مجانية</span>
-            </a>
-          </div>
-
-          {/* Mobile hamburger */}
-          <div className="flex lg:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-600 hover:text-brand-electric hover:bg-slate-100 transition-colors"
-              aria-label="القائمة"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile menu dropdown */}
-        {mobileMenuOpen && (
-          <div
-            className={`lg:hidden pointer-events-auto transition-all duration-300 ${
-              isScrolled
-                ? "mt-2 max-w-[1040px] mx-auto rounded-3xl bg-white/95 backdrop-blur-2xl border border-white/80 shadow-2xl p-5 space-y-4"
-                : "border-b border-slate-100 bg-white/95 backdrop-blur-xl px-6 py-5 space-y-4 shadow-xl"
-            }`}
-          >
-            <nav className="flex flex-col space-y-3 text-base font-bold text-slate-700 text-right">
-              <a href="#destinations" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand-electric py-1">
-                الوجهات الأوروبية
-              </a>
-              <a href="#services" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand-electric py-1">
-                خدماتنا
-              </a>
-              <a href="#processus" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand-electric py-1">
-                مراحل التسجيل
-              </a>
-              <a href="#about" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand-electric py-1">
-                لماذا نحن؟
-              </a>
-              <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-brand-electric py-1">
-                اتصل بنا
-              </a>
-            </nav>
-            <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-              <a
-                href="https://wa.me/212775496303"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-full text-sm font-bold text-white bg-brand-navy hover:bg-brand-electric"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>واتساب طلاب المغرب (0775496303)</span>
-              </a>
-              <a
-                href="https://wa.me/37062202955"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full text-xs font-bold text-brand-navy bg-slate-100"
-              >
-                <span>واتساب طلاب الجزائر (+37062202955)</span>
-              </a>
-            </div>
-          </div>
-        )}
-      </header>
-
+    <div id="hero" className="relative min-h-screen flex flex-col text-brand-navy overflow-x-clip scroll-mt-20">
       {/* Main Hero Body (Balanced Grid with Organic Glassmorphism) */}
       <main className="flex-1 flex items-center pt-24 sm:pt-28 lg:pt-28 pb-8 sm:pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
