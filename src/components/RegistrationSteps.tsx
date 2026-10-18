@@ -200,28 +200,25 @@ function MobileStackedStepCard({
   const Icon = step.icon;
   const isSolid = step.variant === "solid";
 
-  // Domain relative to `index`:
-  // index - 3: deep in deck (hidden)
-  // index - 2: 2nd card underneath (peeking at bottom +18px, scale 0.90)
-  // index - 1: 1st card directly underneath (peeking at bottom +9px, scale 0.95)
-  // index: ACTIVE top card (y: 0, scale: 1, opacity: 1)
-  // index + 0.3 -> index + 0.85: LIFTS UP ("كتهز لفوق") and peels away to reveal card `index + 1`
+  // Using transformOrigin: "bottom center" so scaling down cards underneath (index - 1, index - 2)
+  // keeps their bottom edges anchored at the exact +11px and +22px offsets (Apple Wallet style stack).
+  // When index -> index + 0.88, the active top card holds briefly then lifts smoothly inside the masked zone (-98px).
   const y = useTransform(
     mobileCardProgress,
-    [index - 3, index - 2, index - 1, index, index + 0.32, index + 0.85],
-    [26, 18, 9, 0, -85, -280]
+    [index - 3, index - 2, index - 1, index, index + 0.12, index + 0.45, index + 0.9],
+    [30, 22, 11, 0, 0, -42, -98]
   );
 
   const scale = useTransform(
     mobileCardProgress,
-    [index - 3, index - 2, index - 1, index, index + 0.32, index + 0.85],
-    [0.86, 0.9, 0.95, 1, 0.97, 0.92]
+    [index - 3, index - 2, index - 1, index, index + 0.12, index + 0.45, index + 0.9],
+    [0.84, 0.89, 0.945, 1, 1, 0.97, 0.92]
   );
 
   const opacity = useTransform(
     mobileCardProgress,
-    [index - 2.6, index - 2, index - 1, index, index + 0.28, index + 0.78],
-    [0, 0.45, 0.82, 1, 0.92, 0]
+    [index - 2.5, index - 2, index - 1, index, index + 0.15, index + 0.38, index + 0.82],
+    [0, 0.55, 0.88, 1, 1, 0.82, 0]
   );
 
   return (
@@ -230,9 +227,10 @@ function MobileStackedStepCard({
         y,
         scale,
         opacity,
+        transformOrigin: "bottom center",
         zIndex: (allSteps.length - index) * 10,
       }}
-      className="absolute inset-x-0 top-0 mx-auto w-full max-w-[340px] h-[220px] rounded-3xl bg-white border border-slate-200/95 shadow-[0_14px_34px_-10px_rgba(11,27,61,0.11),0_2px_6px_rgba(11,27,61,0.04)] px-5 py-4 flex flex-col items-center justify-center text-center select-none pointer-events-none will-change-[transform,opacity] transform-gpu"
+      className="absolute inset-x-0 top-3 mx-auto w-full max-w-[344px] h-[230px] rounded-3xl bg-white border border-slate-200/95 shadow-[0_14px_32px_-10px_rgba(11,27,61,0.12),0_4px_10px_-2px_rgba(11,27,61,0.06)] px-5 py-4 flex flex-col items-center justify-center text-center select-none pointer-events-none will-change-[transform,opacity] transform-gpu"
     >
       {/* Subtle Top Accent Glow Bar inside Card */}
       <div
@@ -245,7 +243,7 @@ function MobileStackedStepCard({
       />
 
       {/* Circle Milestone Container with Number Badge */}
-      <div className="relative">
+      <div className="relative shrink-0">
         <div
           className={`w-20 h-20 rounded-full border-2 border-dashed p-1.5 bg-[#FAFBFD] ${
             isSolid ? "border-blue-400/90" : "border-slate-300"
@@ -274,12 +272,12 @@ function MobileStackedStepCard({
         </div>
       </div>
 
-      {/* Step Title & Description */}
-      <div className="mt-4 space-y-1">
+      {/* Step Title & Full Un-truncated Description */}
+      <div className="mt-3.5 space-y-1">
         <h3 className="text-base font-bold text-brand-navy leading-snug">
           {step.title}
         </h3>
-        <p className="text-xs text-slate-600 font-normal leading-relaxed line-clamp-2">
+        <p className="text-xs text-slate-600 font-normal leading-relaxed">
           {step.description}
         </p>
       </div>
@@ -388,29 +386,63 @@ export function RegistrationSteps() {
   // Track vertical scroll progress through the sticky container
   const { scrollYProgress } = useScroll({
     target: scrollTrackRef,
-    offset: ["start 80px", "end end"],
+    offset: ["start 74px", "end end"],
   });
 
-  // Critically-damped spring: instant finger/trackpad response + silky mouse-wheel glide
+  // Weighted, controlled spring physics: absorbs fast thumb flicks so cards move with deliberate weight
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 220,
-    damping: 32,
-    mass: 0.18,
+    stiffness: 155,
+    damping: 30,
+    mass: 0.42,
     restDelta: 0.0005,
   });
 
-  // DESKTOP/TABLET (>=640px): Shift index from 0 (steps 01-03) to 5 (steps 06-08)
+  // DESKTOP/TABLET (>=640px): Stepped Magnetic Dwell Curve from 0 (steps 01-03) to 5 (steps 06-08)
+  // Each step has a flat dwell plateau where it locks and rests before transitioning to the next step
   const desktopShift = useTransform(
     smoothProgress,
-    [0, 0.06, 0.92, 1],
-    [0, 0, 5, 5]
+    [
+      0.0, 0.06,
+      0.188, 0.248,
+      0.376, 0.436,
+      0.564, 0.624,
+      0.752, 0.812,
+      0.94, 1.0,
+    ],
+    [
+      0, 0,
+      1, 1,
+      2, 2,
+      3, 3,
+      4, 4,
+      5, 5,
+    ]
   );
 
-  // MOBILE (<640px): Stacked card index from 0 (Card 01 on top) to 7 (Card 08 on top)
+  // MOBILE (<640px): Stepped Magnetic Dwell Curve across all 8 cards (0 -> 7)
+  // Each card has a dedicated dwell plateau (44% of scroll) where momentum is absorbed so a single swipe never skips 2 cards
   const mobileCardProgress = useTransform(
     smoothProgress,
-    [0, 0.04, 0.93, 1],
-    [0, 0, 7, 7]
+    [
+      0.0, 0.055,
+      0.135, 0.19,
+      0.27, 0.325,
+      0.405, 0.46,
+      0.54, 0.595,
+      0.675, 0.73,
+      0.81, 0.865,
+      0.945, 1.0,
+    ],
+    [
+      0, 0,
+      1, 1,
+      2, 2,
+      3, 3,
+      4, 4,
+      5, 5,
+      6, 6,
+      7, 7,
+    ]
   );
 
   // Desktop horizontal translation in RTL (5/8 = 62.5%)
@@ -419,25 +451,25 @@ export function RegistrationSteps() {
   // Desktop active blue line along the connector between circles (grows right to left in RTL)
   const lineProgressScale = useTransform(desktopShift, [0, 5], [0.28, 1]);
 
-  // Bottom progress pill bar fill
+  // Bottom progress pill bar fill synced directly with the active card/step
   const progressBarScale = useTransform(
-    smoothProgress,
-    [0, 0.05, 0.93, 1],
-    [isMobile ? 0.125 : 0.375, isMobile ? 0.125 : 0.375, 1, 1]
+    isMobile ? mobileCardProgress : desktopShift,
+    isMobile ? [0, 7] : [0, 5],
+    [isMobile ? 0.125 : 0.375, 1]
   );
 
   return (
     <section id="processus" className="relative w-full scroll-mt-20">
-      {/* Tall Scroll Runway (320vh on mobile & desktop) */}
+      {/* Extended Scroll Runway (520vh on mobile for 8 cards with magnetic dwell plateaus, 400vh on desktop) */}
       <div
         ref={scrollTrackRef}
-        className="relative h-[320vh] w-full"
+        className="relative h-[520vh] sm:h-[400vh] w-full"
       >
-        {/* Sticky Pinned Stage: Compact top spacing on mobile so there is no dead gap below the video arch */}
-        <div className="sticky top-[74px] sm:top-0 h-auto sm:h-screen sm:supports-[height:100dvh]:h-[100dvh] w-full flex flex-col justify-start sm:justify-center overflow-x-clip pt-5 pb-6 sm:pt-24 sm:pb-10">
+        {/* Sticky Pinned Stage: Synchronized min-h-[calc(100dvh-74px)] on mobile so it unpins right as Step 08 completes */}
+        <div className="sticky top-[74px] sm:top-0 min-h-[calc(100vh-74px)] supports-[min-height:100dvh]:min-h-[calc(100dvh-74px)] sm:h-screen sm:supports-[height:100dvh]:h-[100dvh] w-full flex flex-col justify-start sm:justify-center overflow-x-clip pt-4 pb-5 sm:pt-24 sm:pb-10">
           <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-10 lg:mb-12 space-y-1.5 sm:space-y-3">
+            <div className="text-center max-w-3xl mx-auto mb-2.5 sm:mb-10 lg:mb-12 space-y-1.5 sm:space-y-3">
               <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-brand-navy tracking-tight leading-[1.25]">
                 مراحل التسجيل والمرافقة{" "}
                 <span className="text-brand-electric">خطوة بخطوة</span>
@@ -447,8 +479,8 @@ export function RegistrationSteps() {
               </p>
             </div>
 
-            {/* --- MOBILE VIEW (<640px): 3D Stacked Card Peel Deck (Tightly fitted to 238px height) --- */}
-            <div className="block sm:hidden relative w-full h-[238px]">
+            {/* --- MOBILE VIEW (<640px): 3D Stacked Card Peel Deck with Top Fade Mask --- */}
+            <div className="block sm:hidden relative w-full h-[264px] [mask-image:linear-gradient(to_bottom,transparent_0%,black_11%,black_100%)]">
               {allSteps.map((step, index) => (
                 <MobileStackedStepCard
                   key={step.number}
@@ -510,8 +542,8 @@ export function RegistrationSteps() {
               progressBarScale={progressBarScale}
             />
 
-            {/* Mobile CTA Card: Directly underneath the counter with tight 16px (mt-4) spacing so there is zero empty gap */}
-            <div className="block sm:hidden mt-4">
+            {/* Mobile CTA Card: Directly underneath the counter with tight 14px (mt-3.5) spacing */}
+            <div className="block sm:hidden mt-3.5">
               <div
                 className="p-5 rounded-3xl apple-glass border-blue-200/80 shadow-[0_14px_32px_-10px_rgba(37,99,235,0.1)] relative overflow-hidden text-center"
                 style={{
