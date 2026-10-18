@@ -107,51 +107,45 @@ const allSteps: StepItem[] = [
   },
 ];
 
-function StepMilestone({
+function DesktopStepMilestone({
   step,
   index,
-  currentShift,
-  visibleSpan,
+  desktopShift,
 }: {
   step: StepItem;
   index: number;
-  currentShift: MotionValue<number>;
-  visibleSpan: number; // 2 on desktop/tablet (3 visible: [index-2, index]), 1 on mobile (2 visible: [index-1, index])
+  desktopShift: MotionValue<number>;
 }) {
   const Icon = step.icon;
   const isSolid = step.variant === "solid";
   const isBadgeTop = step.badgePosition === "top";
 
-  const enterStart = index - visibleSpan - 0.65;
-  const enterEnd = index - visibleSpan;
-  const exitStart = index;
-  const exitEnd = index + 0.65;
-
+  // Desktop shows 3 steps at once: step `index` is inside the 3 visible slots when `desktopShift` is in [index - 2, index]
   const opacity = useTransform(
-    currentShift,
-    [enterStart, enterEnd, exitStart, exitEnd],
+    desktopShift,
+    [index - 2.65, index - 2, index, index + 0.65],
     [0.18, 1, 1, 0.18]
   );
 
   const scale = useTransform(
-    currentShift,
-    [enterStart, enterEnd, exitStart, exitEnd],
+    desktopShift,
+    [index - 2.65, index - 2, index, index + 0.65],
     [0.86, 1, 1, 0.86]
   );
 
   return (
     <motion.div
       style={{ opacity, scale }}
-      className="group relative flex flex-col items-center text-center z-10 w-[12.5%] shrink-0 px-2.5 sm:px-4 lg:px-6 select-none will-change-[transform,opacity] transform-gpu"
+      className="group relative flex flex-col items-center text-center z-10 w-[12.5%] shrink-0 px-3 sm:px-4 lg:px-6 select-none will-change-[transform,opacity] transform-gpu"
     >
       {/* Circle Milestone Container with Alternating Top or Bottom Number Badge */}
       <div className="relative">
         {/* Outer Dashed Circle Ring */}
         <div
-          className={`w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full border-2 border-dashed p-2 sm:p-2.5 bg-[#FAFBFD] transition-[transform,border-color] duration-250 ease-out ${
+          className={`w-28 h-28 lg:w-32 lg:h-32 rounded-full border-2 border-dashed p-2.5 bg-[#FAFBFD] transition-[transform,border-color] duration-250 ease-out ${
             isSolid
-              ? "border-blue-400/85 sm:group-hover:border-brand-electric sm:group-hover:scale-105"
-              : "border-slate-300 sm:group-hover:border-brand-electric sm:group-hover:scale-105"
+              ? "border-blue-400/85 group-hover:border-brand-electric group-hover:scale-105"
+              : "border-slate-300 group-hover:border-brand-electric group-hover:scale-105"
           }`}
         >
           {/* Inner Circle Disc */}
@@ -159,23 +153,21 @@ function StepMilestone({
             className={`w-full h-full rounded-full flex items-center justify-center transition-shadow duration-250 ${
               isSolid
                 ? "bg-gradient-to-br from-blue-600 to-brand-electric text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)]"
-                : "bg-white border border-slate-200/90 text-brand-electric shadow-xs sm:group-hover:shadow-[0_10px_24px_rgba(37,99,235,0.14)]"
+                : "bg-white border border-slate-200/90 text-brand-electric shadow-xs group-hover:shadow-[0_10px_24px_rgba(37,99,235,0.14)]"
             }`}
           >
-            <Icon className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 stroke-[1.8] transition-transform duration-250 ease-out sm:group-hover:scale-110" />
+            <Icon className="w-8 h-8 lg:w-9 lg:h-9 stroke-[1.8] transition-transform duration-250 ease-out group-hover:scale-110" />
           </div>
         </div>
 
         {/* Number Badge (Alternating Top / Bottom) */}
         <div
-          className={`absolute left-1/2 -translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border-2 flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs transition-colors duration-250 z-20 tabular-nums ${
-            isBadgeTop
-              ? "-top-3 sm:-top-3.5"
-              : "-bottom-3 sm:-bottom-3.5"
+          className={`absolute left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white border-2 flex items-center justify-center font-bold text-sm shadow-xs transition-colors duration-250 z-20 tabular-nums ${
+            isBadgeTop ? "-top-3.5" : "-bottom-3.5"
           } ${
             isSolid
               ? "border-brand-electric text-brand-electric"
-              : "border-slate-300 text-brand-navy sm:group-hover:border-brand-electric sm:group-hover:text-brand-electric"
+              : "border-slate-300 text-brand-navy group-hover:border-brand-electric group-hover:text-brand-electric"
           }`}
         >
           {step.number}
@@ -183,8 +175,8 @@ function StepMilestone({
       </div>
 
       {/* Title & Description underneath */}
-      <div className="mt-5 sm:mt-7 space-y-1.5 max-w-[235px]">
-        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-brand-navy sm:group-hover:text-brand-electric transition-colors duration-200 leading-snug">
+      <div className="mt-7 space-y-1.5 max-w-[235px]">
+        <h3 className="text-base lg:text-lg font-bold text-brand-navy group-hover:text-brand-electric transition-colors duration-200 leading-snug">
           {step.title}
         </h3>
         <p className="text-xs lg:text-sm text-slate-500 font-normal leading-relaxed">
@@ -195,26 +187,139 @@ function StepMilestone({
   );
 }
 
-// Isolated leaf component for the live step counter so scrolling never re-renders the 8 step cards
+// Mobile Stacked Card: Sits in a 3D deck; as the user scrolls, the top card lifts up and reveals the next card underneath
+function MobileStackedStepCard({
+  step,
+  index,
+  mobileCardProgress,
+}: {
+  step: StepItem;
+  index: number;
+  mobileCardProgress: MotionValue<number>;
+}) {
+  const Icon = step.icon;
+  const isSolid = step.variant === "solid";
+
+  // Domain relative to `index`:
+  // index - 3: deep in deck (hidden)
+  // index - 2: 2nd card underneath (peeking at bottom +18px, scale 0.90)
+  // index - 1: 1st card directly underneath (peeking at bottom +9px, scale 0.95)
+  // index: ACTIVE top card (y: 0, scale: 1, opacity: 1)
+  // index + 0.3 -> index + 0.85: LIFTS UP ("كتهز لفوق") and peels away to reveal card `index + 1`
+  const y = useTransform(
+    mobileCardProgress,
+    [index - 3, index - 2, index - 1, index, index + 0.32, index + 0.85],
+    [26, 18, 9, 0, -85, -280]
+  );
+
+  const scale = useTransform(
+    mobileCardProgress,
+    [index - 3, index - 2, index - 1, index, index + 0.32, index + 0.85],
+    [0.86, 0.9, 0.95, 1, 0.97, 0.92]
+  );
+
+  const opacity = useTransform(
+    mobileCardProgress,
+    [index - 2.6, index - 2, index - 1, index, index + 0.28, index + 0.78],
+    [0, 0.45, 0.82, 1, 0.92, 0]
+  );
+
+  return (
+    <motion.div
+      style={{
+        y,
+        scale,
+        opacity,
+        zIndex: (allSteps.length - index) * 10,
+      }}
+      className="absolute inset-x-0 top-0 mx-auto w-full max-w-[340px] h-[220px] rounded-3xl bg-white border border-slate-200/95 shadow-[0_14px_34px_-10px_rgba(11,27,61,0.11),0_2px_6px_rgba(11,27,61,0.04)] px-5 py-4 flex flex-col items-center justify-center text-center select-none pointer-events-none will-change-[transform,opacity] transform-gpu"
+    >
+      {/* Subtle Top Accent Glow Bar inside Card */}
+      <div
+        aria-hidden="true"
+        className={`absolute top-0 inset-x-10 h-[3px] rounded-b-full ${
+          isSolid
+            ? "bg-gradient-to-r from-transparent via-brand-electric to-transparent"
+            : "bg-gradient-to-r from-transparent via-blue-300/80 to-transparent"
+        }`}
+      />
+
+      {/* Circle Milestone Container with Number Badge */}
+      <div className="relative">
+        <div
+          className={`w-20 h-20 rounded-full border-2 border-dashed p-1.5 bg-[#FAFBFD] ${
+            isSolid ? "border-blue-400/90" : "border-slate-300"
+          }`}
+        >
+          <div
+            className={`w-full h-full rounded-full flex items-center justify-center ${
+              isSolid
+                ? "bg-gradient-to-br from-blue-600 to-brand-electric text-white shadow-[0_8px_18px_rgba(37,99,235,0.26)]"
+                : "bg-white border border-slate-200/90 text-brand-electric shadow-xs"
+            }`}
+          >
+            <Icon className="w-7 h-7 stroke-[1.8]" />
+          </div>
+        </div>
+
+        {/* Step Number Badge at Bottom of Circle */}
+        <div
+          className={`absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-white border-2 flex items-center justify-center font-bold text-[11px] shadow-xs z-20 tabular-nums ${
+            isSolid
+              ? "border-brand-electric text-brand-electric"
+              : "border-slate-300 text-brand-navy"
+          }`}
+        >
+          {step.number}
+        </div>
+      </div>
+
+      {/* Step Title & Description */}
+      <div className="mt-4 space-y-1">
+        <h3 className="text-base font-bold text-brand-navy leading-snug">
+          {step.title}
+        </h3>
+        <p className="text-xs text-slate-600 font-normal leading-relaxed line-clamp-2">
+          {step.description}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+// Isolated leaf component for the live step counter so scrolling never re-renders the step cards
 function ScrollStepCounter({
-  currentShift,
-  visibleCount,
+  desktopShift,
+  mobileCardProgress,
+  isMobile,
   progressBarScale,
 }: {
-  currentShift: MotionValue<number>;
-  visibleCount: number;
+  desktopShift: MotionValue<number>;
+  mobileCardProgress: MotionValue<number>;
+  isMobile: boolean;
   progressBarScale: MotionValue<number>;
 }) {
-  const [reachedStep, setReachedStep] = useState<number>(visibleCount);
+  const [reachedStep, setReachedStep] = useState<number>(isMobile ? 1 : 3);
 
   useEffect(() => {
-    setReachedStep(
-      Math.min(8, Math.max(visibleCount, Math.round(currentShift.get()) + visibleCount))
-    );
-  }, [visibleCount, currentShift]);
+    if (isMobile) {
+      setReachedStep(Math.min(8, Math.max(1, Math.round(mobileCardProgress.get()) + 1)));
+    } else {
+      setReachedStep(Math.min(8, Math.max(3, Math.round(desktopShift.get()) + 3)));
+    }
+  }, [isMobile, desktopShift, mobileCardProgress]);
 
-  useMotionValueEvent(currentShift, "change", (latest) => {
-    const nextStep = Math.min(8, Math.max(visibleCount, Math.round(latest) + visibleCount));
+  useMotionValueEvent(desktopShift, "change", (latest) => {
+    if (isMobile) return;
+    const nextStep = Math.min(8, Math.max(3, Math.round(latest) + 3));
+    if (nextStep !== reachedStep) {
+      setReachedStep(nextStep);
+    }
+  });
+
+  useMotionValueEvent(mobileCardProgress, "change", (latest) => {
+    if (!isMobile) return;
+    const nextStep = Math.min(8, Math.max(1, Math.round(latest) + 1));
     if (nextStep !== reachedStep) {
       setReachedStep(nextStep);
     }
@@ -223,9 +328,9 @@ function ScrollStepCounter({
   const formattedCurrent = reachedStep < 10 ? `0${reachedStep}` : `${reachedStep}`;
 
   return (
-    <div className="mt-6 sm:mt-8 flex flex-col items-center gap-2.5 select-none">
+    <div className="mt-2 sm:mt-6 flex flex-col items-center gap-2 select-none">
       {/* Dynamic Step Counter Pill + 8 Micro Dots */}
-      <div className="flex items-center gap-3 px-3.5 py-1 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs">
+      <div className="flex items-center gap-3 px-3.5 py-1 rounded-full bg-white/95 border border-slate-200/85 shadow-2xs">
         <span className="text-[11px] sm:text-xs font-bold text-brand-navy tabular-nums">
           المرحلة{" "}
           <span className="text-brand-electric">{formattedCurrent}</span>{" "}
@@ -280,18 +385,10 @@ export function RegistrationSteps() {
     return () => mql.removeEventListener("change", updateMatch);
   }, []);
 
-  // Desktop/Tablet (>=640px): 3 visible steps at a time (maxShift = 5, endX = 62.5%)
-  // Mobile (<640px): 2 spacious visible steps at a time (maxShift = 6, endX = 75%)
-  const visibleCount = isMobile ? 2 : 3;
-  const visibleSpan = visibleCount - 1;
-  const maxShift = 8 - visibleCount;
-  const maxTranslatePercent = isMobile ? "75%" : "62.5%";
-  const initialProgressScale = visibleCount / 8;
-
-  // Track vertical scroll progress through the 320vh sticky container
+  // Track vertical scroll progress through the sticky container
   const { scrollYProgress } = useScroll({
     target: scrollTrackRef,
-    offset: ["start start", "end end"],
+    offset: ["start 80px", "end end"],
   });
 
   // Critically-damped spring: instant finger/trackpad response + silky mouse-wheel glide
@@ -302,43 +399,45 @@ export function RegistrationSteps() {
     restDelta: 0.0005,
   });
 
-  // Continuous shift index from 0 to maxShift (5 on desktop/tablet, 6 on mobile)
-  const currentShift = useTransform(
+  // DESKTOP/TABLET (>=640px): Shift index from 0 (steps 01-03) to 5 (steps 06-08)
+  const desktopShift = useTransform(
     smoothProgress,
     [0, 0.06, 0.92, 1],
-    [0, 0, maxShift, maxShift]
+    [0, 0, 5, 5]
   );
 
-  // Horizontal translation in RTL
-  const xPercent = useTransform(
-    currentShift,
-    [0, maxShift],
-    ["0%", maxTranslatePercent]
+  // MOBILE (<640px): Stacked card index from 0 (Card 01 on top) to 7 (Card 08 on top)
+  const mobileCardProgress = useTransform(
+    smoothProgress,
+    [0, 0.04, 0.93, 1],
+    [0, 0, 7, 7]
   );
 
-  // Active blue line along the connector between circles (grows from right to left in RTL)
-  const lineProgressScale = useTransform(
-    currentShift,
-    [0, maxShift],
-    [isMobile ? 0.16 : 0.28, 1]
-  );
+  // Desktop horizontal translation in RTL (5/8 = 62.5%)
+  const xPercent = useTransform(desktopShift, [0, 5], ["0%", "62.5%"]);
+
+  // Desktop active blue line along the connector between circles (grows right to left in RTL)
+  const lineProgressScale = useTransform(desktopShift, [0, 5], [0.28, 1]);
 
   // Bottom progress pill bar fill
   const progressBarScale = useTransform(
-    currentShift,
-    [0, maxShift],
-    [initialProgressScale, 1]
+    smoothProgress,
+    [0, 0.05, 0.93, 1],
+    [isMobile ? 0.125 : 0.375, isMobile ? 0.125 : 0.375, 1, 1]
   );
 
   return (
     <section id="processus" className="relative w-full scroll-mt-20">
-      {/* Tall Scroll Runway (320vh): Pins the screen while scrolling through all 8 steps */}
-      <div ref={scrollTrackRef} className="relative h-[320vh] w-full">
-        {/* Sticky Pinned Stage: Respects fixed Navbar height with pt-20 sm:pt-24 */}
-        <div className="sticky top-0 h-screen supports-[height:100dvh]:h-[100dvh] w-full flex flex-col justify-center overflow-x-clip pt-20 pb-8 sm:pt-24 sm:pb-12">
-          <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8">
+      {/* Tall Scroll Runway (320vh on mobile & desktop) */}
+      <div
+        ref={scrollTrackRef}
+        className="relative h-[320vh] w-full"
+      >
+        {/* Sticky Pinned Stage: Compact top spacing on mobile so there is no dead gap below the video arch */}
+        <div className="sticky top-[74px] sm:top-0 h-auto sm:h-screen sm:supports-[height:100dvh]:h-[100dvh] w-full flex flex-col justify-start sm:justify-center overflow-x-clip pt-5 pb-6 sm:pt-24 sm:pb-10">
+          <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 lg:mb-14 space-y-2.5 sm:space-y-3">
+            <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-10 lg:mb-12 space-y-1.5 sm:space-y-3">
               <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-brand-navy tracking-tight leading-[1.25]">
                 مراحل التسجيل والمرافقة{" "}
                 <span className="text-brand-electric">خطوة بخطوة</span>
@@ -348,18 +447,30 @@ export function RegistrationSteps() {
               </p>
             </div>
 
-            {/* Horizontal Sliding Viewport Box (2 spacious steps on Mobile, 3 steps on Tablet/Desktop) */}
-            <div className="relative w-full overflow-hidden pt-5 pb-4 sm:pt-6 sm:pb-6 [mask-image:linear-gradient(to_right,transparent_0%,black_4%,black_96%,transparent_100%)]">
-              {/* Moving Track containing all 8 steps (400% on Mobile = 8/2, 266.6667% on Tablet/PC = 8/3) */}
+            {/* --- MOBILE VIEW (<640px): 3D Stacked Card Peel Deck (Tightly fitted to 238px height) --- */}
+            <div className="block sm:hidden relative w-full h-[238px]">
+              {allSteps.map((step, index) => (
+                <MobileStackedStepCard
+                  key={step.number}
+                  step={step}
+                  index={index}
+                  mobileCardProgress={mobileCardProgress}
+                />
+              ))}
+            </div>
+
+            {/* --- DESKTOP & TABLET VIEW (>=640px): Horizontal 3-Step Sliding Timeline --- */}
+            <div className="hidden sm:block relative w-full overflow-hidden pt-6 pb-4 [mask-image:linear-gradient(to_right,transparent_0%,black_4%,black_96%,transparent_100%)]">
+              {/* Moving Track containing all 8 steps (266.6667% width = 8/3 of container) */}
               <motion.div
                 style={{ x: xPercent }}
-                className="relative flex flex-row items-start w-[400%] sm:w-[266.6667%] will-change-transform transform-gpu"
+                className="relative flex flex-row items-start w-[266.6667%] will-change-transform transform-gpu"
               >
                 {/* Base Horizontal Dashed Connector Line across all 8 steps */}
                 <div
                   className="
                     absolute
-                    top-[48px] sm:top-[56px] lg:top-[64px]
+                    top-[56px] lg:top-[64px]
                     right-[6.25%] left-[6.25%]
                     h-[2px] border-t-2 border-dashed border-slate-200
                     pointer-events-none z-0
@@ -372,7 +483,7 @@ export function RegistrationSteps() {
                   style={{ scaleX: lineProgressScale, transformOrigin: "right" }}
                   className="
                     absolute
-                    top-[48px] sm:top-[56px] lg:top-[64px]
+                    top-[56px] lg:top-[64px]
                     right-[6.25%] left-[6.25%]
                     h-[2px] bg-gradient-to-l from-brand-electric via-blue-500 to-blue-400/60
                     pointer-events-none z-0 will-change-transform transform-gpu
@@ -381,29 +492,66 @@ export function RegistrationSteps() {
                 />
 
                 {allSteps.map((step, index) => (
-                  <StepMilestone
+                  <DesktopStepMilestone
                     key={step.number}
                     step={step}
                     index={index}
-                    currentShift={currentShift}
-                    visibleSpan={visibleSpan}
+                    desktopShift={desktopShift}
                   />
                 ))}
               </motion.div>
             </div>
 
-            {/* Live Step Counter Pill (03 / 08 -> 08 / 08) + Progress Bar */}
+            {/* Live Step Counter Pill + 8 Dots + Progress Bar */}
             <ScrollStepCounter
-              currentShift={currentShift}
-              visibleCount={visibleCount}
+              desktopShift={desktopShift}
+              mobileCardProgress={mobileCardProgress}
+              isMobile={isMobile}
               progressBarScale={progressBarScale}
             />
+
+            {/* Mobile CTA Card: Directly underneath the counter with tight 16px (mt-4) spacing so there is zero empty gap */}
+            <div className="block sm:hidden mt-4">
+              <div
+                className="p-5 rounded-3xl apple-glass border-blue-200/80 shadow-[0_14px_32px_-10px_rgba(37,99,235,0.1)] relative overflow-hidden text-center"
+                style={{
+                  backgroundImage: `
+                    radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
+                    radial-gradient(circle at 100% 100%, rgba(96, 165, 250, 0.08) 0%, transparent 45%)
+                  `,
+                }}
+              >
+                <div className="relative z-10 flex flex-col items-center gap-3.5">
+                  <div className="space-y-1">
+                    <h3 className="text-base font-bold text-brand-navy leading-snug">
+                      مستعد لبدء خطوتك الأولى نحو جامعات أوروبا؟
+                    </h3>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      تواصل الآن مع مستشارينا المعتمدين لبدء{" "}
+                      <strong>الخطوة 01 مجاناً</strong> وتحديد أفضل جامعة وتخصص يتناسب
+                      مع طموحك.
+                    </p>
+                  </div>
+
+                  <a
+                    href="https://wa.me/212775496303"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-md shadow-brand-navy/15 transition-[background-color,transform,box-shadow] duration-200 group"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light shrink-0" />
+                    <span>احجز استشارة مجانية</span>
+                    <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-200 group-hover:-translate-x-1 shrink-0" />
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom CTA Card (Appears naturally once all 8 steps finish and the screen unpins) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16 lg:pb-24">
+      {/* Desktop/Tablet Bottom CTA Card */}
+      <div className="hidden sm:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 pb-16 lg:pb-24">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
