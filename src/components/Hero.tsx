@@ -270,9 +270,7 @@ export function Hero() {
                 variants={heroItemVariants}
                 className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-xl"
               >
-                مرافقة متكاملة لطلاب <strong>المغرب</strong> و<strong>الجزائر</strong>: 
-                من اختيار الجامعة المناسبة والتخصص، استخراج القبول المعتمد والمنح الدراسية، 
-                إلى غاية الحصول على التأشيرة والاستقرار في بلد الدراسة.
+                معاك خطوة بخطوة لطلابنا في <strong>المغرب</strong> و<strong>الجزائر</strong>: ركّز على مستقبلك واترك الإجراءات علينا: نختار معك أفضل جامعة وتخصص، نستخرج لك القبول الرسمي والمنح، ونسهّل طريقك نحو التأشيرة وحتى الاستقرار في وجهتك الجديدة.
               </motion.p>
 
               {/* Action Buttons (High-Conversion CTAs) */}

@@ -127,12 +127,12 @@ export function PartnersMarquee() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 text-center">
         {/* Section Title */}
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-brand-navy tracking-tight">
-          شراكات أكاديمية مع كبرى الجامعات الأوروبية
+          شراكات رسمية مع أفضل الجامعات والمعاهد الأوروبية
         </h2>
 
         {/* Subtitle */}
         <p className="mt-2 text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto leading-relaxed">
-          دبلومات وبكالوريوس وماستر معترف بها رسمياً في المغرب والجزائر وكافة دول فضاء شنغن
+          شهادات جامعية ودبلومات معترف بها رسمياً في المغرب، الجزائر، وكافة دول أوروبا.
         </p>
       </div>
 
