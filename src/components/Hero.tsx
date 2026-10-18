@@ -7,7 +7,7 @@ import {
   MessageCircle,
   GraduationCap,
   ArrowLeft,
-  Compass,
+  PlayCircle,
 } from "lucide-react";
 
 // Crisp SVG Country Flag Tokens (Works 100% on Windows, Mac, iOS, Android)
@@ -292,8 +292,8 @@ export function Hero() {
                   href="#results"
                   className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-sm sm:text-base font-bold text-brand-navy bg-white hover:bg-slate-50 active:scale-[0.98] border border-slate-200/90 shadow-xs transition-[background-color,transform,border-color] duration-200"
                 >
-                  <Compass className="w-4 h-4 text-brand-electric shrink-0" />
-                  <span>استكشف الوجهات والمنح</span>
+                  <PlayCircle className="w-4 h-4 text-brand-electric shrink-0" />
+                  <span>شاهد تجارب الطلاب</span>
                 </a>
               </motion.div>
             </motion.div>
