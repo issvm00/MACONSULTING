@@ -122,7 +122,7 @@ export function PartnersMarquee() {
     <section
       ref={sectionRef}
       id="partners"
-      className="relative w-full pt-4 pb-12 sm:pb-16 overflow-x-clip scroll-mt-24 sm:scroll-mt-28"
+      className="relative w-full pt-4 pb-8 sm:pb-10 overflow-x-clip scroll-mt-24 sm:scroll-mt-28"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 text-center">
         {/* Section Title */}

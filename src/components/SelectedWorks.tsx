@@ -224,23 +224,22 @@ export const SelectedWorks: React.FC = () => {
     <section
       ref={sectionRef}
       id="results"
-      className="relative pt-16 sm:pt-20 md:pt-24 pb-16 sm:pb-20 md:pb-28 flex flex-col items-center overflow-hidden scroll-mt-20"
+      className="relative pt-7 sm:pt-8 md:pt-10 pb-8 sm:pb-9 md:pb-11 flex flex-col items-center overflow-hidden scroll-mt-20"
     >
-      {/* Arch Background with Royal Navy & Electric Blue Shader */}
-      {/* Slightly wider arch (w-[128%] sm:w-[118%] lg:w-[112%]) + balanced top/bottom padding ensures side cards sit 100% inside the dark arch */}
+      {/* Sleek Architectural Arch Background with Symmetrical Parabolic Curve & Curved Rim Glow */}
       <div className="absolute inset-x-0 top-0 bottom-0 overflow-hidden flex justify-center z-0 pointer-events-none transform-gpu">
         <div
-          className="w-[128%] sm:w-[118%] lg:w-[112%] shrink-0 h-full bg-[#071228] overflow-hidden relative"
+          className="w-[146%] sm:w-[134%] lg:w-[126%] shrink-0 h-full bg-[#071228] overflow-hidden relative"
           style={{
-            borderTopLeftRadius: "50% 120px",
-            borderTopRightRadius: "50% 120px",
-            borderBottomLeftRadius: "50% 120px",
-            borderBottomRightRadius: "50% 120px",
+            borderTopLeftRadius: "50% clamp(38px, 4.8vw, 66px)",
+            borderTopRightRadius: "50% clamp(38px, 4.8vw, 66px)",
+            borderBottomLeftRadius: "50% clamp(38px, 4.8vw, 66px)",
+            borderBottomRightRadius: "50% clamp(38px, 4.8vw, 66px)",
           }}
         >
           <ShaderBackground className="absolute inset-0 w-full h-full object-cover opacity-90" />
           {/* Subtle Depth Gradients for Eye-Friendly Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#071228]/50 via-transparent to-[#071228]/85 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#071228]/45 via-transparent to-[#071228]/85 pointer-events-none" />
 
           {/* High-Performance 60FPS Electric Tech Grid */}
           <div
@@ -248,25 +247,37 @@ export const SelectedWorks: React.FC = () => {
             className="absolute inset-0 pointer-events-none select-none"
             style={{
               backgroundImage: `
-                linear-gradient(to right, rgba(59, 130, 246, 0.22) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(59, 130, 246, 0.22) 1px, transparent 1px)
+                linear-gradient(to right, rgba(59, 130, 246, 0.2) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(59, 130, 246, 0.2) 1px, transparent 1px)
               `,
-              backgroundSize: "64px 64px",
-              backgroundPosition: "center top",
+              backgroundSize: "48px 48px",
+              backgroundPosition: "center center",
               maskImage:
-                "radial-gradient(ellipse 90% 80% at 50% 20%, black 45%, transparent 95%)",
+                "radial-gradient(ellipse 75% 72% at 50% 50%, black 35%, transparent 90%)",
               WebkitMaskImage:
-                "radial-gradient(ellipse 90% 80% at 50% 20%, black 45%, transparent 95%)",
+                "radial-gradient(ellipse 75% 72% at 50% 50%, black 35%, transparent 90%)",
             }}
-          >
-            {/* Luminous Glowing Electric Horizon Beam Line */}
-            <div className="absolute top-[64px] sm:top-[128px] inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-blue-400/65 to-transparent shadow-[0_0_12px_rgba(59,130,246,0.75)]" />
-          </div>
+          />
+
+          {/* Curved Specular Rim Highlight that follows the exact contour of the top and bottom arch */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              borderRadius: "inherit",
+              boxShadow:
+                "inset 0 1.5px 0 0 rgba(96, 165, 250, 0.55), inset 0 14px 28px -10px rgba(37, 99, 235, 0.38), inset 0 -1.5px 0 0 rgba(96, 165, 250, 0.32), inset 0 -14px 28px -10px rgba(37, 99, 235, 0.22)",
+              maskImage:
+                "linear-gradient(to right, transparent 8%, black 24%, black 76%, transparent 92%)",
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 8%, black 24%, black 76%, transparent 92%)",
+            }}
+          />
         </div>
       </div>
 
       <motion.div
-        className="relative z-10 w-full mt-2 md:mt-4 py-8 min-h-[480px] sm:min-h-[550px] md:min-h-[620px] flex items-center"
+        className="relative z-10 w-full max-w-[1240px] mx-auto py-1.5 sm:py-2 min-h-[355px] sm:min-h-[395px] md:min-h-[436px] flex items-center"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -274,19 +285,22 @@ export const SelectedWorks: React.FC = () => {
       >
         <motion.div variants={itemVariants} className="w-full">
           {/* Portfolio Coverflow Carousel (dir="ltr" ensures proper 3D physics in RTL pages) */}
-          <div dir="ltr" className="relative w-full">
+          <div
+            dir="ltr"
+            className="relative w-full lg:[mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]"
+          >
             {isMounted && works.length > 0 && (
               <>
-                {/* Top Minimalist 2-Button Controls */}
-                <div className="absolute -top-4 sm:-top-6 md:-top-8 inset-x-0 max-w-[420px] sm:max-w-[500px] md:max-w-[600px] mx-auto hidden sm:flex items-center justify-between px-3 sm:px-4 z-30 pointer-events-none select-none">
+                {/* Top Minimalist 2-Button Controls (Tightly framing the compacted center card shoulders) */}
+                <div className="absolute -top-2.5 sm:-top-3.5 md:-top-4 inset-x-0 max-w-[310px] sm:max-w-[365px] md:max-w-[410px] mx-auto hidden sm:flex items-center justify-between px-3 sm:px-4 z-30 pointer-events-none select-none">
                   <button
                     type="button"
                     onClick={() => swiperRef.current?.slidePrev()}
-                    className="pointer-events-auto group relative w-11 h-11 sm:w-12 sm:h-12 md:w-13 md:h-13 rounded-full bg-[#0B1B3D]/80 hover:bg-[#132D63] active:scale-92 border border-white/25 hover:border-blue-400/80 text-white flex items-center justify-center transition-[background-color,border-color,transform,box-shadow] duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer"
+                    className="pointer-events-auto group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0B1B3D]/85 hover:bg-[#132D63] active:scale-92 border border-white/25 hover:border-blue-400/80 text-white flex items-center justify-center transition-[background-color,border-color,transform,box-shadow] duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer"
                     aria-label="السابق"
                   >
                     <ChevronLeft
-                      className="relative z-10 w-5 h-5 sm:w-6 sm:h-6 text-white/90 group-hover:text-white transition-transform duration-200 group-hover:-translate-x-0.5"
+                      className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-white/90 group-hover:text-white transition-transform duration-200 group-hover:-translate-x-0.5"
                       strokeWidth={2.5}
                     />
                   </button>
@@ -294,11 +308,11 @@ export const SelectedWorks: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => swiperRef.current?.slideNext()}
-                    className="pointer-events-auto group relative w-11 h-11 sm:w-12 sm:h-12 md:w-13 md:h-13 rounded-full bg-[#0B1B3D]/80 hover:bg-[#132D63] active:scale-92 border border-white/25 hover:border-blue-400/80 text-white flex items-center justify-center transition-[background-color,border-color,transform,box-shadow] duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer"
+                    className="pointer-events-auto group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0B1B3D]/85 hover:bg-[#132D63] active:scale-92 border border-white/25 hover:border-blue-400/80 text-white flex items-center justify-center transition-[background-color,border-color,transform,box-shadow] duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer"
                     aria-label="التالي"
                   >
                     <ChevronRight
-                      className="relative z-10 w-5 h-5 sm:w-6 sm:h-6 text-white/90 group-hover:text-white transition-transform duration-200 group-hover:translate-x-0.5"
+                      className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-white/90 group-hover:text-white transition-transform duration-200 group-hover:translate-x-0.5"
                       strokeWidth={2.5}
                     />
                   </button>
@@ -308,7 +322,7 @@ export const SelectedWorks: React.FC = () => {
                   onSwiper={(swiper) => {
                     swiperRef.current = swiper;
                   }}
-                  speed={480}
+                  speed={460}
                   effect={"coverflow"}
                   grabCursor={true}
                   centeredSlides={true}
@@ -317,14 +331,14 @@ export const SelectedWorks: React.FC = () => {
                   slideToClickedSlide={true}
                   watchSlidesProgress={true}
                   coverflowEffect={{
-                    rotate: 10,
-                    stretch: 0,
-                    depth: 180,
+                    rotate: 8,
+                    stretch: 22,
+                    depth: 135,
                     modifier: 1,
                     slideShadows: false,
                   }}
                   modules={[EffectCoverflow]}
-                  className="w-full pt-2 sm:pt-4 [touch-action:pan-y]"
+                  className="w-full pt-1 pb-1 [touch-action:pan-y]"
                   threshold={6}
                   touchAngle={42}
                   resistanceRatio={0.85}
@@ -343,10 +357,10 @@ export const SelectedWorks: React.FC = () => {
                     return (
                       <SwiperSlide
                         key={`${work.id}-${index}`}
-                        className="!w-[260px] sm:!w-[300px] md:!w-[340px]"
+                        className="!w-[196px] sm:!w-[216px] md:!w-[232px] lg:!w-[242px]"
                       >
                         <div
-                          className="group relative aspect-[9/16] rounded-3xl overflow-hidden cursor-pointer shadow-[0_12px_32px_rgba(7,18,40,0.5)] [.swiper-slide-active_&]:shadow-[0_18px_48px_rgba(37,99,235,0.3)] mx-auto w-full h-full bg-[#0B1B3D] transition-shadow duration-300 transform-gpu [backface-visibility:hidden]"
+                          className="group relative aspect-[9/16] rounded-3xl overflow-hidden cursor-pointer shadow-[0_12px_30px_rgba(7,18,40,0.5)] [.swiper-slide-active_&]:shadow-[0_16px_42px_rgba(37,99,235,0.3)] mx-auto w-full h-full bg-[#0B1B3D] transition-shadow duration-300 transform-gpu [backface-visibility:hidden]"
                           onClick={(e) => handleCardClick(index, e)}
                         >
                           {/* Crisp Top-Layer Border Ring so image/video layers never cover up the rounded-3xl border */}
@@ -394,14 +408,14 @@ export const SelectedWorks: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={toggleMute}
-                                className="absolute top-3.5 right-3.5 z-30 p-2.5 rounded-full bg-black/65 hover:bg-black/80 border border-white/20 text-white transition-transform duration-200 hover:scale-105 active:scale-95 shadow-lg cursor-pointer flex items-center justify-center pointer-events-auto"
+                                className="absolute top-2.5 right-2.5 z-30 p-2 rounded-full bg-black/65 hover:bg-black/80 border border-white/20 text-white transition-transform duration-200 hover:scale-105 active:scale-95 shadow-lg cursor-pointer flex items-center justify-center pointer-events-auto"
                                 aria-label={isMuted ? "Unmute video" : "Mute video"}
                               >
                                 {isMuted ? (
-                                  <VolumeX size={17} className="text-white/90" />
+                                  <VolumeX size={15} className="text-white/90" />
                                 ) : (
                                   <Volume2
-                                    size={17}
+                                    size={15}
                                     className="text-cyan-400"
                                   />
                                 )}
@@ -415,8 +429,8 @@ export const SelectedWorks: React.FC = () => {
                           {/* Loading Spinner (appears when buffering) */}
                           {isPlaying && isVideoLoading && (
                             <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                              <div className="w-16 h-16 rounded-full bg-black/70 border border-white/20 flex items-center justify-center shadow-2xl">
-                                <div className="w-7 h-7 rounded-full border-2 border-white/20 border-t-brand-electric animate-spin" />
+                              <div className="w-12 h-12 rounded-full bg-black/70 border border-white/20 flex items-center justify-center shadow-2xl">
+                                <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-brand-electric animate-spin" />
                               </div>
                             </div>
                           )}
@@ -424,10 +438,10 @@ export const SelectedWorks: React.FC = () => {
                           {/* Resume Play Icon (if paused by user) */}
                           {isPlaying && isPaused && !isVideoLoading && (
                             <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                              <div className="w-16 h-16 rounded-full bg-black/55 border border-white/40 flex items-center justify-center shadow-lg">
+                              <div className="w-12 h-12 rounded-full bg-black/55 border border-white/40 flex items-center justify-center shadow-lg">
                                 <Play
-                                  size={24}
-                                  className="text-white fill-white ml-1"
+                                  size={20}
+                                  className="text-white fill-white ml-0.5"
                                 />
                               </div>
                             </div>
@@ -437,27 +451,27 @@ export const SelectedWorks: React.FC = () => {
                           {!isPlaying && (
                             <>
                               {/* Gradient Overlay */}
-                              <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-[#071228]/85 via-black/20 to-transparent pointer-events-none" />
+                              <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-[#071228]/85 via-black/15 to-transparent pointer-events-none" />
 
                               {/* Center Play Button */}
                               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <div className="w-16 h-16 rounded-full bg-[#0B1B3D]/65 border border-white/45 flex items-center justify-center transition-[transform,background-color] duration-300 sm:group-hover:scale-110 sm:group-hover:bg-brand-electric/80 relative z-10 shadow-lg">
+                                <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-[#0B1B3D]/65 border border-white/45 flex items-center justify-center transition-[transform,background-color] duration-300 sm:group-hover:scale-110 sm:group-hover:bg-brand-electric/80 relative z-10 shadow-lg">
                                   <Play
-                                    size={24}
-                                    className="text-white fill-white ml-1 relative z-10"
+                                    size={20}
+                                    className="text-white fill-white ml-0.5 relative z-10"
                                   />
                                 </div>
                               </div>
 
                               {/* Bottom Info Card */}
-                              <div className="absolute bottom-0 left-0 right-0 p-4 z-10 pointer-events-none">
-                                <div className="rounded-2xl bg-white/95 border border-white/80 px-5 py-3 flex items-center justify-between shadow-lg">
-                                  <span className="text-sm font-bold text-brand-navy truncate pr-2">
+                              <div className="absolute bottom-0 left-0 right-0 p-2.5 sm:p-3 z-10 pointer-events-none">
+                                <div className="rounded-2xl bg-white/95 border border-white/80 px-3 py-2 flex items-center justify-between shadow-lg">
+                                  <span className="text-[11px] sm:text-xs font-bold text-brand-navy truncate pr-1.5">
                                     {work.title}
                                   </span>
-                                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-electric/[0.08] border border-brand-electric/15 shrink-0">
-                                    <Eye size={14} className="text-brand-electric" />
-                                    <span className="text-xs font-bold text-brand-electric tabular-nums">
+                                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-electric/[0.08] border border-brand-electric/15 shrink-0">
+                                    <Eye size={12} className="text-brand-electric" />
+                                    <span className="text-[10px] sm:text-[11px] font-bold text-brand-electric tabular-nums">
                                       {work.views}
                                     </span>
                                   </div>
@@ -480,6 +494,7 @@ export const SelectedWorks: React.FC = () => {
 };
 
 export default SelectedWorks;
+
 
 
 
