@@ -189,7 +189,7 @@ function DesktopStepMilestone({
   );
 }
 
-// Mobile Stacked Card: True opaque physical card deck with synchronized lift & rise phases
+// Mobile Stacked Card: Pure white physical card stack with unclipped shadows and synchronized content reveal
 function MobileStackedStepCard({
   step,
   index,
@@ -202,70 +202,72 @@ function MobileStackedStepCard({
   const Icon = step.icon;
   const isSolid = step.variant === "solid";
 
-  // Synchronized transition windows for every step k -> k + 1:
-  // - [k, k + 0.14]: All cards in the deck hold steady (settling zone so small thumb movements don't jitter)
-  // - [k + 0.14, k + 0.88]: Top card lifts cleanly upward while cards underneath rise by one slot in lockstep
-  // - [k + 0.88, k + 1.0]: Next card is already settled at y = 0, scale = 1
+  // Synchronized card stack choreography:
+  // - index - 2: 2nd card in deck (y: +20px, scale: 0.90, shell opacity: 0.75, inner content opacity: 0)
+  // - index - 1: 1st card in deck (y: +10px, scale: 0.95, shell opacity: 1.0, inner content opacity: 0)
+  // - index: ACTIVE top card (y: 0px, scale: 1.0, shell opacity: 1.0, inner content opacity: 1.0)
+  // - index + 0.12 -> index + 0.72: Active card lifts gently (-28px), scales slightly (1.02), and dissolves cleanly
+  //   without ever touching the title above or needing an overflow-hidden guillotine clip!
   const y = useTransform(
     mobileCardProgress,
     [
       index - 3,
-      index - 2.86,
-      index - 2.12,
       index - 2,
-      index - 1.86,
-      index - 1.12,
       index - 1,
-      index - 0.86,
-      index - 0.12,
+      index - 0.15,
       index,
-      index + 0.14,
-      index + 0.52,
-      index + 0.88,
+      index + 0.12,
+      index + 0.72,
     ],
-    [32, 32, 22, 22, 22, 11, 11, 11, 0, 0, 0, -115, -245]
+    [28, 20, 10, 0, 0, 0, -28]
   );
 
   const scale = useTransform(
     mobileCardProgress,
     [
       index - 3,
-      index - 2.86,
-      index - 2.12,
       index - 2,
-      index - 1.86,
-      index - 1.12,
       index - 1,
-      index - 0.86,
-      index - 0.12,
+      index - 0.15,
       index,
-      index + 0.14,
-      index + 0.88,
+      index + 0.12,
+      index + 0.72,
     ],
-    [0.85, 0.85, 0.9, 0.9, 0.9, 0.95, 0.95, 0.95, 1, 1, 1, 0.93]
+    [0.85, 0.9, 0.95, 1, 1, 1, 1.02]
   );
 
-  // CRITICAL: Cards waiting at index - 1 and index - 2 stay 100% opaque (opacity: 1) so cards never bleed through each other.
-  // The lifting card (index -> index + 0.88) stays 100% opaque until index + 0.48 (after it has already cleared the card below).
-  const opacity = useTransform(
+  // Outer white card shell opacity: stays solid for active card and 1st/2nd deck cards so 3 stacked edges are crisp
+  const shellOpacity = useTransform(
     mobileCardProgress,
     [
-      index - 2.85,
-      index - 2.15,
+      index - 2.8,
       index - 2,
       index - 1,
       index,
-      index + 0.48,
-      index + 0.86,
+      index + 0.15,
+      index + 0.68,
     ],
-    [0, 1, 1, 1, 1, 1, 0]
+    [0, 0.7, 0.95, 1, 1, 0]
   );
 
-  // Subtle dimming overlay for cards tucked underneath (index - 1, index - 2) to create physical 3D deck contrast without transparency bleed
-  const deckShadeOpacity = useTransform(
+  // Inner content (icon + Arabic text) only appears when the card rises to the top slot,
+  // completely preventing double-text ghosting while keeping the stacked white card shells solid!
+  const contentOpacity = useTransform(
     mobileCardProgress,
-    [index - 2, index - 1, index - 0.12, index],
-    [0.07, 0.035, 0, 0]
+    [
+      index - 0.75,
+      index - 0.15,
+      index,
+      index + 0.12,
+      index + 0.55,
+    ],
+    [0, 1, 1, 1, 0]
+  );
+
+  const contentY = useTransform(
+    mobileCardProgress,
+    [index - 0.75, index - 0.15, index, index + 0.12, index + 0.65],
+    [8, 0, 0, 0, -6]
   );
 
   return (
@@ -273,19 +275,12 @@ function MobileStackedStepCard({
       style={{
         y,
         scale,
-        opacity,
+        opacity: shellOpacity,
         transformOrigin: "bottom center",
         zIndex: (allSteps.length - index) * 10,
       }}
-      className="absolute inset-x-0 top-[18px] mx-auto w-full max-w-[294px] h-[224px] rounded-3xl bg-white border border-slate-200/95 shadow-[0_12px_28px_-8px_rgba(11,27,61,0.12),0_2px_6px_rgba(11,27,61,0.05)] px-4 py-3.5 flex flex-col items-center justify-center text-center select-none pointer-events-none overflow-hidden will-change-[transform,opacity] transform-gpu"
+      className="absolute inset-x-0 top-0 mx-auto w-full h-[218px] rounded-3xl bg-white border border-slate-200/90 shadow-[0_10px_26px_-8px_rgba(11,27,61,0.10),0_2px_6px_rgba(11,27,61,0.04)] px-4 py-3.5 flex flex-col items-center justify-center text-center select-none pointer-events-none will-change-[transform,opacity] transform-gpu"
     >
-      {/* Solid Depth Shade Overlay for underlying deck cards (prevents white-on-white blending while keeping card 100% opaque) */}
-      <motion.div
-        aria-hidden="true"
-        style={{ opacity: deckShadeOpacity }}
-        className="absolute inset-0 bg-brand-navy pointer-events-none z-30"
-      />
-
       {/* Subtle Top Accent Glow Bar inside Card */}
       <div
         aria-hidden="true"
@@ -296,45 +291,51 @@ function MobileStackedStepCard({
         }`}
       />
 
-      {/* Circle Milestone Container with Number Badge */}
-      <div className="relative shrink-0">
-        <div
-          className={`w-[76px] h-[76px] rounded-full border-2 border-dashed p-1.5 bg-[#FAFBFD] ${
-            isSolid ? "border-blue-400/90" : "border-slate-300"
-          }`}
-        >
+      {/* Inner Content Wrapper: Smoothly blooms in as the card reaches the front of the deck */}
+      <motion.div
+        style={{ opacity: contentOpacity, y: contentY }}
+        className="w-full flex flex-col items-center justify-center will-change-[transform,opacity]"
+      >
+        {/* Circle Milestone Container with Number Badge */}
+        <div className="relative shrink-0">
           <div
-            className={`w-full h-full rounded-full flex items-center justify-center ${
-              isSolid
-                ? "bg-gradient-to-br from-blue-600 to-brand-electric text-white shadow-[0_8px_18px_rgba(37,99,235,0.26)]"
-                : "bg-white border border-slate-200/90 text-brand-electric shadow-xs"
+            className={`w-[74px] h-[74px] rounded-full border-2 border-dashed p-1.5 bg-[#FAFBFD] ${
+              isSolid ? "border-blue-400/90" : "border-slate-300"
             }`}
           >
-            <Icon className="w-6 h-6 stroke-[1.8]" />
+            <div
+              className={`w-full h-full rounded-full flex items-center justify-center ${
+                isSolid
+                  ? "bg-gradient-to-br from-blue-600 to-brand-electric text-white shadow-[0_8px_18px_rgba(37,99,235,0.26)]"
+                  : "bg-white border border-slate-200/90 text-brand-electric shadow-xs"
+              }`}
+            >
+              <Icon className="w-6 h-6 stroke-[1.8]" />
+            </div>
+          </div>
+
+          {/* Step Number Badge at Bottom of Circle */}
+          <div
+            className={`absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-white border-2 flex items-center justify-center font-bold text-[11px] shadow-xs z-20 tabular-nums ${
+              isSolid
+                ? "border-brand-electric text-brand-electric"
+                : "border-slate-300 text-brand-navy"
+            }`}
+          >
+            {step.number}
           </div>
         </div>
 
-        {/* Step Number Badge at Bottom of Circle */}
-        <div
-          className={`absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-white border-2 flex items-center justify-center font-bold text-[11px] shadow-xs z-20 tabular-nums ${
-            isSolid
-              ? "border-brand-electric text-brand-electric"
-              : "border-slate-300 text-brand-navy"
-          }`}
-        >
-          {step.number}
+        {/* Step Title & Full Un-truncated Description */}
+        <div className="mt-3.5 space-y-1">
+          <h3 className="text-[15px] font-bold text-brand-navy leading-snug">
+            {step.title}
+          </h3>
+          <p className="text-[11.5px] text-slate-600 font-normal leading-relaxed">
+            {step.description}
+          </p>
         </div>
-      </div>
-
-      {/* Step Title & Full Un-truncated Description */}
-      <div className="mt-3.5 space-y-1">
-        <h3 className="text-[15px] font-bold text-brand-navy leading-snug">
-          {step.title}
-        </h3>
-        <p className="text-[11.5px] text-slate-600 font-normal leading-relaxed">
-          {step.description}
-        </p>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -363,16 +364,17 @@ function MobileCardNavArrows({
     const rect = scrollTrackRef.current.getBoundingClientRect();
     const trackTop = window.scrollY + rect.top;
     const trackHeight = rect.height;
+    const viewportHeight = window.innerHeight;
 
-    // Matches useScroll offset: ["start 74px", "end 510px"]
-    const startScrollY = trackTop - 74;
-    const endScrollY = trackTop + trackHeight - 510;
+    // Matches useScroll offset: ["start start", "end end"] with sticky top-0 h-[100dvh]
+    const startScrollY = trackTop;
+    const endScrollY = trackTop + trackHeight - viewportHeight;
     const totalScrollable = Math.max(1, endScrollY - startScrollY);
 
-    // If user is at Step 08 (index 7) and taps Down (targetIdx > 7), smoothly unpin and scroll to the CTA card
+    // If user is at Step 08 (index 7) and taps Down (targetIdx > 7), smoothly scroll to next section
     if (targetIdx > 7) {
       window.scrollTo({
-        top: endScrollY + 210,
+        top: endScrollY + Math.round(viewportHeight * 0.65),
         behavior: "smooth",
       });
       return;
@@ -381,11 +383,11 @@ function MobileCardNavArrows({
     const clampedIdx = Math.min(7, Math.max(0, targetIdx));
     let targetProgress = 0;
     if (clampedIdx === 0) {
-      targetProgress = 0;
+      targetProgress = 0.02;
     } else if (clampedIdx === 7) {
       targetProgress = 0.96;
     } else {
-      targetProgress = 0.08 + (clampedIdx / 7) * (0.95 - 0.08);
+      targetProgress = 0.1 + (clampedIdx / 7) * (0.94 - 0.1);
     }
 
     const targetScrollY = startScrollY + targetProgress * totalScrollable;
@@ -419,7 +421,7 @@ function MobileCardNavArrows({
         0{activeIndex + 1}
       </span>
 
-      {/* Down Arrow: Next Step (or scroll to CTA when at Step 08) */}
+      {/* Down Arrow: Next Step */}
       <button
         type="button"
         onClick={() => scrollToStep(activeIndex + 1)}
@@ -471,7 +473,7 @@ function ScrollStepCounter({
   const formattedCurrent = reachedStep < 10 ? `0${reachedStep}` : `${reachedStep}`;
 
   return (
-    <div className="mt-2.5 sm:mt-6 flex flex-col items-center gap-2 select-none">
+    <div className="mt-1 sm:mt-6 flex flex-col items-center gap-2 select-none">
       {/* Dynamic Step Counter Pill + 8 Micro Dots */}
       <div className="flex items-center gap-3 px-3.5 py-1 rounded-full bg-white/95 border border-slate-200/85 shadow-2xs">
         <span className="text-[11px] sm:text-xs font-bold text-brand-navy tabular-nums">
@@ -531,151 +533,31 @@ export function RegistrationSteps() {
     return () => mql.removeEventListener("change", updateMatch);
   }, []);
 
-  // ============================================================================
-  // Entry Scroll Gate ("Scroll Momentum Arrest" / "Inertia Catch on Pin")
-  // When the user scrolls down rapidly from the section above, we arrest the
-  // incoming scroll momentum right at the pin point of this section so no steps
-  // are skipped. The user must perform a fresh scroll gesture to advance steps.
-  // ============================================================================
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    let wasAboveEntry = true;
-    let isArresting = false;
-    let arrestTargetY = 0;
-    let arrestTimeoutId: ReturnType<typeof setTimeout> | null = null;
-    let wheelIdleTimeoutId: ReturnType<typeof setTimeout> | null = null;
-
-    const getEntryPinY = () => {
-      if (!scrollTrackRef.current) return null;
-      const rect = scrollTrackRef.current.getBoundingClientRect();
-      const trackTop = window.scrollY + rect.top;
-      const pinOffset = window.innerWidth < 640 ? 74 : 0;
-      return trackTop - pinOffset;
-    };
-
-    const releaseArrest = () => {
-      isArresting = false;
-      if (arrestTimeoutId) {
-        clearTimeout(arrestTimeoutId);
-        arrestTimeoutId = null;
-      }
-      if (wheelIdleTimeoutId) {
-        clearTimeout(wheelIdleTimeoutId);
-        wheelIdleTimeoutId = null;
-      }
-    };
-
-    const handleScroll = () => {
-      const entryPinY = getEntryPinY();
-      if (entryPinY === null) return;
-
-      const currentY = window.scrollY;
-
-      // Reset gate armed state when user is clearly above the section
-      if (currentY < entryPinY - 60) {
-        wasAboveEntry = true;
-        if (isArresting) releaseArrest();
-        return;
-      }
-
-      // If currently arresting incoming momentum, lock scrollY at the exact entry pin point
-      if (isArresting) {
-        if (currentY > arrestTargetY) {
-          window.scrollTo(0, arrestTargetY);
-        }
-        return;
-      }
-
-      // Detect downward crossing from above into the pinned section
-      if (wasAboveEntry && currentY >= entryPinY) {
-        wasAboveEntry = false;
-
-        // If the scroll jumped past the entry point with momentum, engage the mandatory stop
-        if (currentY > entryPinY + 4) {
-          isArresting = true;
-          arrestTargetY = Math.round(entryPinY);
-          window.scrollTo(0, arrestTargetY);
-
-          // Automatically release after momentum decays (420ms), or immediately on a fresh touch/wheel gesture
-          arrestTimeoutId = setTimeout(() => {
-            releaseArrest();
-          }, 420);
-        }
-      }
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (!isArresting) return;
-
-      // Absorb ongoing trackpad/mouse-wheel inertia from the previous section
-      if (e.deltaY > 0) {
-        e.preventDefault();
-        window.scrollTo(0, arrestTargetY);
-
-        // Once the user pauses wheel/trackpad input for 120ms, release the gate for their next scroll
-        if (wheelIdleTimeoutId) clearTimeout(wheelIdleTimeoutId);
-        wheelIdleTimeoutId = setTimeout(() => {
-          releaseArrest();
-        }, 120);
-      } else if (e.deltaY < 0) {
-        releaseArrest();
-      }
-    };
-
-    // On mobile: touching the screen again after the section stops immediately opens the gate for the new swipe
-    const handleTouchStart = () => {
-      if (isArresting) {
-        releaseArrest();
-      }
-    };
-
-    // Initialize wasAboveEntry based on current scroll position on mount
-    const initialEntryY = getEntryPinY();
-    if (initialEntryY !== null) {
-      wasAboveEntry = window.scrollY < initialEntryY - 10;
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-
-    return () => {
-      releaseArrest();
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-    };
-  }, []);
-
-  // On mobile, the sticky box is ~430px tall pinned at 74px (bottom at ~504px),
-  // so ending scroll tracking at "end 510px" on mobile ensures Step 08 completes at the exact pixel the CTA card meets the counter!
+  // Native compositor-aligned scroll tracking: sticky top-0 h-[100dvh] with ["start start", "end end"]
   const { scrollYProgress } = useScroll({
     target: scrollTrackRef,
-    offset: isMobile ? ["start 74px", "end 510px"] : ["start start", "end end"],
+    offset: ["start start", "end end"],
   });
 
-  // Critically-damped, responsive spring (zero rubber-banding, instant touch tracking)
+  // Critically-damped spring: zero rubber-banding, instant touch/wheel response
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 260,
-    damping: 34,
-    mass: 0.16,
+    stiffness: 280,
+    damping: 36,
+    mass: 0.14,
     restDelta: 0.0005,
   });
 
-  // DESKTOP/TABLET (>=640px): Smooth continuous shift from 0 (steps 01-03) to 5 (steps 06-08)
-  // Includes a generous 10% entry hold buffer so Steps 01-03 stay firmly anchored upon arrival
+  // DESKTOP/TABLET (>=640px): 10% entry hold buffer so Steps 01-03 rest calmly when entering the section
   const desktopShift = useTransform(
     smoothProgress,
     [0, 0.1, 0.94, 1],
     [0, 0, 5, 5]
   );
 
-  // MOBILE (<640px): Smooth continuous progression from 0 (Card 01) to 7 (Card 08)
-  // Includes a generous 8% entry hold buffer so Card 01 stays firmly anchored upon arrival
+  // MOBILE (<640px): 10% entry hold buffer so Card 01 rests calmly when entering the section before peeling
   const mobileCardProgress = useTransform(
     smoothProgress,
-    [0, 0.08, 0.95, 1],
+    [0, 0.1, 0.94, 1],
     [0, 0, 7, 7]
   );
 
@@ -691,21 +573,20 @@ export function RegistrationSteps() {
 
   return (
     <section id="processus" className="relative w-full scroll-mt-20">
-      {/* Scroll Runway: 420vh on mobile (~450px per card so 1 swipe = 1 card), 350vh on desktop */}
+      {/* Scroll Runway: 420vh on mobile, 360vh on desktop */}
       <div
         ref={scrollTrackRef}
-        className="relative h-[420vh] sm:h-[350vh] w-full"
+        className="relative h-[420vh] sm:h-[360vh] w-full"
       >
         {/*
-          Sticky Pinned Stage:
-          - On Mobile (<640px): h-auto (430px) pinned at top-[74px] so it NEVER overflows small phone screens,
-            and has zero invisible dead space below the counter!
-          - On Desktop (>=640px): Full viewport height centered stage.
+          Sticky Pinned Stage (top-0 h-[100dvh]):
+          - Covers 100% of the viewport so the dark video arch above is completely cleared when pinned.
+          - On Mobile: Header + (Right Arrows + Stacked Cards) + Counter + Compact CTA Banner fill the screen with zero empty bottom gap!
         */}
-        <div className="sticky top-[74px] sm:top-0 h-auto sm:h-screen sm:supports-[height:100dvh]:h-[100dvh] w-full flex flex-col justify-start sm:justify-center overflow-x-clip pt-5 pb-3 sm:pt-24 sm:pb-10">
-          <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="sticky top-0 h-screen supports-[height:100dvh]:h-[100dvh] w-full flex flex-col justify-between sm:justify-center overflow-x-clip pt-[84px] pb-4 sm:pt-24 sm:pb-10">
+          <div className="max-w-7xl w-full h-full sm:h-auto mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between sm:justify-center">
             {/* Section Header */}
-            <div className="text-center max-w-3xl mx-auto mb-2 sm:mb-10 lg:mb-12 space-y-1.5 sm:space-y-3">
+            <div className="text-center max-w-3xl mx-auto mb-1 sm:mb-10 lg:mb-12 space-y-1 sm:space-y-3 shrink-0">
               <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-brand-navy tracking-tight leading-[1.25]">
                 مراحل التسجيل والمرافقة{" "}
                 <span className="text-brand-electric">خطوة بخطوة</span>
@@ -715,24 +596,37 @@ export function RegistrationSteps() {
               </p>
             </div>
 
-            {/* --- MOBILE VIEW (<640px): Right-Side Vertical Arrows + Narrowed 3D Stacked Card Peel Deck --- */}
-            <div className="flex sm:hidden flex-row items-center justify-center gap-2.5 w-full max-w-[356px] mx-auto">
-              {/* Right-Side Vertical Navigation Pill (First child in RTL = Right side) */}
-              <MobileCardNavArrows
-                mobileCardProgress={mobileCardProgress}
-                scrollTrackRef={scrollTrackRef}
-              />
+            {/* --- MOBILE VIEW (<640px): Right-Side Vertical Arrows + Unclipped 3D Stacked Card Deck --- */}
+            <div className="flex sm:hidden flex-col items-center justify-center my-auto py-1">
+              <div className="flex flex-row items-center justify-center gap-2.5 w-full max-w-[356px] mx-auto">
+                {/* Right-Side Vertical Navigation Pill (First child in RTL = Right side) */}
+                <MobileCardNavArrows
+                  mobileCardProgress={mobileCardProgress}
+                  scrollTrackRef={scrollTrackRef}
+                />
 
-              {/* Stacked Card Stage (Flex-1 next to the right-side arrows) */}
-              <div className="relative flex-1 h-[270px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent_0%,black_5%,black_100%)]">
-                {allSteps.map((step, index) => (
-                  <MobileStackedStepCard
-                    key={step.number}
-                    step={step}
-                    index={index}
-                    mobileCardProgress={mobileCardProgress}
-                  />
-                ))}
+                {/* Stacked Card Stage: No overflow-hidden so card shadows & stacked bottom edges render cleanly without grey box clipping */}
+                <div className="relative flex-1 h-[242px]">
+                  {allSteps.map((step, index) => (
+                    <MobileStackedStepCard
+                      key={step.number}
+                      step={step}
+                      index={index}
+                      mobileCardProgress={mobileCardProgress}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Mobile Counter directly below the card stack */}
+              <div className="mt-2.5">
+                <ScrollStepCounter
+                  desktopShift={desktopShift}
+                  mobileCardProgress={mobileCardProgress}
+                  isMobile={isMobile}
+                  desktopProgressScale={desktopProgressScale}
+                  mobileProgressScale={mobileProgressScale}
+                />
               </div>
             </div>
 
@@ -779,26 +673,64 @@ export function RegistrationSteps() {
               </motion.div>
             </div>
 
-            {/* Live Step Counter Pill + 8 Dots + Progress Bar */}
-            <ScrollStepCounter
-              desktopShift={desktopShift}
-              mobileCardProgress={mobileCardProgress}
-              isMobile={isMobile}
-              desktopProgressScale={desktopProgressScale}
-              mobileProgressScale={mobileProgressScale}
-            />
+            {/* Desktop Live Step Counter */}
+            <div className="hidden sm:block">
+              <ScrollStepCounter
+                desktopShift={desktopShift}
+                mobileCardProgress={mobileCardProgress}
+                isMobile={isMobile}
+                desktopProgressScale={desktopProgressScale}
+                mobileProgressScale={mobileProgressScale}
+              />
+            </div>
+
+            {/* --- MOBILE PINNED BOTTOM CTA CARD: Eliminates the empty bottom space in the mobile screenshot --- */}
+            <div className="block sm:hidden shrink-0 pt-1">
+              <div
+                className="p-4 rounded-2xl apple-glass border-blue-200/80 shadow-[0_12px_28px_-8px_rgba(37,99,235,0.10)] relative overflow-hidden text-center"
+                style={{
+                  backgroundImage: `
+                    radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
+                    radial-gradient(circle at 100% 100%, rgba(96, 165, 250, 0.08) 0%, transparent 45%)
+                  `,
+                }}
+              >
+                <div className="relative z-10 flex flex-col items-center gap-2.5">
+                  <div className="space-y-0.5">
+                    <h3 className="text-sm font-bold text-brand-navy leading-snug">
+                      مستعد لبدء خطوتك الأولى نحو جامعات أوروبا؟
+                    </h3>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      تواصل الآن مع مستشارينا لبدء{" "}
+                      <strong>الخطوة 01 مجاناً</strong> وتحديد أفضل جامعة وتخصص لطموحك.
+                    </p>
+                  </div>
+
+                  <a
+                    href="https://wa.me/212775496303"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-md shadow-brand-navy/15 transition-[background-color,transform,box-shadow] duration-200 group"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light shrink-0" />
+                    <span>احجز استشارة مجانية</span>
+                    <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-200 group-hover:-translate-x-1 shrink-0" />
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom CTA Card: Glides up right underneath the counter (pt-2 on mobile, -mt-6 on desktop) with zero dead gap */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-0 sm:-mt-6 pb-14 lg:pb-24">
+      {/* Desktop/Tablet Bottom CTA Card */}
+      <div className="hidden sm:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 pb-16 lg:pb-24">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="p-6 sm:p-10 rounded-3xl apple-glass border-blue-200/80 shadow-[0_16px_40px_-10px_rgba(37,99,235,0.1)] relative overflow-hidden"
+          className="p-8 sm:p-10 rounded-3xl apple-glass border-blue-200/80 shadow-[0_16px_40px_-10px_rgba(37,99,235,0.1)] relative overflow-hidden"
           style={{
             backgroundImage: `
               radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
@@ -806,9 +738,9 @@ export function RegistrationSteps() {
             `,
           }}
         >
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 text-center lg:text-right">
-            <div className="space-y-1.5 sm:space-y-2 max-w-2xl">
-              <h3 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug">
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 text-center lg:text-right">
+            <div className="space-y-2 max-w-2xl">
+              <h3 className="text-xl sm:text-2xl font-bold text-brand-navy">
                 مستعد لبدء خطوتك الأولى نحو جامعات أوروبا؟
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -824,7 +756,7 @@ export function RegistrationSteps() {
                 href="https://wa.me/212775496303"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 rounded-full text-xs sm:text-base font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-lg shadow-brand-navy/15 transition-[background-color,transform,box-shadow] duration-200 group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full text-sm sm:text-base font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-lg shadow-brand-navy/15 transition-[background-color,transform,box-shadow] duration-200 group"
               >
                 <MessageCircle className="w-4 h-4 text-brand-electric-light shrink-0" />
                 <span>احجز استشارة مجانية</span>
