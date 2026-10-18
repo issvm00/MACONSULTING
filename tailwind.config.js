@@ -21,6 +21,25 @@ module.exports = {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "Georgia", "serif"],
       },
+      spacing: {
+        13: "3.25rem",
+        18: "4.5rem",
+        34: "8.5rem",
+      },
+      opacity: {
+        85: "0.85",
+        88: "0.88",
+        92: "0.92",
+        98: "0.98",
+      },
+      transitionDuration: {
+        250: "250ms",
+      },
+      scale: {
+        92: "0.92",
+        97: "0.97",
+        98: "0.98",
+      },
       animation: {
         float: "float 6s ease-in-out infinite",
         "float-delayed": "float 7s ease-in-out 2s infinite",
@@ -38,6 +57,8 @@ module.exports = {
         },
       },
       boxShadow: {
+        "2xs": "0 1px 2px 0 rgba(11, 27, 61, 0.04)",
+        xs: "0 1px 3px 0 rgba(11, 27, 61, 0.06), 0 1px 2px -1px rgba(11, 27, 61, 0.04)",
         "glow-blue": "0 0 50px -10px rgba(37, 99, 235, 0.25)",
         "card-modern": "0 20px 40px -15px rgba(11, 27, 61, 0.07)",
       },
@@ -45,3 +66,4 @@ module.exports = {
   },
   plugins: [],
 };
+

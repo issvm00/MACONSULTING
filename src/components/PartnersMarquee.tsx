@@ -53,19 +53,80 @@ const partners: Partner[] = [
 ];
 
 export function PartnersMarquee() {
-  // 4 identical sets (24 items total) ensure continuous >5,000px width for infinite zero-gap loop
-  const infinitePartners = [
-    ...partners,
-    ...partners,
-    ...partners,
-    ...partners,
-  ];
+  const sectionRef = React.useRef<HTMLElement | null>(null);
+  const [isInView, setIsInView] = React.useState(true);
+
+  React.useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: "100px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Two identical sets per half-track (12 items per half = 24 items total)
+  // Using two identical half-tracks with trailing padding guarantees -50% is 0.00px exact with zero loop jump
+  const halfTrackPartners = [...partners, ...partners];
+
+  const renderPartnerCard = (partner: Partner, keyPrefix: string, index: number) => (
+    <div
+      key={`${keyPrefix}-${partner.id}-${index}`}
+      className="apple-glass relative flex items-center justify-center h-16 sm:h-[72px] px-5 sm:px-6 rounded-2xl flex-shrink-0 cursor-pointer"
+    >
+      {partner.type === "badge" ? (
+        /* Square Emblem Badge with Typography */
+        <div className="flex items-center gap-3">
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-2xs border border-slate-100 flex-shrink-0 bg-slate-50">
+            <Image
+              src={partner.logo}
+              alt={partner.name}
+              fill
+              sizes="40px"
+              referrerPolicy="no-referrer"
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-xs font-bold text-brand-navy tracking-tight whitespace-nowrap">
+              {partner.name}
+            </span>
+            {partner.subtitle && (
+              <span className="text-[10px] text-slate-400 font-semibold tracking-tight whitespace-nowrap">
+                {partner.subtitle}
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Wide Horizontal University Logo in Authentic Colors (Zero mix-blend-multiply GPU overhead) */
+        <div className="relative w-28 sm:w-36 h-8 sm:h-9 flex items-center justify-center">
+          <Image
+            src={partner.logo}
+            alt={partner.name}
+            fill
+            sizes="(max-width: 640px) 112px, 144px"
+            referrerPolicy="no-referrer"
+            className="object-contain opacity-90 hover:opacity-100 transition-opacity duration-200"
+          />
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <section id="partners" className="relative w-full pt-4 pb-12 sm:pb-16 overflow-hidden scroll-mt-24 sm:scroll-mt-28">
+    <section
+      ref={sectionRef}
+      id="partners"
+      className="relative w-full pt-4 pb-12 sm:pb-16 overflow-x-clip scroll-mt-24 sm:scroll-mt-28"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 text-center">
         {/* Section Title */}
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-brand-navy tracking-tight">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-brand-navy tracking-tight">
           شراكات أكاديمية مع كبرى الجامعات الأوروبية
         </h2>
 
@@ -75,66 +136,39 @@ export function PartnersMarquee() {
         </p>
       </div>
 
-      {/* Infinite Horizontal Marquee Container with Apple Glass Transparency Mask */}
-      <div dir="ltr" className="relative w-full overflow-hidden select-none marquee-mask group">
-        
-        {/* Apple Frosted Glass Edge Refraction (Left Edge) */}
-        <div 
-          aria-hidden="true" 
-          className="absolute top-0 left-0 bottom-0 w-12 sm:w-20 z-10 pointer-events-none backdrop-blur-[4px] [mask-image:linear-gradient(to_right,black,transparent)]" 
+      {/* Infinite Horizontal Marquee Container with Static GPU-Cached Horizon Fades */}
+      <div dir="ltr" className="relative w-full overflow-hidden select-none">
+        {/* Left & Right Horizon Edge Fades (Zero per-frame mask-image alpha buffer cost) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-24 z-10 bg-gradient-to-r from-[#FAFBFD] to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-24 z-10 bg-gradient-to-l from-[#FAFBFD] to-transparent"
         />
 
-        {/* Apple Frosted Glass Edge Refraction (Right Edge) */}
-        <div 
-          aria-hidden="true" 
-          className="absolute top-0 right-0 bottom-0 w-12 sm:w-20 z-10 pointer-events-none backdrop-blur-[4px] [mask-image:linear-gradient(to_left,black,transparent)]" 
-        />
-
-        {/* Continuous Seamless Infinite Track */}
-        <div className="animate-marquee-infinite flex items-center gap-4 sm:gap-5 py-3">
-          {infinitePartners.map((partner, index) => (
-            <div
-              key={`${partner.id}-${index}`}
-              className="apple-glass relative flex items-center justify-center h-16 sm:h-18 px-5 sm:px-6 rounded-2xl flex-shrink-0 cursor-pointer"
-            >
-              {partner.type === "badge" ? (
-                /* Square Emblem Badge with Typography */
-                <div className="flex items-center gap-3">
-                  <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-2xs border border-slate-100 flex-shrink-0 bg-slate-50">
-                    <Image
-                      src={partner.logo}
-                      alt={partner.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-xs font-bold text-brand-navy tracking-tight whitespace-nowrap">
-                      {partner.name}
-                    </span>
-                    {partner.subtitle && (
-                      <span className="text-[10px] text-slate-400 font-semibold tracking-tight whitespace-nowrap">
-                        {partner.subtitle}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                /* Wide Horizontal University Logo in Authentic Colors */
-                <div className="relative w-28 sm:w-34 h-8 sm:h-9 flex items-center justify-center">
-                  <Image
-                    src={partner.logo}
-                    alt={partner.name}
-                    fill
-                    sizes="(max-width: 640px) 112px, 136px"
-                    className="object-contain mix-blend-multiply opacity-85 hover:opacity-100 transition-opacity duration-300"
-                  />
-                </div>
-              )}
-            </div>
-          ))}
+        {/* Continuous Seamless Infinite Track (Pauses automatically when offscreen) */}
+        <div
+          className="animate-marquee-infinite flex items-center py-3"
+          style={{ animationPlayState: isInView ? "running" : "paused" }}
+        >
+          <div className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0">
+            {halfTrackPartners.map((partner, index) =>
+              renderPartnerCard(partner, "track-a", index)
+            )}
+          </div>
+          <div
+            aria-hidden="true"
+            className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0"
+          >
+            {halfTrackPartners.map((partner, index) =>
+              renderPartnerCard(partner, "track-b", index)
+            )}
+          </div>
         </div>
       </div>
     </section>
   );
 }
+

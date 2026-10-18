@@ -218,11 +218,8 @@ const UNIFORMS = {
   timeScale: -1.278,
 };
 
-const pendingContextReleases = new WeakMap<HTMLCanvasElement, number>();
-
 export function ShaderBackground({
   className,
-  opacity = 1,
 }: {
   className?: string;
   opacity?: number;
@@ -233,26 +230,19 @@ export function ShaderBackground({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const pendingRelease = pendingContextReleases.get(canvas);
-    if (pendingRelease !== undefined) window.clearTimeout(pendingRelease);
-    pendingContextReleases.delete(canvas);
-
-    const isMobileOrWeak =
-      (typeof window !== "undefined" && (window.innerWidth < 768 || "ontouchstart" in window)) ||
-      (typeof navigator !== "undefined" && (navigator.hardwareConcurrency ?? 4) <= 4);
-
-    if (isMobileOrWeak) {
-      canvas.style.background = "linear-gradient(135deg, #071228 0%, #0B1B3D 60%, #071228 100%)";
-      return;
-    }
-
     const gl = (canvas.getContext("webgl2", {
       antialias: false,
-      powerPreference: "high-performance",
+      depth: false,
+      stencil: false,
+      preserveDrawingBuffer: true,
+      powerPreference: "low-power",
     }) ||
       canvas.getContext("webgl", {
         antialias: false,
-        powerPreference: "high-performance",
+        depth: false,
+        stencil: false,
+        preserveDrawingBuffer: true,
+        powerPreference: "low-power",
       })) as WebGLRenderingContext | WebGL2RenderingContext | null;
 
     if (!gl) return;
@@ -338,136 +328,39 @@ export function ShaderBackground({
       UNIFORMS.cursorRadius
     );
 
-    let targetX = 0;
-    let targetY = 0;
-    let targetPresence = 0;
-    let mouseX = 0;
-    let mouseY = 0;
-    let cursorPresence = 0;
-    let pointerKnown = false;
-    let pointerClientX = 0;
-    let pointerClientY = 0;
-    let bounds = canvas.getBoundingClientRect();
-    let raf = 0;
-    let lastNow: number | null = null;
-    let visible = typeof document !== "undefined" && document.visibilityState === "visible";
-    let inView = true;
-    let disposed = false;
-    const start = performance.now();
-
-    const resizeCanvas = () => {
-      const dpr = 0.5; // Performance downscale for 60fps
-      const rawWidth = Math.max(1, Math.round(bounds.width * dpr));
-      const rawHeight = Math.max(1, Math.round(bounds.height * dpr));
+    const drawStaticFrame = () => {
+      if (!canvas || !gl) return;
+      const rect = canvas.getBoundingClientRect();
+      const dpr = 0.45;
+      const rawWidth = Math.max(1, Math.round(rect.width * dpr));
+      const rawHeight = Math.max(1, Math.round(rect.height * dpr));
       if (canvas.width !== rawWidth || canvas.height !== rawHeight) {
         canvas.width = rawWidth;
         canvas.height = rawHeight;
         gl.viewport(0, 0, rawWidth, rawHeight);
       }
-    };
 
-    function requestRender() {
-      if (!disposed && visible && inView && raf === 0) {
-        raf = requestAnimationFrame(render);
-      }
-    }
-
-    const updatePointerTarget = () => {
-      if (!pointerKnown || bounds.width === 0 || bounds.height === 0) return;
-      const inside =
-        pointerClientX >= bounds.left &&
-        pointerClientX <= bounds.right &&
-        pointerClientY >= bounds.top &&
-        pointerClientY <= bounds.bottom;
-      if (!inside) {
-        targetPresence = 0;
-        requestRender();
-        return;
-      }
-      targetX = ((pointerClientX - bounds.left) / bounds.width) * 2 - 1;
-      targetY = -(((pointerClientY - bounds.top) / bounds.height) * 2 - 1);
-      targetPresence = 1;
-      requestRender();
-    };
-
-    const onPointerMove = (e: PointerEvent) => {
-      pointerKnown = true;
-      pointerClientX = e.clientX;
-      pointerClientY = e.clientY;
-      bounds = canvas.getBoundingClientRect();
-      updatePointerTarget();
-    };
-
-    const onPointerLeave = () => {
-      pointerKnown = false;
-      targetPresence = 0;
-      requestRender();
-    };
-
-    const updateLayout = () => {
-      bounds = canvas.getBoundingClientRect();
-      resizeCanvas();
-      updatePointerTarget();
-      requestRender();
-    };
-
-    window.addEventListener("resize", updateLayout);
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("pointercancel", onPointerLeave);
-
-    const resizeObserver = new ResizeObserver(updateLayout);
-    resizeObserver.observe(canvas);
-
-    const intersectionObserver = new IntersectionObserver(([entry]) => {
-      inView = entry?.isIntersecting ?? true;
-      if (inView) requestRender();
-      else if (raf !== 0) {
-        cancelAnimationFrame(raf);
-        raf = 0;
-      }
-    });
-    intersectionObserver.observe(canvas);
-
-    function render(now: number) {
-      raf = 0;
-      if (disposed || !visible || !inView || !gl || !canvas) return;
-      const dt = lastNow === null ? 0 : Math.min((now - lastNow) / 1000, 0.1);
-      lastNow = now;
-      const follow = 1 - Math.exp(-12 * dt);
-      mouseX += (targetX - mouseX) * follow;
-      mouseY += (targetY - mouseY) * follow;
-      cursorPresence += (targetPresence - cursorPresence) * follow;
-
-      gl.uniform4f(
-        uni.scene,
-        canvas.width,
-        canvas.height,
-        ((now - start) / 1000) * UNIFORMS.timeScale,
-        UNIFORMS.colorCount
-      );
-      gl.uniform4f(uni.space, UNIFORMS.offsetX, UNIFORMS.offsetY, mouseX, mouseY);
+      gl.uniform4f(uni.scene, canvas.width, canvas.height, 2.4, UNIFORMS.colorCount);
+      gl.uniform4f(uni.space, UNIFORMS.offsetX, UNIFORMS.offsetY, 0, 0);
       gl.uniform4f(
         uni.cursor,
-        cursorPresence,
+        0,
         UNIFORMS.cursorEffect,
         UNIFORMS.cursorStrength,
         UNIFORMS.cursorRadius
       );
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
 
-      requestRender();
-    }
+    drawStaticFrame();
 
-    requestRender();
+    const resizeObserver = new ResizeObserver(() => {
+      window.requestAnimationFrame(drawStaticFrame);
+    });
+    resizeObserver.observe(canvas);
 
     return () => {
-      disposed = true;
-      cancelAnimationFrame(raf);
       resizeObserver.disconnect();
-      intersectionObserver.disconnect();
-      window.removeEventListener("resize", updateLayout);
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointercancel", onPointerLeave);
       if (gl) {
         if (buf) gl.deleteBuffer(buf);
         if (program) gl.deleteProgram(program);
@@ -483,3 +376,5 @@ export function ShaderBackground({
     />
   );
 }
+
+

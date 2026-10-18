@@ -51,25 +51,22 @@ export function Navbar() {
   const navLinks = [
     { label: "الرئيسية", href: "#hero" },
     { label: "الجامعات الشريكة", href: "#partners" },
+    { label: "تجارب الطلاب", href: "#results" },
     { label: "مراحل التسجيل", href: "#processus" },
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        isScrolled ? "pt-3 sm:pt-4 px-3 sm:px-6" : "pt-0 px-0"
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none pt-2.5 sm:pt-3.5 px-3 sm:px-6 transform-gpu">
       {/* 
-        Single continuous morphing container (Apple Fluid Interface Principle)
-        - Top state: Edge-to-edge full width (w-full max-w-full rounded-none), flush with screen edges, zero side gaps
-        - Scrolled state: Contracts smoothly into floating island pill (max-w-[1080px] rounded-full) with Apple glass refraction
+        Zero-Reflow Floating Pill Container:
+        Dimensions (max-width, height, padding) remain 100% constant during scroll.
+        Only compositor/paint properties (background, border, shadow) transition!
       */}
       <div
-        className={`mx-auto flex items-center justify-between pointer-events-auto transform-gpu transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] relative ${
+        className={`max-w-6xl mx-auto h-16 sm:h-[68px] rounded-full px-4 sm:px-6 flex items-center justify-between pointer-events-auto transform-gpu transition-[background-color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] relative ${
           isScrolled
-            ? "h-[64px] sm:h-[68px] max-w-[1080px] bg-white/90 backdrop-blur-2xl border border-white/80 shadow-[0_16px_40px_-8px_rgba(11,27,61,0.12),0_2px_8px_rgba(11,27,61,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-full px-5 sm:px-7"
-            : "h-20 w-full max-w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-[0_1px_3px_rgba(11,27,61,0.03)] rounded-none px-4 sm:px-8 lg:px-12 xl:px-16"
+            ? "bg-white/95 md:backdrop-blur-md border border-slate-200/90 shadow-[0_12px_32px_-8px_rgba(11,27,61,0.12),0_2px_6px_rgba(11,27,61,0.04)]"
+            : "bg-white/90 md:backdrop-blur-md border border-slate-200/75 shadow-[0_4px_20px_-4px_rgba(11,27,61,0.05)]"
         }`}
       >
         {/* ========================================================= */}
@@ -77,7 +74,7 @@ export function Navbar() {
         {/* ========================================================= */}
         <Link
           href="#hero"
-          className="flex items-center gap-3 sm:gap-3.5 group select-none active:scale-[0.98] transition-transform duration-100 ease-out"
+          className="flex items-center gap-3 sm:gap-3.5 group select-none active:scale-[0.98] transition-transform duration-150 ease-out shrink-0"
         >
           <div className="relative flex items-center">
             <Image
@@ -85,33 +82,20 @@ export function Navbar() {
               alt="M&A OVERSEAS CONSULTING"
               width={352}
               height={163}
-              className={`w-auto object-contain transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02] ${
-                isScrolled ? "h-9 sm:h-10" : "h-11 sm:h-12 lg:h-[48px]"
-              }`}
+              referrerPolicy="no-referrer"
+              className="w-auto object-contain h-9 sm:h-10"
               priority
             />
           </div>
 
-          <div
-            className={`hidden sm:block w-[1px] bg-slate-200/80 transition-all duration-500 ${
-              isScrolled ? "h-5" : "h-7"
-            }`}
-          />
+          <div className="hidden sm:block w-[1px] h-6 bg-slate-200/80" />
 
           <div className="hidden sm:flex flex-col text-right justify-center">
-            <span
-              className={`font-extrabold text-brand-navy leading-tight transition-all duration-500 flex items-center gap-1 ${
-                isScrolled ? "text-[10px]" : "text-[11px]"
-              }`}
-            >
+            <span className="font-bold text-brand-navy leading-tight text-[11px] flex items-center gap-1 whitespace-nowrap">
               <span>مكتب معتمد</span>
-              <CheckCircle2 className="w-2.5 h-2.5 text-brand-electric" />
+              <CheckCircle2 className="w-2.5 h-2.5 text-brand-electric shrink-0" />
             </span>
-            <span
-              className={`text-slate-500 font-medium leading-tight transition-all duration-500 ${
-                isScrolled ? "text-[9px]" : "text-[10px]"
-              }`}
-            >
+            <span className="text-slate-500 font-medium leading-tight text-[10px] whitespace-nowrap">
               للدراسة في أوروبا
             </span>
           </div>
@@ -120,20 +104,16 @@ export function Navbar() {
         {/* ========================================================= */}
         {/* Desktop Navigation Links (Arabic RTL)                     */}
         {/* ========================================================= */}
-        <nav
-          className={`hidden md:flex items-center font-bold text-slate-700 transition-all duration-500 ${
-            isScrolled ? "gap-6 text-[13px]" : "gap-8 text-sm"
-          }`}
-        >
+        <nav className="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-bold text-slate-700">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="relative py-1 text-slate-600 hover:text-brand-electric active:scale-[0.96] transition-all duration-150 group"
+              className="relative py-1 text-slate-600 hover:text-brand-electric active:scale-[0.97] transition-[color,transform] duration-150 group whitespace-nowrap"
             >
               <span>{link.label}</span>
-              {/* Apple-style animated underline effect */}
-              <span className="absolute bottom-0 right-0 w-0 h-[2px] bg-brand-electric rounded-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:w-full group-hover:right-0" />
+              {/* Hardware-accelerated scaleX underline */}
+              <span className="absolute bottom-0 inset-x-0 h-[2px] bg-brand-electric rounded-full origin-right scale-x-0 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
             </a>
           ))}
         </nav>
@@ -141,14 +121,10 @@ export function Navbar() {
         {/* ========================================================= */}
         {/* Office Location + Single Focused CTA Button               */}
         {/* ========================================================= */}
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="hidden sm:flex items-center gap-4 shrink-0">
           {/* Physical Office Location */}
-          <div
-            className={`items-center gap-1.5 text-xs text-slate-500 font-medium transition-all duration-500 ${
-              isScrolled ? "hidden" : "hidden xl:flex"
-            }`}
-          >
-            <MapPin className="w-3.5 h-3.5 text-brand-electric" />
+          <div className="hidden xl:flex items-center gap-1.5 text-xs text-slate-500 font-medium whitespace-nowrap">
+            <MapPin className="w-3.5 h-3.5 text-brand-electric shrink-0" />
             <span>إنزكان - شارع مراكش</span>
           </div>
 
@@ -157,13 +133,11 @@ export function Navbar() {
             href="https://wa.me/212775496303"
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 rounded-full font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.96] shadow-sm hover:shadow-glow-blue transition-all duration-300 group ${
-              isScrolled ? "px-5 py-2 text-xs" : "px-6 py-2.5 text-xs"
-            }`}
+            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.97] shadow-sm transition-[background-color,transform,box-shadow] duration-200 group whitespace-nowrap"
           >
-            <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light" />
+            <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light shrink-0" />
             <span>احجز استشارة مجانية</span>
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-x-1" />
+            <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover:-translate-x-1 shrink-0" />
           </a>
         </div>
 
@@ -173,7 +147,7 @@ export function Navbar() {
         <div className="flex md:hidden">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-xl text-slate-700 hover:text-brand-electric hover:bg-slate-100/80 active:scale-[0.92] transition-all duration-150"
+            className="p-2 rounded-full text-slate-700 hover:text-brand-electric hover:bg-slate-100 active:scale-[0.92] transition-[color,background-color,transform] duration-150"
             aria-label="القائمة الرئيسية"
           >
             {isMobileMenuOpen ? (
@@ -196,30 +170,30 @@ export function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.18 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-brand-navy/25 backdrop-blur-[2px] pointer-events-auto z-40 md:hidden"
+              className="fixed inset-0 bg-brand-navy/30 pointer-events-auto z-40 md:hidden"
             />
 
             <motion.div
-              initial={{ opacity: 0, y: -12, scale: 0.98 }}
+              initial={{ opacity: 0, y: -10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -12, scale: 0.98 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="pointer-events-auto md:hidden px-4 pt-2 relative z-50"
+              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-auto md:hidden pt-2 relative z-50"
             >
-              <div className="max-w-[1080px] mx-auto rounded-3xl bg-white/95 backdrop-blur-2xl border border-white/90 shadow-[0_20px_50px_rgba(11,27,61,0.2),inset_0_1px_0_rgba(255,255,255,0.9)] p-6 space-y-5">
+              <div className="max-w-6xl mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[0_20px_50px_rgba(11,27,61,0.18)] p-6 space-y-5">
                 
                 {/* Header inside Drawer */}
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-sm text-brand-navy">
+                    <span className="font-bold text-sm text-brand-navy">
                       M&A OVERSEAS CONSULTING
                     </span>
                   </div>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 active:scale-90 transition-all"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 active:scale-90 transition-transform"
                     aria-label="إغلاق القائمة"
                   >
                     <X className="w-5 h-5" />
@@ -227,13 +201,13 @@ export function Navbar() {
                 </div>
 
                 {/* Navigation Links */}
-                <nav className="flex flex-col space-y-2 text-base font-bold text-slate-800 text-right">
+                <nav className="flex flex-col space-y-1.5 text-base font-bold text-slate-800 text-right">
                   {navLinks.map((link) => (
                     <a
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-between py-2.5 px-3.5 rounded-xl hover:bg-blue-50/80 hover:text-brand-electric active:scale-[0.98] transition-all"
+                      className="flex items-center justify-between py-2.5 px-3.5 rounded-xl hover:bg-blue-50/80 hover:text-brand-electric active:scale-[0.98] transition-[background-color,color,transform]"
                     >
                       <span>{link.label}</span>
                       <ArrowLeft className="w-4 h-4 text-slate-300" />
@@ -248,7 +222,7 @@ export function Navbar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-full text-sm font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.97] shadow-lg shadow-navy/15 transition-all"
+                    className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-full text-sm font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.97] shadow-lg shadow-brand-navy/15 transition-[background-color,transform]"
                   >
                     <MessageCircle className="w-4 h-4 text-brand-electric-light" />
                     <span>احجز استشارة مجانية</span>
@@ -273,3 +247,4 @@ export function Navbar() {
     </header>
   );
 }
+
