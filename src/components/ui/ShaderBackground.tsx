@@ -20,22 +20,18 @@ uniform vec4 u_surface;    // detail, contrast, brightness, saturation
 uniform vec4 u_finish;     // hue, vignette, blur, grain
 uniform vec4 u_transform;  // seed, rotation, drift, OKLab toggle
 uniform vec4 u_space;      // offset.xy, pointer.xy
-uniform vec4 u_cursor;
 
 #define u_resolution u_scene.xy
 #define u_time u_scene.z
 #define u_colorCount u_scene.w
 #define u_scale u_shape.x
 #define u_intensity u_shape.y
-#define u_paramA u_shape.z
 #define u_warp u_shape.w
 #define u_detail u_surface.x
 #define u_contrast u_surface.y
 #define u_brightness u_surface.z
 #define u_saturation u_surface.w
-#define u_hue u_finish.x
 #define u_vignette u_finish.y
-#define u_blur u_finish.z
 #define u_grain u_finish.w
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 #define u_seed u_transform.x
@@ -44,13 +40,7 @@ uniform vec4 u_cursor;
 #endif
 #define u_rotate u_transform.y
 #define u_drift u_transform.z
-#define u_oklab u_transform.w
 #define u_offset u_space.xy
-#define u_mouse u_space.zw
-#define u_cursorPresence u_cursor.x
-#define u_cursorEffect u_cursor.y
-#define u_cursorStrength u_cursor.z
-#define u_cursorRadius u_cursor.w
 
 float hash21(vec2 p) {
 #ifndef GL_FRAGMENT_PRECISION_HIGH
@@ -116,32 +106,6 @@ void main() {
   vec2 screenUv = uv;
   vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy)
     / min(u_resolution.x, u_resolution.y);
-  float cursorMask = 0.0;
-
-  if (u_cursorPresence > 0.001) {
-    vec2 cursor = (0.5 * u_mouse * u_resolution.xy)
-      / min(u_resolution.x, u_resolution.y);
-    vec2 cursorDelta = p - cursor;
-    if (u_cursorEffect < 0.5) {
-      p += cursor * u_cursorPresence * u_cursorStrength * 0.55;
-    } else {
-      float cursorDistance = length(cursorDelta);
-      vec2 cursorDirection = cursorDelta / max(cursorDistance, 0.0001);
-      cursorMask = u_cursorPresence
-        * (1.0 - smoothstep(0.0, u_cursorRadius, cursorDistance));
-      if (u_cursorEffect < 1.5) {
-        p -= cursorDirection * cursorMask * u_cursorStrength * 0.24;
-      } else if (u_cursorEffect < 2.5) {
-        float cursorAngle = cursorMask * u_cursorStrength * 2.2;
-        float cc = cos(cursorAngle), cs = sin(cursorAngle);
-        p = cursor + mat2(cc, -cs, cs, cc) * cursorDelta;
-      } else if (u_cursorEffect < 3.5) {
-        float ripple = sin(
-          cursorDistance / max(u_cursorRadius, 0.001) * 18.0 - u_time * 5.0);
-        p -= cursorDirection * ripple * cursorMask * u_cursorStrength * 0.07;
-      }
-    }
-  }
 
   uv = p * min(u_resolution.x, u_resolution.y) / u_resolution.xy + 0.5;
   p *= u_scale;
@@ -172,8 +136,6 @@ void main() {
     float vd = length(screenUv - 0.5) * 1.41421356;
     col *= 1.0 - u_vignette * smoothstep(0.35, 1.0, vd);
   }
-  if (u_cursorPresence > 0.001 && u_cursorEffect > 3.5)
-    col += (vec3(0.18) + col * 0.12) * cursorMask * u_cursorStrength;
   if (u_grain > 0.0001)
     col += (grainHash(
       gl_FragCoord.xy + vec2(u_seed * 17.0, u_seed * 31.0)) - 0.5) * u_grain;
@@ -210,19 +172,13 @@ const UNIFORMS = {
   offsetX: -0.02,
   offsetY: 0.15,
   drift: 0.05,
-  cursorEnabled: true,
-  cursorEffect: 4.0,
-  cursorStrength: 0.66,
-  cursorRadius: 0.65,
   oklab: 0.0,
-  timeScale: -1.278,
 };
 
 export function ShaderBackground({
   className,
 }: {
   className?: string;
-  opacity?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -288,7 +244,6 @@ export function ShaderBackground({
       finish: gl.getUniformLocation(program, "u_finish"),
       transform: gl.getUniformLocation(program, "u_transform"),
       space: gl.getUniformLocation(program, "u_space"),
-      cursor: gl.getUniformLocation(program, "u_cursor"),
     };
 
     gl.uniform3fv(uni.colors, new Float32Array(UNIFORMS.colors.flat()));
@@ -320,13 +275,6 @@ export function ShaderBackground({
       UNIFORMS.drift,
       UNIFORMS.oklab
     );
-    gl.uniform4f(
-      uni.cursor,
-      0,
-      UNIFORMS.cursorEffect,
-      UNIFORMS.cursorStrength,
-      UNIFORMS.cursorRadius
-    );
 
     const drawStaticFrame = () => {
       if (!canvas || !gl) return;
@@ -342,13 +290,6 @@ export function ShaderBackground({
 
       gl.uniform4f(uni.scene, canvas.width, canvas.height, 2.4, UNIFORMS.colorCount);
       gl.uniform4f(uni.space, UNIFORMS.offsetX, UNIFORMS.offsetY, 0, 0);
-      gl.uniform4f(
-        uni.cursor,
-        0,
-        UNIFORMS.cursorEffect,
-        UNIFORMS.cursorStrength,
-        UNIFORMS.cursorRadius
-      );
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
@@ -376,5 +317,6 @@ export function ShaderBackground({
     />
   );
 }
+
 
 

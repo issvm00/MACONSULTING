@@ -50,6 +50,36 @@ const VideoProgressBar: React.FC<VideoProgressBarProps> = ({ videoRef }) => {
   );
 };
 
+const SORTED_WORKS = [...portfolioVideos].sort((a, b) => a.id - b.id);
+
+// Duplicate to 18 slides so wide screens showing 7 cards in 3D Coverflow never run out of offscreen buffer slides on the sides
+const WORKS =
+  SORTED_WORKS.length > 0 && SORTED_WORKS.length < 16
+    ? Array.from({ length: Math.ceil(16 / SORTED_WORKS.length) }).flatMap(
+        () => SORTED_WORKS
+      )
+    : SORTED_WORKS;
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
+
 export const SelectedWorks: React.FC = () => {
   const [playingSlideIndex, setPlayingSlideIndex] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -67,18 +97,15 @@ export const SelectedWorks: React.FC = () => {
 
   // Speculative Background Pre-caching in idle time so side cards never flash blank when swiping
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const sorted = [...portfolioVideos].sort((a, b) => a.id - b.id);
-    if (sorted.length === 0) return;
+    if (typeof window === "undefined" || SORTED_WORKS.length === 0) return;
 
     const prioritizedUrls: string[] = [];
-    if (sorted[0]?.thumbnailUrl) prioritizedUrls.push(sorted[0].thumbnailUrl);
-    if (sorted[1]?.thumbnailUrl) prioritizedUrls.push(sorted[1].thumbnailUrl);
-    if (sorted[sorted.length - 1]?.thumbnailUrl)
-      prioritizedUrls.push(sorted[sorted.length - 1].thumbnailUrl);
+    if (SORTED_WORKS[0]?.thumbnailUrl) prioritizedUrls.push(SORTED_WORKS[0].thumbnailUrl);
+    if (SORTED_WORKS[1]?.thumbnailUrl) prioritizedUrls.push(SORTED_WORKS[1].thumbnailUrl);
+    if (SORTED_WORKS[SORTED_WORKS.length - 1]?.thumbnailUrl)
+      prioritizedUrls.push(SORTED_WORKS[SORTED_WORKS.length - 1].thumbnailUrl);
 
-    sorted.forEach((w) => {
+    SORTED_WORKS.forEach((w) => {
       if (w.thumbnailUrl && !prioritizedUrls.includes(w.thumbnailUrl)) {
         prioritizedUrls.push(w.thumbnailUrl);
       }
@@ -189,37 +216,6 @@ export const SelectedWorks: React.FC = () => {
     };
   }, []);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 18 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
-    },
-  };
-
-  // Sort videos by ID
-  const sortedWorks = [...portfolioVideos].sort((a, b) => a.id - b.id);
-
-  // Duplicate to 18 slides so wide screens showing 7 cards in 3D Coverflow never run out of offscreen buffer slides on the sides
-  const works =
-    sortedWorks.length > 0 && sortedWorks.length < 16
-      ? Array.from({ length: Math.ceil(16 / sortedWorks.length) }).flatMap(
-          () => sortedWorks
-        )
-      : sortedWorks;
-
   return (
     <section
       ref={sectionRef}
@@ -289,7 +285,7 @@ export const SelectedWorks: React.FC = () => {
             dir="ltr"
             className="relative w-full lg:[mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]"
           >
-            {isMounted && works.length > 0 && (
+            {isMounted && WORKS.length > 0 && (
               <>
                 {/* Top Minimalist 2-Button Controls (Tightly framing the compacted center card shoulders) */}
                 <div className="absolute -top-2.5 sm:-top-3.5 md:-top-4 inset-x-0 max-w-[310px] sm:max-w-[365px] md:max-w-[410px] mx-auto hidden sm:flex items-center justify-between px-3 sm:px-4 z-30 pointer-events-none select-none">
@@ -351,7 +347,7 @@ export const SelectedWorks: React.FC = () => {
                     setIsVideoLoading(false);
                   }}
                 >
-                  {works.map((work, index) => {
+                  {WORKS.map((work, index) => {
                     const isPlaying = playingSlideIndex === index;
 
                     return (
@@ -493,7 +489,6 @@ export const SelectedWorks: React.FC = () => {
   );
 };
 
-export default SelectedWorks;
 
 
 

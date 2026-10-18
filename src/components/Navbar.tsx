@@ -13,6 +13,13 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+const navLinks = [
+  { label: "الرئيسية", href: "#hero" },
+  { label: "الجامعات الشريكة", href: "#partners" },
+  { label: "تجارب الطلاب", href: "#results" },
+  { label: "مراحل التسجيل", href: "#processus" },
+];
+
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,13 +54,6 @@ export function Navbar() {
       document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
-
-  const navLinks = [
-    { label: "الرئيسية", href: "#hero" },
-    { label: "الجامعات الشريكة", href: "#partners" },
-    { label: "تجارب الطلاب", href: "#results" },
-    { label: "مراحل التسجيل", href: "#processus" },
-  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none pt-2.5 sm:pt-3.5 px-3 sm:px-6 transform-gpu">

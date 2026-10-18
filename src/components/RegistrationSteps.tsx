@@ -321,11 +321,11 @@ function ScrollStepCounter({
   );
 }
 
+const row1Steps = allSteps.slice(0, 4);
+const row2Steps = allSteps.slice(4, 8);
+
 export function RegistrationSteps() {
   const scrollTrackRef = useRef<HTMLDivElement | null>(null);
-
-  const row1Steps = allSteps.slice(0, 4);
-  const row2Steps = allSteps.slice(4, 8);
 
   // Desktop scroll tracking
   const { scrollYProgress } = useScroll({

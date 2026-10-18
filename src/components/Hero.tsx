@@ -85,17 +85,85 @@ function FlagCircle({ code, name }: { code: string; name: string }) {
   );
 }
 
+const ROTATING_WORDS = [
+  "ليتوانيا",
+  "إيطاليا",
+  "رومانيا",
+  "إسبانيا",
+  "المجر",
+  "أوروبا",
+];
+
+// The 7 official European study destinations
+const DESTINATIONS = [
+  { code: "LT", name: "ليتوانيا" },
+  { code: "RO", name: "رومانيا" },
+  { code: "IT", name: "إيطاليا" },
+  { code: "ES", name: "إسبانيا" },
+  { code: "HU", name: "هنغاريا" },
+  { code: "MT", name: "مالطا" },
+  { code: "IE", name: "أيرلندا" },
+];
+
+// Strong hardware-accelerated ease-out curve [0.22, 1, 0.36, 1]
+const TRANSITION_EASE = [0.22, 1, 0.36, 1] as const;
+
+// Orchestrated Stagger Container for the Text Column (Compositor-only: opacity + transform)
+const heroTextContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+// Crisp GPU-accelerated entrance for H1, Paragraph, and Action Buttons (No expensive filter:blur)
+const heroItemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.55,
+      ease: TRANSITION_EASE,
+    },
+  },
+};
+
+// Visual Centerpiece (Student Image & Cloud shape)
+const visualCardVariants = {
+  hidden: { opacity: 0, scale: 0.97, y: 18 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      ease: TRANSITION_EASE,
+      delay: 0.12,
+    },
+  },
+};
+
+// Floating Glassmorphic Badges entrance variants
+const badgeVariants = (delay: number) => ({
+  hidden: { opacity: 0, scale: 0.94, y: 12 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: TRANSITION_EASE,
+      delay,
+    },
+  },
+});
+
 export function Hero() {
-  // Dynamic rotating destination words for H1:
-  // "ليتوانيا " ➔ "إيطاليا " ➔ "رومانيا " ➔ "إسبانيا " ➔ "المجر " ➔ "أوروبا"
-  const rotatingWords = [
-    "ليتوانيا",
-    "إيطاليا",
-    "رومانيا",
-    "إسبانيا",
-    "المجر",
-    "أوروبا",
-  ];
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const heroRef = React.useRef<HTMLDivElement | null>(null);
   const [isInView, setIsInView] = useState(true);
@@ -117,79 +185,10 @@ export function Hero() {
   useEffect(() => {
     if (!isInView) return;
     const timer = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % rotatingWords.length);
+      setCurrentWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
     }, 2600);
     return () => clearInterval(timer);
-  }, [isInView, rotatingWords.length]);
-
-  // The 7 official European study destinations
-  const destinations = [
-    { code: "LT", name: "ليتوانيا" },
-    { code: "RO", name: "رومانيا" },
-    { code: "IT", name: "إيطاليا" },
-    { code: "ES", name: "إسبانيا" },
-    { code: "HU", name: "هنغاريا" },
-    { code: "MT", name: "مالطا" },
-    { code: "IE", name: "أيرلندا" },
-  ];
-
-  // Strong hardware-accelerated ease-out curve [0.22, 1, 0.36, 1]
-  const transitionEase = [0.22, 1, 0.36, 1] as const;
-
-  // Orchestrated Stagger Container for the Text Column (Compositor-only: opacity + transform)
-  const heroTextContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.04,
-      },
-    },
-  };
-
-  // Crisp GPU-accelerated entrance for H1, Paragraph, and Action Buttons (No expensive filter:blur)
-  const heroItemVariants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.55,
-        ease: transitionEase,
-      },
-    },
-  };
-
-  // Visual Centerpiece (Student Image & Cloud shape)
-  const visualCardVariants = {
-    hidden: { opacity: 0, scale: 0.97, y: 18 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        duration: 0.65,
-        ease: transitionEase,
-        delay: 0.12,
-      },
-    },
-  };
-
-  // Floating Glassmorphic Badges entrance variants
-  const badgeVariants = (delay: number) => ({
-    hidden: { opacity: 0, scale: 0.94, y: 12 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: transitionEase,
-        delay,
-      },
-    },
-  });
+  }, [isInView]);
 
   return (
     <div
@@ -220,7 +219,7 @@ export function Hero() {
                 <span className="relative inline-flex items-center min-h-[1.35em] mt-1 sm:mt-2">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span
-                      key={rotatingWords[currentWordIndex]}
+                      key={ROTATING_WORDS[currentWordIndex]}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
@@ -229,7 +228,7 @@ export function Hero() {
                     >
                       {/* Active Destination Word */}
                       <span className="relative z-10">
-                        {rotatingWords[currentWordIndex]}
+                        {ROTATING_WORDS[currentWordIndex]}
                       </span>
 
                       {/* Subtle radial glow behind rotating word (Zero filter:blur cost) */}
@@ -369,7 +368,7 @@ export function Hero() {
                 >
                   {/* Clean 7 Flags Row */}
                   <div className="flex items-center gap-1 mb-1">
-                    {destinations.map((d) => (
+                    {DESTINATIONS.map((d) => (
                       <FlagCircle key={d.code} code={d.code} name={d.name} />
                     ))}
                   </div>

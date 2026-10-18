@@ -52,6 +52,10 @@ const partners: Partner[] = [
   },
 ];
 
+// Two identical sets per half-track (12 items per half = 24 items total)
+// Using two identical half-tracks with trailing padding guarantees -50% is 0.00px exact with zero loop jump
+const halfTrackPartners: Partner[] = [...partners, ...partners];
+
 export function PartnersMarquee() {
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const [isInView, setIsInView] = React.useState(true);
@@ -68,10 +72,6 @@ export function PartnersMarquee() {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-
-  // Two identical sets per half-track (12 items per half = 24 items total)
-  // Using two identical half-tracks with trailing padding guarantees -50% is 0.00px exact with zero loop jump
-  const halfTrackPartners = [...partners, ...partners];
 
   const renderPartnerCard = (partner: Partner, keyPrefix: string, index: number) => (
     <div
