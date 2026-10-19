@@ -16,6 +16,7 @@ import {
 const navLinks = [
   { label: "الرئيسية", href: "#hero" },
   { label: "الجامعات الشريكة", href: "#partners" },
+  { label: "من نحن وفريقنا", href: "#about" },
   { label: "تجارب الطلاب", href: "#results" },
   { label: "مراحل التسجيل", href: "#processus" },
 ];
