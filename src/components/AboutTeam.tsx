@@ -256,7 +256,7 @@ export function AboutTeam() {
         {/* ================================================================= */}
         {/* THE ASYMMETRICAL ARCHITECTURAL BENTO GRID                         */}
         {/* ================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
           {/* --------------------------------------------------------------- */}
           {/* RIGHT COLUMN (Bento Authority & Trust Anchor - 5 cols)           */}
@@ -266,10 +266,10 @@ export function AboutTeam() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-5 flex flex-col h-full"
+            className="lg:col-span-5 flex flex-col gap-4"
           >
             {/* Primary Trust Anchor Card */}
-            <div className="apple-glass rounded-3xl p-6 sm:p-7 relative overflow-hidden border border-slate-200/90 shadow-[0_12px_32px_-10px_rgba(11,27,61,0.06)] h-full flex flex-col justify-between">
+            <div className="apple-glass rounded-3xl p-6 sm:p-7 relative overflow-hidden border border-slate-200/90 shadow-[0_12px_32px_-10px_rgba(11,27,61,0.06)]">
               {/* Subtle Ambient Radial Glow */}
               <div
                 aria-hidden="true"
@@ -314,6 +314,29 @@ export function AboutTeam() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Micro Quick CTA Card (Desktop / PC View: exactly as originally designed) */}
+            <div className="hidden sm:flex p-5 rounded-2xl bg-gradient-to-br from-brand-navy to-brand-navy-light text-white relative overflow-hidden shadow-sm items-center justify-between gap-4">
+              <div className="space-y-1 text-right">
+                <span className="text-[11px] font-bold text-brand-electric-light flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5" />
+                  <span>تواصل مباشر مع المؤسسين</span>
+                </span>
+                <p className="text-xs text-slate-200 font-medium">
+                  احجز جلسة توجيه مجانية لمناقشة تخصصك المناسب في أوروبا.
+                </p>
+              </div>
+
+              <a
+                href="https://wa.me/212775496303"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-white text-brand-navy hover:bg-brand-electric hover:text-white text-xs font-bold transition-all duration-200 shrink-0 group shadow-sm active:scale-95"
+              >
+                <span>احجز الآن</span>
+                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+              </a>
             </div>
           </motion.div>
 
@@ -431,34 +454,30 @@ export function AboutTeam() {
               )}
             </div>
 
-            {/* Direct Consultation CTA Card placed under Team Cards */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-4 sm:mt-4.5 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-brand-navy to-brand-navy-light text-white relative overflow-hidden shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4"
-            >
-              <div className="space-y-1 text-center sm:text-right w-full sm:w-auto">
-                <span className="text-[11px] font-bold text-brand-electric-light flex items-center justify-center sm:justify-start gap-1.5">
-                  <Users className="w-3.5 h-3.5" />
-                  <span>تواصل مباشر مع المؤسسين</span>
-                </span>
-                <p className="text-xs text-slate-200 font-medium">
-                  احجز جلسة توجيه مجانية لمناقشة تخصصك المناسب في أوروبا.
-                </p>
-              </div>
+            {/* Mobile Only: Direct Consultation CTA Card placed under Team Swiper (<640px) */}
+            <div className="block sm:hidden mt-4">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-brand-navy to-brand-navy-light text-white relative overflow-hidden shadow-sm flex flex-col items-center text-center gap-3.5">
+                <div className="space-y-1">
+                  <span className="text-[11px] font-bold text-brand-electric-light flex items-center justify-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" />
+                    <span>تواصل مباشر مع المؤسسين</span>
+                  </span>
+                  <p className="text-xs text-slate-200 font-medium">
+                    احجز جلسة توجيه مجانية لمناقشة تخصصك المناسب في أوروبا.
+                  </p>
+                </div>
 
-              <a
-                href="https://wa.me/212775496303"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-white text-brand-navy hover:bg-brand-electric hover:text-white text-xs font-bold transition-all duration-200 shrink-0 group shadow-sm active:scale-95"
-              >
-                <span>احجز الآن</span>
-                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-              </a>
-            </motion.div>
+                <a
+                  href="https://wa.me/212775496303"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-white text-brand-navy hover:bg-brand-electric hover:text-white text-xs font-bold transition-all duration-200 shrink-0 group shadow-sm active:scale-95"
+                >
+                  <span>احجز الآن</span>
+                  <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
 
           </div>
 

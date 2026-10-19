@@ -86,12 +86,12 @@ function FlagCircle({ code, name }: { code: string; name: string }) {
 }
 
 const ROTATING_WORDS = [
+  "أوروبا",
   "ليتوانيا",
   "إيطاليا",
   "رومانيا",
   "إسبانيا",
   "المجر",
-  "أوروبا",
 ];
 
 // The 7 official European study destinations
