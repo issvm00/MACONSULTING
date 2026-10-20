@@ -151,7 +151,7 @@ export function PartnersMarquee() {
         {/* Continuous Seamless Infinite Track (Pauses automatically when offscreen) */}
         <div
           className="animate-marquee-infinite flex items-center py-3"
-          style={{ animationPlayState: isInView ? "running" : "paused" }}
+          style={{ animationPlayState: isInView ? undefined : "paused" }}
         >
           <div className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0">
             {halfTrackPartners.map((partner, index) =>

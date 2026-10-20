@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  memo,
+} from "react";
 import Image from "next/image";
 import {
   Play,
@@ -12,12 +18,13 @@ import {
   X,
 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow } from "swiper/modules";
+import { EffectCoverflow, Keyboard } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 
+import { AudioReview } from "@/types/audioReview";
 import { audioReviews } from "@/data/audioReviews";
 import { HlsAudio, HlsAudioHandle } from "@/components/ui/HlsAudio";
 
@@ -40,87 +47,341 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
 }
 
+// Memoized 28-Bar Waveform so timeupdate ticks never re-render the 28 DOM bars
+const WaveformEqualizer = memo(function WaveformEqualizer({
+  isPlaying,
+}: {
+  isPlaying: boolean;
+}) {
+  return (
+    <div className="w-[76%] h-6 flex items-center justify-between gap-[3px] mb-4">
+      {waveHeights.map((height, i) => {
+        const delay = (i * 0.05) % 0.8;
+        const isCenterAccent = Math.abs(waveHeights.length / 2 - i) < 6;
+
+        return (
+          <div
+            key={i}
+            className={`w-[2.5px] rounded-full origin-center ${
+              isCenterAccent
+                ? "bg-[#00d2ff] shadow-[0_0_8px_rgba(0,210,255,0.9)]"
+                : "bg-white/30"
+            }`}
+            style={{
+              height: `${height}%`,
+              transform: isPlaying ? undefined : "scaleY(0.22)",
+              animation: isPlaying
+                ? `eq-play 0.8s ease-in-out ${delay.toFixed(2)}s infinite`
+                : "none",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+});
+
+interface AudioReviewCardProps {
+  review: AudioReview;
+  index: number;
+  isActive: boolean;
+  cardIsPlaying: boolean;
+  cardCurrentTime: number;
+  cardDuration: number;
+  onPlayClick: (review: AudioReview, index: number) => void;
+  onSeekToRatio: (review: AudioReview, ratio: number) => void;
+}
+
+// Memoized Card so inactive slides never re-render during audio timeupdate
+const AudioReviewCard = memo(function AudioReviewCard({
+  review,
+  index,
+  isActive,
+  cardIsPlaying,
+  cardCurrentTime,
+  cardDuration,
+  onPlayClick,
+  onSeekToRatio,
+}: AudioReviewCardProps) {
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
+  const isScrubbingRef = useRef<boolean>(false);
+
+  const progressPercent =
+    isActive && cardDuration > 0
+      ? Math.min(100, Math.max(0, (cardCurrentTime / cardDuration) * 100))
+      : 0;
+
+  const computeRatioFromClientX = (clientX: number): number | null => {
+    const el = progressBarRef.current;
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0) return null;
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isActive) return;
+    e.stopPropagation();
+    isScrubbingRef.current = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const ratio = computeRatioFromClientX(e.clientX);
+    if (ratio !== null) {
+      onSeekToRatio(review, ratio);
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isActive || !isScrubbingRef.current) return;
+    e.stopPropagation();
+    const ratio = computeRatioFromClientX(e.clientX);
+    if (ratio !== null) {
+      onSeekToRatio(review, ratio);
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isActive || !isScrubbingRef.current) return;
+    e.stopPropagation();
+    isScrubbingRef.current = false;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  return (
+    <div
+      className={`
+        relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9
+        bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d]
+        border transition-[border-color,opacity,box-shadow] duration-300
+        flex flex-col items-center justify-between overflow-hidden transform-gpu
+        ${
+          isActive
+            ? "border-white/15 shadow-[0_24px_50px_-12px_rgba(7,14,28,0.55)] opacity-100"
+            : "border-white/10 shadow-[0_14px_30px_-10px_rgba(7,14,28,0.35)] opacity-90 cursor-pointer"
+        }
+      `}
+    >
+      {/* Subtle Top Inner Specular Highlight */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 rounded-[32px] pointer-events-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.14)]"
+      />
+
+      {/* Zero-Blur-Filter Hardware-Accelerated Radial Halo Behind Center Play Button */}
+      <div
+        aria-hidden="true"
+        className={`absolute top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full pointer-events-none transition-opacity duration-300 ${
+          cardIsPlaying ? "opacity-95" : "opacity-55"
+        }`}
+        style={{
+          background:
+            "radial-gradient(circle, rgba(0, 180, 216, 0.34) 0%, rgba(0, 180, 216, 0.12) 42%, rgba(0, 180, 216, 0) 70%)",
+        }}
+      />
+
+      {/* Watermark Quote (&rdquo;) Bottom Right */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-6 right-5 text-[150px] leading-none text-white/[0.04] font-serif pointer-events-none select-none"
+      >
+        &rdquo;
+      </div>
+
+      {/* ============================================= */}
+      {/* 1. TOP CENTER: GLASS PILL BADGE IN ARABIC     */}
+      {/* ============================================= */}
+      <div dir="rtl" className="relative z-10 flex justify-center w-full">
+        <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#09101d]/85 border border-white/10 shadow-inner">
+          <span className="w-2 h-2 rounded-full bg-[#00d2ff] shadow-[0_0_10px_#00d2ff]" />
+          <span className="font-sans text-xs font-bold tracking-wide text-[#38bdf8]">
+            {review.title}
+          </span>
+        </div>
+      </div>
+
+      {/* ============================================= */}
+      {/* 2. CENTER: CONCENTRIC DOUBLE-RING PLAY BUTTON */}
+      {/* ============================================= */}
+      <div className="relative z-10 my-auto flex items-center justify-center">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onPlayClick(review, index);
+          }}
+          aria-label={
+            cardIsPlaying ? "إيقاف التسجيل الصوتي" : "تشغيل التسجيل الصوتي"
+          }
+          className="swiper-no-swiping relative w-28 h-28 sm:w-[118px] sm:h-[118px] rounded-full border border-[#00d2ff]/35 bg-[#0e1b2e]/60 shadow-[0_0_35px_rgba(0,210,255,0.18)] hover:shadow-[0_0_45px_rgba(0,210,255,0.32)] hover:border-[#00d2ff]/60 flex items-center justify-center transition-[transform,border-color,box-shadow] duration-200 active:scale-95 group cursor-pointer"
+        >
+          {/* Inner Concentric Circle */}
+          <div className="w-[88px] h-[88px] sm:w-[94px] sm:h-[94px] rounded-full border border-[#00d2ff]/20 bg-[#122036]/85 flex items-center justify-center transition-transform duration-200 group-hover:scale-[1.03]">
+            {cardIsPlaying ? (
+              <Pause className="w-8 h-8 text-white fill-white" />
+            ) : (
+              <Play className="w-8 h-8 text-white fill-white ml-1" />
+            )}
+          </div>
+        </button>
+      </div>
+
+      {/* ============================================= */}
+      {/* 3. WAVEFORM + PROGRESS BAR + 5.0 STAR RATING  */}
+      {/* ============================================= */}
+      <div className="relative z-10 w-full flex flex-col items-center">
+        {/* 28-Bar Simulated Waveform Equalizer */}
+        <WaveformEqualizer isPlaying={cardIsPlaying} />
+
+        {/* Interactive Progress Bar with Touch-Scrubbing Hit Area */}
+        <div className="swiper-no-swiping w-full space-y-2 mb-5">
+          <div
+            ref={progressBarRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            className={`relative w-full py-2.5 -my-2.5 flex items-center touch-none ${
+              isActive ? "cursor-pointer" : "pointer-events-none"
+            }`}
+          >
+            <div className="relative w-full h-1.5 rounded-full bg-[#153259] flex items-center">
+              {/* Active Fill */}
+              <div
+                className="h-full rounded-full bg-[#00d2ff] shadow-[0_0_10px_rgba(0,210,255,0.75)] relative"
+                style={{ width: `${progressPercent}%` }}
+              >
+                {/* Glowing Cyan Thumb Indicator */}
+                <div className="w-3.5 h-3.5 rounded-full bg-[#00d2ff] shadow-[0_0_12px_#00d2ff] absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2" />
+              </div>
+            </div>
+          </div>
+
+          {/* Monospace Timestamps (0:00 ... 2:19) */}
+          <div className="flex items-center justify-between font-mono tracking-widest text-[11px] text-slate-300/85 tabular-nums px-0.5">
+            <span>{formatTime(cardCurrentTime)}</span>
+            <span>{formatTime(cardDuration)}</span>
+          </div>
+        </div>
+
+        {/* 5 Golden Stars + 5.0 Score Centered at Bottom */}
+        <div className="flex items-center justify-center gap-1.5 pt-1">
+          {Array.from({ length: review.rating }).map((_, i) => (
+            <Star
+              key={i}
+              className="w-4 h-4 text-[#F59E0B] fill-[#F59E0B] drop-shadow-[0_2px_4px_rgba(245,158,11,0.3)]"
+            />
+          ))}
+          <span className="text-white font-bold text-sm sm:text-[15px] ml-1.5 tabular-nums">
+            5.0
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// Memoized Infinite Loop Marquee so audio state updates never re-render the 40 Next.js Images
+const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
+  isPaused,
+  onSelectImage,
+}: {
+  isPaused: boolean;
+  onSelectImage: (src: string) => void;
+}) {
+  const renderCard = (src: string, keyPrefix: string, index: number) => (
+    <div
+      key={`${keyPrefix}-${index}`}
+      onClick={() => onSelectImage(src)}
+      className="apple-glass group relative w-[185px] h-[230px] sm:w-[225px] sm:h-[280px] p-2 sm:p-2.5 rounded-2xl flex-shrink-0 cursor-pointer overflow-hidden"
+    >
+      <div className="relative w-full h-full rounded-xl overflow-hidden bg-white ring-1 ring-slate-100/90">
+        <Image
+          src={src}
+          alt={`وثيقة قبول جامعي ${index + 1}`}
+          fill
+          sizes="(max-width: 640px) 185px, 225px"
+          referrerPolicy="no-referrer"
+          className="object-contain p-1 transition-transform duration-300 group-hover:scale-[1.03]"
+        />
+      </div>
+    </div>
+  );
+
+  return (
+    <div
+      dir="ltr"
+      className="relative z-10 w-full mt-10 sm:mt-14 lg:mt-16 overflow-hidden select-none"
+    >
+      {/* Left & Right Horizon Edge Fades */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-28 z-10 bg-gradient-to-r from-[#FAFBFD] to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-28 z-10 bg-gradient-to-l from-[#FAFBFD] to-transparent"
+      />
+
+      {/* Continuous Seamless Infinite Track */}
+      <div
+        className="animate-marquee-infinite flex items-center py-3"
+        style={{
+          animationDuration: "68s",
+          animationPlayState: isPaused ? "paused" : undefined,
+        }}
+      >
+        <div className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0">
+          {reviewImages.map((src, index) =>
+            renderCard(src, "reviews-track-a", index)
+          )}
+        </div>
+        <div
+          aria-hidden="true"
+          className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0"
+        >
+          {reviewImages.map((src, index) =>
+            renderCard(src, "reviews-track-b", index)
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
 export function AudioReviews() {
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [isInView, setIsInView] = useState<boolean>(true);
+  const [isMarqueeInView, setIsMarqueeInView] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [activeAudioId, setActiveAudioId] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
-  const [loadedDurations, setLoadedDurations] = useState<Record<number, number>>(
-    {}
-  );
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const swiperRef = useRef<SwiperType | null>(null);
   const hlsAudioRef = useRef<HlsAudioHandle | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const audioDeckRef = useRef<HTMLDivElement | null>(null);
+  const activeAudioIdRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    activeAudioIdRef.current = activeAudioId;
+  }, [activeAudioId]);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Preload real MP3 durations with full memory cleanup so detached Audio nodes never leak
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    let isCancelled = false;
-    const tempAudios: HTMLAudioElement[] = [];
-
-    audioReviews.forEach((item) => {
-      if (item.audioUrl && !item.audioUrl.toLowerCase().endsWith(".m3u8")) {
-        const tempAudio = new Audio();
-        tempAudio.preload = "metadata";
-
-        const cleanupAudio = () => {
-          tempAudio.onloadedmetadata = null;
-          tempAudio.onerror = null;
-          tempAudio.removeAttribute("src");
-          tempAudio.load();
-        };
-
-        tempAudio.onloadedmetadata = () => {
-          if (
-            !isCancelled &&
-            Number.isFinite(tempAudio.duration) &&
-            tempAudio.duration > 0
-          ) {
-            const exactDuration = tempAudio.duration;
-            setLoadedDurations((prev) => ({
-              ...prev,
-              [item.id]: exactDuration,
-            }));
-          }
-          cleanupAudio();
-        };
-
-        tempAudio.onerror = () => {
-          cleanupAudio();
-        };
-
-        tempAudio.src = encodeURI(item.audioUrl);
-        tempAudios.push(tempAudio);
-      }
-    });
-
-    return () => {
-      isCancelled = true;
-      tempAudios.forEach((audio) => {
-        audio.onloadedmetadata = null;
-        audio.onerror = null;
-        audio.removeAttribute("src");
-        audio.load();
-      });
-    };
-  }, []);
-
-  // Auto-Stop on Slide (guarantees audio never keeps playing in background when card changes)
+  // Completely stops audio AND aborts background network downloading
   const stopCurrentAudio = useCallback(() => {
-    setActiveAudioId(null);
-    setIsPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
+    if (activeAudioIdRef.current !== null) {
+      activeAudioIdRef.current = null;
+      setActiveAudioId(null);
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+    }
     hlsAudioRef.current?.stop();
   }, []);
 
@@ -146,47 +407,62 @@ export function AudioReviews() {
     }
   }, [stopCurrentAudio]);
 
-  const togglePlay = useCallback(
-    (reviewId: number, audioUrl: string, fallbackDuration?: number) => {
-      const targetDuration =
-        loadedDurations[reviewId] || fallbackDuration || 32;
+  const handlePlayClick = useCallback(
+    (review: AudioReview, slideIndex: number) => {
+      const swiper = swiperRef.current;
+      const targetDuration = review.fallbackDuration || 32;
 
-      if (activeAudioId === reviewId) {
+      // If user clicked Play on a peeking side card, smoothly slide to it and play it
+      if (swiper && swiper.activeIndex !== slideIndex) {
+        stopCurrentAudio();
+        swiper.slideTo(slideIndex);
+        activeAudioIdRef.current = review.id;
+        setActiveAudioId(review.id);
+        setCurrentTime(0);
+        setDuration(targetDuration);
+        hlsAudioRef.current?.play(review.audioUrl, targetDuration);
+        return;
+      }
+
+      if (activeAudioIdRef.current === review.id) {
         if (isPlaying) {
           hlsAudioRef.current?.pause();
           setIsPlaying(false);
         } else {
-          hlsAudioRef.current?.play(audioUrl, targetDuration);
+          hlsAudioRef.current?.play(review.audioUrl, targetDuration);
         }
       } else {
-        setActiveAudioId(reviewId);
+        activeAudioIdRef.current = review.id;
+        setActiveAudioId(review.id);
         setCurrentTime(0);
         setDuration(targetDuration);
-        hlsAudioRef.current?.play(audioUrl, targetDuration);
+        hlsAudioRef.current?.play(review.audioUrl, targetDuration);
       }
     },
-    [activeAudioId, isPlaying, loadedDurations]
+    [isPlaying, stopCurrentAudio]
   );
 
-  const handleSeek = useCallback(
-    (
-      e: React.MouseEvent<HTMLDivElement>,
-      cardIsActive: boolean,
-      reviewId: number,
-      cardDuration: number
-    ) => {
-      if (!cardIsActive || activeAudioId !== reviewId || cardDuration <= 0) {
-        return;
+  const handleSeekToRatio = useCallback(
+    (review: AudioReview, ratio: number) => {
+      const targetDuration =
+        activeAudioIdRef.current === review.id && duration > 0
+          ? duration
+          : review.fallbackDuration || 32;
+      const targetTime = ratio * targetDuration;
+
+      if (activeAudioIdRef.current === review.id) {
+        setCurrentTime(targetTime);
+        hlsAudioRef.current?.seek(targetTime);
+      } else {
+        // If user scrubs the progress bar before pressing Play, start from that position
+        activeAudioIdRef.current = review.id;
+        setActiveAudioId(review.id);
+        setCurrentTime(targetTime);
+        setDuration(targetDuration);
+        hlsAudioRef.current?.play(review.audioUrl, targetDuration, targetTime);
       }
-      e.stopPropagation();
-      const rect = e.currentTarget.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-      const targetTime = ratio * cardDuration;
-      setCurrentTime(targetTime);
-      hlsAudioRef.current?.seek(targetTime);
     },
-    [activeAudioId]
+    [duration]
   );
 
   const handleTimeUpdate = useCallback((cur: number, dur: number) => {
@@ -199,67 +475,91 @@ export function AudioReviews() {
   }, []);
 
   const handleAudioEnded = useCallback(() => {
+    activeAudioIdRef.current = null;
     setActiveAudioId(null);
     setIsPlaying(false);
     setCurrentTime(0);
   }, []);
 
-  // Observe section visibility to pause audio and infinite marquee when offscreen
-  useEffect(() => {
-    const currentSection = sectionRef.current;
-    if (!currentSection || typeof IntersectionObserver === "undefined") return;
+  const handleSelectPreviewImage = useCallback(
+    (src: string) => {
+      stopCurrentAudio();
+      setPreviewImage(src);
+    },
+    [stopCurrentAudio]
+  );
 
-    const observer = new IntersectionObserver(
+  // 1. Observe the Audio Deck specifically: the moment the audio cards scroll out of view,
+  // immediately stop playback AND abort any background network download
+  useEffect(() => {
+    const deckEl = audioDeckRef.current;
+    if (!deckEl || typeof IntersectionObserver === "undefined") return;
+
+    const deckObserver = new IntersectionObserver(
       ([entry]) => {
-        setIsInView(entry.isIntersecting);
         if (!entry.isIntersecting) {
           stopCurrentAudio();
         }
       },
+      { threshold: 0.15 }
+    );
+
+    deckObserver.observe(deckEl);
+    return () => deckObserver.disconnect();
+  }, [stopCurrentAudio]);
+
+  // 2. Observe the whole section to pause the infinite marquee when offscreen
+  useEffect(() => {
+    const sectionEl = sectionRef.current;
+    if (!sectionEl || typeof IntersectionObserver === "undefined") return;
+
+    const sectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsMarqueeInView(entry.isIntersecting);
+      },
       { rootMargin: "100px 0px", threshold: 0 }
     );
 
-    observer.observe(currentSection);
+    sectionObserver.observe(sectionEl);
+    return () => sectionObserver.disconnect();
+  }, []);
 
+  // 3. Stop audio & abort background download if user switches browser tabs or locks phone
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopCurrentAudio();
+      }
+    };
+    const handlePageHide = () => {
+      stopCurrentAudio();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handlePageHide);
     return () => {
-      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", handlePageHide);
     };
   }, [stopCurrentAudio]);
 
-  // Close image preview on Escape key
+  // Close image preview on Escape key and lock background scroll while open
   useEffect(() => {
     if (!previewImage) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setPreviewImage(null);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [previewImage]);
-
-  const renderReviewImageCard = (
-    src: string,
-    keyPrefix: string,
-    index: number
-  ) => (
-    <div
-      key={`${keyPrefix}-${index}`}
-      onClick={() => setPreviewImage(src)}
-      className="apple-glass group relative w-[185px] h-[230px] sm:w-[225px] sm:h-[280px] p-2 sm:p-2.5 rounded-2xl flex-shrink-0 cursor-pointer overflow-hidden"
-    >
-      <div className="relative w-full h-full rounded-xl overflow-hidden bg-white ring-1 ring-slate-100/90">
-        <Image
-          src={src}
-          alt=""
-          fill
-          sizes="(max-width: 640px) 185px, 225px"
-          referrerPolicy="no-referrer"
-          className="object-contain p-1 transition-transform duration-300 group-hover:scale-[1.03]"
-        />
-      </div>
-    </div>
-  );
 
   return (
     <section
@@ -301,7 +601,10 @@ export function AudioReviews() {
         onEnded={handleAudioEnded}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        ref={audioDeckRef}
+        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-8 items-center">
           {/* =============================================================== */}
           {/* RIGHT COLUMN (RTL): ARABIC CALLIGRAPHIC TYPOGRAPHY & PROMPT     */}
@@ -384,13 +687,17 @@ export function AudioReviews() {
                     <ChevronLeft className="w-5 h-5 stroke-[2.2] transition-transform duration-200 group-hover:-translate-x-0.5" />
                   </button>
 
-                  {/* 3D Coverflow Swiper Viewport (Exact smooth physics as Team section) */}
+                  {/* 3D Coverflow Swiper Viewport */}
                   <div className="relative w-full max-w-[360px] sm:max-w-[520px] overflow-hidden py-6 px-2 sm:[mask-image:linear-gradient(to_right,transparent_0%,black_7%,black_93%,transparent_100%)]">
                     <Swiper
                       onSwiper={(swiper) => {
                         swiperRef.current = swiper;
                       }}
-                      speed={420}
+                      speed={400}
+                      threshold={5}
+                      touchRatio={1.15}
+                      longSwipesRatio={0.25}
+                      resistanceRatio={0.75}
                       effect={"coverflow"}
                       grabCursor={true}
                       centeredSlides={true}
@@ -398,6 +705,10 @@ export function AudioReviews() {
                       slideToClickedSlide={true}
                       initialSlide={0}
                       watchSlidesProgress={true}
+                      keyboard={{
+                        enabled: true,
+                        onlyInViewport: true,
+                      }}
                       coverflowEffect={{
                         rotate: 6,
                         stretch: 14,
@@ -405,214 +716,50 @@ export function AudioReviews() {
                         modifier: 1,
                         slideShadows: false,
                       }}
-                      modules={[EffectCoverflow]}
+                      modules={[EffectCoverflow, Keyboard]}
                       className="w-full !overflow-visible [touch-action:pan-y]"
+                      onSliderFirstMove={() => {
+                        // Immediately stop audio & abort background download the instant user starts swiping
+                        if (activeAudioIdRef.current !== null) {
+                          stopCurrentAudio();
+                        }
+                      }}
                       onSlideChange={(swiper) => {
-                        stopCurrentAudio();
+                        if (activeAudioIdRef.current !== null) {
+                          stopCurrentAudio();
+                        }
                         setCurrentIndex(swiper.activeIndex);
                       }}
                     >
                       {audioReviews.map((review, index) => {
                         const isActive = currentIndex === index;
+                        const isThisCardActiveAudio =
+                          isActive && activeAudioId === review.id;
                         const cardIsPlaying =
-                          isActive && activeAudioId === review.id && isPlaying;
+                          isThisCardActiveAudio && isPlaying;
                         const cardDuration =
-                          isActive && activeAudioId === review.id && duration > 0
+                          isThisCardActiveAudio && duration > 0
                             ? duration
-                            : loadedDurations[review.id] ||
-                              review.fallbackDuration ||
-                              32;
-                        const cardCurrentTime =
-                          isActive && activeAudioId === review.id
-                            ? currentTime
-                            : 0;
-                        const progressPercent =
-                          isActive &&
-                          activeAudioId === review.id &&
-                          cardDuration > 0
-                            ? Math.min(
-                                100,
-                                (cardCurrentTime / cardDuration) * 100
-                              )
-                            : 0;
+                            : review.fallbackDuration || 32;
+                        const cardCurrentTime = isThisCardActiveAudio
+                          ? currentTime
+                          : 0;
 
                         return (
                           <SwiperSlide
                             key={review.id}
-                            className="!w-[288px] sm:!w-[325px] md:!w-[340px] transition-transform duration-300"
+                            className="!w-[288px] sm:!w-[325px] md:!w-[340px]"
                           >
-                            <div
-                              className={`
-                                relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9
-                                bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d]
-                                border transition-all duration-300
-                                flex flex-col items-center justify-between overflow-hidden transform-gpu
-                                ${
-                                  isActive
-                                    ? "border-white/15 shadow-[0_24px_50px_-12px_rgba(7,14,28,0.55)]"
-                                    : "border-white/10 shadow-[0_14px_30px_-10px_rgba(7,14,28,0.35)] opacity-90 cursor-pointer"
-                                }
-                              `}
-                            >
-                              {/* Subtle Top Inner Specular Highlight */}
-                              <div
-                                aria-hidden="true"
-                                className="absolute inset-0 rounded-[32px] pointer-events-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.14)]"
-                              />
-
-                              {/* Cinematic Glowing Cyan/Blue Halo Behind Center Play Button */}
-                              <div
-                                aria-hidden="true"
-                                className={`absolute top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 rounded-full bg-[#00b4d8] blur-[65px] pointer-events-none transition-opacity duration-500 ${
-                                  cardIsPlaying ? "opacity-45" : "opacity-25"
-                                }`}
-                              />
-
-                              {/* Watermark Quote (&rdquo;) Bottom Right */}
-                              <div
-                                aria-hidden="true"
-                                className="absolute bottom-6 right-5 text-[150px] leading-none text-white/[0.04] font-serif pointer-events-none select-none"
-                              >
-                                &rdquo;
-                              </div>
-
-                              {/* ============================================= */}
-                              {/* 1. TOP CENTER: GLASS PILL BADGE IN ARABIC     */}
-                              {/* ============================================= */}
-                              <div
-                                dir="rtl"
-                                className="relative z-10 flex justify-center w-full"
-                              >
-                                <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#09101d]/85 backdrop-blur-md border border-white/10 shadow-inner">
-                                  <span className="w-2 h-2 rounded-full bg-[#00d2ff] animate-pulse shadow-[0_0_10px_#00d2ff]" />
-                                  <span className="font-sans text-xs font-bold tracking-wide text-[#38bdf8]">
-                                    {review.title}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* ============================================= */}
-                              {/* 2. CENTER: CONCENTRIC DOUBLE-RING PLAY BUTTON */}
-                              {/* ============================================= */}
-                              <div className="relative z-10 my-auto flex items-center justify-center">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    if (!isActive) return;
-                                    e.stopPropagation();
-                                    togglePlay(
-                                      review.id,
-                                      review.audioUrl,
-                                      review.fallbackDuration
-                                    );
-                                  }}
-                                  aria-label={
-                                    cardIsPlaying
-                                      ? "إيقاف التسجيل الصوتي"
-                                      : "تشغيل التسجيل الصوتي"
-                                  }
-                                  className={`swiper-no-swiping relative w-28 h-28 sm:w-[118px] sm:h-[118px] rounded-full border border-[#00d2ff]/35 bg-[#0e1b2e]/50 shadow-[0_0_35px_rgba(0,210,255,0.18)] hover:shadow-[0_0_45px_rgba(0,210,255,0.32)] hover:border-[#00d2ff]/60 flex items-center justify-center transition-all duration-300 active:scale-95 group ${
-                                    isActive
-                                      ? "cursor-pointer"
-                                      : "pointer-events-none"
-                                  }`}
-                                >
-                                  {/* Inner Concentric Circle */}
-                                  <div className="w-[88px] h-[88px] sm:w-[94px] sm:h-[94px] rounded-full border border-[#00d2ff]/20 bg-[#122036]/80 flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.03]">
-                                    {cardIsPlaying ? (
-                                      <Pause className="w-8 h-8 text-white fill-white transition-transform duration-200" />
-                                    ) : (
-                                      <Play className="w-8 h-8 text-white fill-white ml-1 transition-transform duration-200" />
-                                    )}
-                                  </div>
-                                </button>
-                              </div>
-
-                              {/* ============================================= */}
-                              {/* 3. WAVEFORM + PROGRESS BAR + 5.0 STAR RATING  */}
-                              {/* ============================================= */}
-                              <div className="relative z-10 w-full flex flex-col items-center">
-                                {/* 28-Bar Simulated Waveform Equalizer */}
-                                <div className="w-[76%] h-6 flex items-center justify-between gap-[3px] mb-4">
-                                  {waveHeights.map((height, i) => {
-                                    const delay = (i * 0.05) % 0.8;
-                                    const isCenterAccent =
-                                      Math.abs(waveHeights.length / 2 - i) < 6;
-
-                                    return (
-                                      <div
-                                        key={i}
-                                        className={`w-[2.5px] rounded-full transition-colors duration-300 origin-center ${
-                                          isCenterAccent
-                                            ? "bg-[#00d2ff] shadow-[0_0_8px_rgba(0,210,255,0.9)]"
-                                            : "bg-white/30"
-                                        }`}
-                                        style={{
-                                          height: `${height}%`,
-                                          transform: cardIsPlaying
-                                            ? undefined
-                                            : "scaleY(0.22)",
-                                          animation: cardIsPlaying
-                                            ? `eq-play 0.8s ease-in-out ${delay.toFixed(
-                                                2
-                                              )}s infinite`
-                                            : "none",
-                                        }}
-                                      />
-                                    );
-                                  })}
-                                </div>
-
-                                {/* Interactive Progress Bar */}
-                                <div className="swiper-no-swiping w-full space-y-2 mb-5">
-                                  <div
-                                    onClick={(e) =>
-                                      handleSeek(
-                                        e,
-                                        isActive,
-                                        review.id,
-                                        cardDuration
-                                      )
-                                    }
-                                    className={`relative w-full h-1.5 rounded-full bg-[#153259] flex items-center ${
-                                      isActive && activeAudioId === review.id
-                                        ? "cursor-pointer"
-                                        : ""
-                                    }`}
-                                  >
-                                    {/* Active Fill */}
-                                    <div
-                                      className="h-full rounded-full bg-[#00d2ff] shadow-[0_0_10px_rgba(0,210,255,0.75)] transition-[width] duration-100 ease-linear relative"
-                                      style={{ width: `${progressPercent}%` }}
-                                    >
-                                      {/* Glowing Cyan Thumb Indicator */}
-                                      <div className="w-3.5 h-3.5 rounded-full bg-[#00d2ff] shadow-[0_0_12px_#00d2ff] absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2" />
-                                    </div>
-                                  </div>
-
-                                  {/* Monospace Timestamps (0:00 ... 2:19) */}
-                                  <div className="flex items-center justify-between font-mono tracking-widest text-[11px] text-slate-300/85 tabular-nums px-0.5">
-                                    <span>{formatTime(cardCurrentTime)}</span>
-                                    <span>{formatTime(cardDuration)}</span>
-                                  </div>
-                                </div>
-
-                                {/* 5 Golden Stars + 5.0 Score Centered at Bottom */}
-                                <div className="flex items-center justify-center gap-1.5 pt-1">
-                                  {Array.from({ length: review.rating }).map(
-                                    (_, i) => (
-                                      <Star
-                                        key={i}
-                                        className="w-4 h-4 text-[#F59E0B] fill-[#F59E0B] drop-shadow-[0_2px_4px_rgba(245,158,11,0.3)]"
-                                      />
-                                    )
-                                  )}
-                                  <span className="text-white font-bold text-sm sm:text-[15px] ml-1.5 tabular-nums">
-                                    5.0
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
+                            <AudioReviewCard
+                              review={review}
+                              index={index}
+                              isActive={isActive}
+                              cardIsPlaying={cardIsPlaying}
+                              cardCurrentTime={cardCurrentTime}
+                              cardDuration={cardDuration}
+                              onPlayClick={handlePlayClick}
+                              onSeekToRatio={handleSeekToRatio}
+                            />
                           </SwiperSlide>
                         );
                       })}
@@ -630,7 +777,7 @@ export function AudioReviews() {
                   </button>
                 </div>
 
-                {/* Interactive Pagination Dots Indicator (Exact Team Section Style) */}
+                {/* Interactive Pagination Dots Indicator */}
                 <div
                   className="flex items-center justify-center gap-1.5 mt-2"
                   aria-hidden="true"
@@ -682,44 +829,10 @@ export function AudioReviews() {
       {/* =================================================================== */}
       {/* INTEGRATED INFINITE LOOP STRIP FOR ACCEPTANCE & REVIEW IMAGES       */}
       {/* =================================================================== */}
-      <div
-        dir="ltr"
-        className="relative z-10 w-full mt-10 sm:mt-14 lg:mt-16 overflow-hidden select-none"
-      >
-        {/* Left & Right Horizon Edge Fades (Matches PartnersMarquee) */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-28 z-10 bg-gradient-to-r from-[#FAFBFD] to-transparent"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-28 z-10 bg-gradient-to-l from-[#FAFBFD] to-transparent"
-        />
-
-        {/* Continuous Seamless Infinite Track (Pauses when offscreen or hovered) */}
-        <div
-          className="animate-marquee-infinite flex items-center py-3"
-          style={{
-            animationDuration: "68s",
-            animationPlayState:
-              isInView && !previewImage ? "running" : "paused",
-          }}
-        >
-          <div className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0">
-            {reviewImages.map((src, index) =>
-              renderReviewImageCard(src, "reviews-track-a", index)
-            )}
-          </div>
-          <div
-            aria-hidden="true"
-            className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0"
-          >
-            {reviewImages.map((src, index) =>
-              renderReviewImageCard(src, "reviews-track-b", index)
-            )}
-          </div>
-        </div>
-      </div>
+      <ReviewImagesMarquee
+        isPaused={!isMarqueeInView || Boolean(previewImage)}
+        onSelectImage={handleSelectPreviewImage}
+      />
 
       {/* Zero-Text Clean Lightbox Preview when a user clicks an image */}
       {previewImage && (
@@ -742,7 +855,7 @@ export function AudioReviews() {
             <div className="relative w-full h-full rounded-2xl overflow-hidden bg-white">
               <Image
                 src={previewImage}
-                alt=""
+                alt="وثيقة قبول جامعي"
                 fill
                 sizes="(max-width: 768px) 95vw, 672px"
                 referrerPolicy="no-referrer"

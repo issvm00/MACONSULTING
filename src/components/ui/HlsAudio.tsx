@@ -10,7 +10,7 @@ import React, {
 import Hls from "hls.js";
 
 export interface HlsAudioHandle {
-  play: (src: string, fallbackDuration?: number) => void;
+  play: (src: string, fallbackDuration?: number, initialTime?: number) => void;
   pause: () => void;
   stop: () => void;
   seek: (time: number) => void;
@@ -27,6 +27,8 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const hlsRef = useRef<Hls | null>(null);
     const simTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    // Monotonic session counter to cancel stale async play() promises when user swipes or stops
+    const sessionIdRef = useRef<number>(0);
 
     // Store callbacks in a ref so parent re-renders never re-trigger effect cleanup or interrupt playback
     const callbacksRef = useRef({
@@ -64,7 +66,14 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
     }, []);
 
     const startSimulatedPlayback = useCallback(
-      (src: string, fallbackDuration = 30) => {
+      (src: string, fallbackDuration = 30, sessionId?: number) => {
+        if (
+          sessionId !== undefined &&
+          sessionId !== sessionIdRef.current
+        ) {
+          return;
+        }
+
         clearSimTimer();
         const isResumingSame =
           simStateRef.current.active && simStateRef.current.currentSrc === src;
@@ -107,7 +116,9 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       [clearSimTimer]
     );
 
+    // Completely stops playback AND aborts any active background HTTP download/buffering
     const stop = useCallback(() => {
+      sessionIdRef.current += 1;
       clearSimTimer();
       simStateRef.current.active = false;
       simStateRef.current.currentTime = 0;
@@ -115,6 +126,12 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       currentSrcRef.current = "";
 
       if (hlsRef.current) {
+        try {
+          hlsRef.current.stopLoad();
+          hlsRef.current.detachMedia();
+        } catch {
+          // ignore cleanup errors
+        }
         hlsRef.current.destroy();
         hlsRef.current = null;
       }
@@ -122,8 +139,11 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       const audio = audioRef.current;
       if (audio) {
         audio.pause();
-        audio.removeAttribute("src");
-        audio.load();
+        if (audio.hasAttribute("src") || audio.src) {
+          audio.removeAttribute("src");
+          // Invoking load() with no src attribute immediately aborts browser network fetching
+          audio.load();
+        }
       }
 
       callbacksRef.current.onPlayStateChange?.(false);
@@ -131,6 +151,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
     }, [clearSimTimer]);
 
     const pause = useCallback(() => {
+      sessionIdRef.current += 1;
       if (simStateRef.current.active) {
         clearSimTimer();
         callbacksRef.current.onPlayStateChange?.(false);
@@ -139,8 +160,8 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       const audio = audioRef.current;
       if (audio && !audio.paused) {
         audio.pause();
-        callbacksRef.current.onPlayStateChange?.(false);
       }
+      callbacksRef.current.onPlayStateChange?.(false);
     }, [clearSimTimer]);
 
     const seek = useCallback((time: number) => {
@@ -163,10 +184,11 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
     }, []);
 
     const play = useCallback(
-      (src: string, fallbackDuration = 30) => {
+      (src: string, fallbackDuration = 30, initialTime?: number) => {
         const audio = audioRef.current;
         if (!audio) return;
 
+        const sessionId = ++sessionIdRef.current;
         const encodedSrc = encodeURI(src);
 
         // If already in fallback simulation for this src and paused, resume simulation
@@ -174,25 +196,43 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
           simStateRef.current.active &&
           simStateRef.current.currentSrc === encodedSrc
         ) {
-          startSimulatedPlayback(encodedSrc, fallbackDuration);
+          if (initialTime !== undefined && initialTime >= 0) {
+            simStateRef.current.currentTime = Math.min(
+              initialTime,
+              simStateRef.current.duration
+            );
+          }
+          startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
           return;
         }
 
         // If same real audio is already loaded and paused, resume synchronously
         if (
           currentSrcRef.current === encodedSrc &&
-          audio.src &&
+          audio.hasAttribute("src") &&
           audio.paused &&
           !simStateRef.current.active
         ) {
+          if (
+            initialTime !== undefined &&
+            initialTime >= 0 &&
+            Number.isFinite(audio.duration)
+          ) {
+            audio.currentTime = Math.min(initialTime, audio.duration);
+          }
           const playPromise = audio.play();
           if (playPromise !== undefined) {
             playPromise
               .then(() => {
+                if (sessionId !== sessionIdRef.current) return;
                 callbacksRef.current.onPlayStateChange?.(true);
               })
-              .catch(() => {
-                startSimulatedPlayback(encodedSrc, fallbackDuration);
+              .catch((err: unknown) => {
+                if (sessionId !== sessionIdRef.current) return;
+                if (err instanceof DOMException && err.name === "AbortError") {
+                  return;
+                }
+                startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
               });
           }
           return;
@@ -202,6 +242,12 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
         clearSimTimer();
         simStateRef.current.active = false;
         if (hlsRef.current) {
+          try {
+            hlsRef.current.stopLoad();
+            hlsRef.current.detachMedia();
+          } catch {
+            // ignore
+          }
           hlsRef.current.destroy();
           hlsRef.current = null;
         }
@@ -219,42 +265,88 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
             hls.loadSource(encodedSrc);
             hls.attachMedia(audio);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              if (sessionId !== sessionIdRef.current) return;
+              if (initialTime !== undefined && initialTime > 0) {
+                audio.currentTime = initialTime;
+              }
               audio
                 .play()
-                .then(() => callbacksRef.current.onPlayStateChange?.(true))
-                .catch(() =>
-                  startSimulatedPlayback(encodedSrc, fallbackDuration)
-                );
+                .then(() => {
+                  if (sessionId !== sessionIdRef.current) return;
+                  callbacksRef.current.onPlayStateChange?.(true);
+                })
+                .catch((err: unknown) => {
+                  if (sessionId !== sessionIdRef.current) return;
+                  if (
+                    err instanceof DOMException &&
+                    err.name === "AbortError"
+                  ) {
+                    return;
+                  }
+                  startSimulatedPlayback(
+                    encodedSrc,
+                    fallbackDuration,
+                    sessionId
+                  );
+                });
             });
             hls.on(Hls.Events.ERROR, (_event, data) => {
+              if (sessionId !== sessionIdRef.current) return;
               if (data.fatal) {
-                startSimulatedPlayback(encodedSrc, fallbackDuration);
+                startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
               }
             });
           } else if (audio.canPlayType("application/vnd.apple.mpegurl")) {
-            // Native HLS for Safari
             audio.src = encodedSrc;
+            if (initialTime !== undefined && initialTime > 0) {
+              audio.currentTime = initialTime;
+            }
             audio
               .play()
-              .then(() => callbacksRef.current.onPlayStateChange?.(true))
-              .catch(() =>
-                startSimulatedPlayback(encodedSrc, fallbackDuration)
-              );
+              .then(() => {
+                if (sessionId !== sessionIdRef.current) return;
+                callbacksRef.current.onPlayStateChange?.(true);
+              })
+              .catch((err: unknown) => {
+                if (sessionId !== sessionIdRef.current) return;
+                if (err instanceof DOMException && err.name === "AbortError") {
+                  return;
+                }
+                startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
+              });
           } else {
-            startSimulatedPlayback(encodedSrc, fallbackDuration);
+            startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
           }
         } else {
           // Standard MP3/Audio file: synchronous assignment + play() for iOS Safari compatibility
           audio.src = encodedSrc;
+          if (initialTime !== undefined && initialTime > 0) {
+            const setInitialSeek = () => {
+              if (
+                sessionId === sessionIdRef.current &&
+                Number.isFinite(audio.duration)
+              ) {
+                audio.currentTime = Math.min(initialTime, audio.duration);
+              }
+              audio.removeEventListener("loadedmetadata", setInitialSeek);
+            };
+            audio.addEventListener("loadedmetadata", setInitialSeek, {
+              once: true,
+            });
+          }
           const playPromise = audio.play();
           if (playPromise !== undefined) {
             playPromise
               .then(() => {
+                if (sessionId !== sessionIdRef.current) return;
                 callbacksRef.current.onPlayStateChange?.(true);
               })
-              .catch(() => {
-                // Graceful fallback if the MP3 file is 0-bytes / empty placeholder
-                startSimulatedPlayback(encodedSrc, fallbackDuration);
+              .catch((err: unknown) => {
+                if (sessionId !== sessionIdRef.current) return;
+                if (err instanceof DOMException && err.name === "AbortError") {
+                  return;
+                }
+                startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
               });
           }
         }
@@ -310,14 +402,24 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       audio.addEventListener("ended", handleEnded, { passive: true });
 
       return () => {
+        sessionIdRef.current += 1;
         clearSimTimer();
         audio.removeEventListener("timeupdate", handleTimeUpdate);
         audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
         audio.removeEventListener("ended", handleEnded);
         if (hlsRef.current) {
+          try {
+            hlsRef.current.stopLoad();
+            hlsRef.current.detachMedia();
+          } catch {
+            // ignore
+          }
           hlsRef.current.destroy();
           hlsRef.current = null;
         }
+        audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
       };
     }, [clearSimTimer]);
 

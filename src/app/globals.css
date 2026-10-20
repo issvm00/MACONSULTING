@@ -90,7 +90,7 @@ body {
 
 @media (hover: hover) and (pointer: fine) {
   .animate-marquee-infinite:hover {
-    animation-play-state: paused;
+    animation-play-state: paused !important;
   }
 }
 
