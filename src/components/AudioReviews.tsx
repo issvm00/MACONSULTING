@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import {
   Play,
   Pause,
@@ -8,6 +9,7 @@ import {
   ChevronRight,
   Star,
   ArrowLeft,
+  X,
 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow } from "swiper/modules";
@@ -25,6 +27,12 @@ const waveHeights = [
   65, 45, 60, 35, 25, 40, 20, 30, 15,
 ];
 
+// 20 Official Admission / Acceptance Images in /public/reviewsimage
+const reviewImages: string[] = Array.from(
+  { length: 20 },
+  (_, index) => `/reviewsimage/${index + 1}.webp`
+);
+
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   const mins = Math.floor(seconds / 60);
@@ -34,6 +42,7 @@ function formatTime(seconds: number): string {
 
 export function AudioReviews() {
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [isInView, setIsInView] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [activeAudioId, setActiveAudioId] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -42,6 +51,7 @@ export function AudioReviews() {
   const [loadedDurations, setLoadedDurations] = useState<Record<number, number>>(
     {}
   );
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const swiperRef = useRef<SwiperType | null>(null);
   const hlsAudioRef = useRef<HlsAudioHandle | null>(null);
@@ -194,19 +204,19 @@ export function AudioReviews() {
     setCurrentTime(0);
   }, []);
 
-  // Stop audio automatically when section scrolls out of viewport
+  // Observe section visibility to pause audio and infinite marquee when offscreen
   useEffect(() => {
     const currentSection = sectionRef.current;
     if (!currentSection || typeof IntersectionObserver === "undefined") return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
         if (!entry.isIntersecting) {
           stopCurrentAudio();
         }
       },
-      { threshold: 0 }
+      { rootMargin: "100px 0px", threshold: 0 }
     );
 
     observer.observe(currentSection);
@@ -216,23 +226,62 @@ export function AudioReviews() {
     };
   }, [stopCurrentAudio]);
 
+  // Close image preview on Escape key
+  useEffect(() => {
+    if (!previewImage) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPreviewImage(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewImage]);
+
+  const renderReviewImageCard = (
+    src: string,
+    keyPrefix: string,
+    index: number
+  ) => (
+    <div
+      key={`${keyPrefix}-${index}`}
+      onClick={() => setPreviewImage(src)}
+      className="apple-glass group relative w-[185px] h-[230px] sm:w-[225px] sm:h-[280px] p-2 sm:p-2.5 rounded-2xl flex-shrink-0 cursor-pointer overflow-hidden"
+    >
+      <div className="relative w-full h-full rounded-xl overflow-hidden bg-white ring-1 ring-slate-100/90">
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes="(max-width: 640px) 185px, 225px"
+          referrerPolicy="no-referrer"
+          className="object-contain p-1 transition-transform duration-300 group-hover:scale-[1.03]"
+        />
+      </div>
+    </div>
+  );
+
   return (
     <section
       ref={sectionRef}
       id="reviews"
       dir="rtl"
-      className="relative w-full pt-4 sm:pt-6 lg:pt-8 pb-16 sm:pb-24 lg:pb-28 bg-transparent overflow-hidden select-none scroll-mt-20"
+      className="relative w-full pt-4 sm:pt-6 lg:pt-8 pb-14 sm:pb-20 lg:pb-24 bg-transparent overflow-hidden select-none scroll-mt-20"
     >
       {/* Subtle Dot Grid Pattern Background with smooth top fade */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none opacity-[0.055] [mask-image:linear-gradient(to_bottom,transparent_0%,black_12%,black_100%)]"
-        style={{
-          backgroundImage:
-            "radial-gradient(#0B1B3D 1.25px, transparent 1.25px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
+      >
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage:
+              "radial-gradient(#0B1B3D 1.25px, transparent 1.25px)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+      </div>
 
       {/* Soft Cyan / Light Blue Organic Ambient Waves */}
       <div
@@ -629,6 +678,80 @@ export function AudioReviews() {
           </div>
         </div>
       </div>
+
+      {/* =================================================================== */}
+      {/* INTEGRATED INFINITE LOOP STRIP FOR ACCEPTANCE & REVIEW IMAGES       */}
+      {/* =================================================================== */}
+      <div
+        dir="ltr"
+        className="relative z-10 w-full mt-10 sm:mt-14 lg:mt-16 overflow-hidden select-none"
+      >
+        {/* Left & Right Horizon Edge Fades (Matches PartnersMarquee) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-28 z-10 bg-gradient-to-r from-[#FAFBFD] to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-28 z-10 bg-gradient-to-l from-[#FAFBFD] to-transparent"
+        />
+
+        {/* Continuous Seamless Infinite Track (Pauses when offscreen or hovered) */}
+        <div
+          className="animate-marquee-infinite flex items-center py-3"
+          style={{
+            animationDuration: "68s",
+            animationPlayState:
+              isInView && !previewImage ? "running" : "paused",
+          }}
+        >
+          <div className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0">
+            {reviewImages.map((src, index) =>
+              renderReviewImageCard(src, "reviews-track-a", index)
+            )}
+          </div>
+          <div
+            aria-hidden="true"
+            className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0"
+          >
+            {reviewImages.map((src, index) =>
+              renderReviewImageCard(src, "reviews-track-b", index)
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Zero-Text Clean Lightbox Preview when a user clicks an image */}
+      {previewImage && (
+        <div
+          onClick={() => setPreviewImage(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#071228]/80 backdrop-blur-md p-4 sm:p-6 cursor-pointer"
+        >
+          <button
+            type="button"
+            onClick={() => setPreviewImage(null)}
+            aria-label="إغلاق"
+            className="absolute top-5 right-5 sm:top-7 sm:right-7 w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors cursor-pointer z-10"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-2xl h-[78vh] sm:h-[84vh] bg-white rounded-3xl p-3 sm:p-4 shadow-2xl overflow-hidden cursor-default"
+          >
+            <div className="relative w-full h-full rounded-2xl overflow-hidden bg-white">
+              <Image
+                src={previewImage}
+                alt=""
+                fill
+                sizes="(max-width: 768px) 95vw, 672px"
+                referrerPolicy="no-referrer"
+                className="object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
