@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck,
   ArrowLeft,
@@ -11,6 +11,8 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
+  X,
+  MessageCircle,
 } from "lucide-react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -213,11 +215,37 @@ function MemberCard({
 export function AboutTeam() {
   const [isMounted, setIsMounted] = useState(false);
   const [activeMobileIndex, setActiveMobileIndex] = useState(0);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
   const mobileSwiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Lock body scroll when Story Modal is open
+  useEffect(() => {
+    if (isStoryModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isStoryModalOpen]);
+
+  // Handle ESC key to dismiss Modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsStoryModalOpen(false);
+      }
+    };
+    if (isStoryModalOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isStoryModalOpen]);
 
   return (
     <section
@@ -281,17 +309,28 @@ export function AboutTeam() {
                   <ShieldCheck className="w-5 h-5 stroke-[2]" />
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <h3 className="text-lg sm:text-xl font-bold text-brand-navy">
-                    مكتب قانوني معتمد ومتابعة شخصية
+                    من واقع التجربة إلى التأسيس
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                    انطلق مكتبنا من إنزكان - أكادير برؤية واضحة: الشفافية المطلقة، غياب أي تكاليف خفية، والمتابعة المباشرة لملفات الطلاب من قِبل القيادة نفسها دون تفويض لوسطاء خارجيين.
+                    لم تُبنَ M&A Overseas Consulting من فراغ، بل انطلقت من تجربة ذاتية خاضها مؤسسونا (علي ومحمد أمين) خلال رحلتهما الدراسية في أوروبا. اختبرا حجم التحديات في أوراق القبول ومساطر التأشيرة، فجعلا من تلك المعاناة جسراً أميناً نرافق به مئات الطلاب اليوم خطوة بخطوة نحو مقاعدهم الجامعية.
                   </p>
+
+                  <div className="pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsStoryModalOpen(true)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-electric hover:text-brand-navy active:scale-95 transition-all group cursor-pointer"
+                    >
+                      <span>اقرأ قصة التأسيس الكاملة</span>
+                      <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* 3 Micro Trust Features */}
-                <div className="pt-2 border-t border-slate-100 space-y-2.5">
+                <div className="pt-3 border-t border-slate-100 space-y-2.5">
                   <div className="flex items-start gap-2.5 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
                     <span>
@@ -302,14 +341,14 @@ export function AboutTeam() {
                   <div className="flex items-start gap-2.5 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
                     <span>
-                      <strong>حضور مباشر في أوروبا:</strong> استقبال ميداني وإرشاد في ليتوانيا وكافة الوجهات الشريكة.
+                      <strong>حضور مباشر في أوروبا:</strong> إرشاد ميداني واستقبال للطلبة في ليتوانيا وباقي الوجهات.
                     </span>
                   </div>
 
                   <div className="flex items-start gap-2.5 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
                     <span>
-                      <strong>تنسيق أكاديمي مباشر:</strong> عقود رسمية وشراكات معتمدة مع الجامعات والمعاهد الأوروبية.
+                      <strong>مرافقة شخصية دون وسطاء:</strong> نأخذ بيدك من التوجيه واختيار التخصص حتى الاستقرار.
                     </span>
                   </div>
                 </div>
@@ -484,6 +523,143 @@ export function AboutTeam() {
         </div>
 
       </div>
+
+      {/* ================================================================= */}
+      {/* HIGH-END STORY MODAL (APPLE-GRADE LIQUID GLASS OVERLAY)           */}
+      {/* ================================================================= */}
+      <AnimatePresence>
+        {isStoryModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-6 overflow-x-hidden overflow-y-auto">
+            {/* Backdrop Dimmer */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsStoryModalOpen(false)}
+              className="fixed inset-0 bg-[#071228]/65 backdrop-blur-sm"
+              aria-hidden="true"
+            />
+
+            {/* Modal Window Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="story-modal-title"
+              className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl sm:rounded-[32px] border border-slate-200/90 shadow-[0_24px_60px_-12px_rgba(11,27,61,0.3)] flex flex-col overflow-hidden text-right z-10"
+              dir="rtl"
+            >
+              {/* Header Bar */}
+              <div className="flex items-center justify-between px-5 sm:px-7 py-4 sm:py-5 border-b border-slate-100 bg-slate-50/70 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-brand-electric animate-pulse" />
+                  <span className="text-xs font-bold text-brand-navy">
+                    عن M&A Overseas Consulting
+                  </span>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-[11px] font-semibold text-slate-500">
+                    قصة التأسيس
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsStoryModalOpen(false)}
+                  className="p-1.5 rounded-full text-slate-400 hover:text-brand-navy hover:bg-slate-200/70 active:scale-90 transition-all cursor-pointer"
+                  aria-label="إغلاق النافذة"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Scrollable Story Body */}
+              <div className="p-5 sm:p-7 overflow-y-auto space-y-5">
+                {/* Visual Identity Capsule: Founders Cluster */}
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-blue-50/70 border border-blue-100/80">
+                  <div className="flex -space-x-2 space-x-reverse overflow-hidden shrink-0">
+                    {teamMembers.map((m) => (
+                      <div
+                        key={m.id}
+                        className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-2xs"
+                      >
+                        <Image
+                          src={m.image}
+                          alt={m.name}
+                          fill
+                          sizes="36px"
+                          className="object-cover object-top"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-bold text-brand-navy">
+                      فريق قيادة M&A Overseas Consulting
+                    </p>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      علي بنعمر • مروان بنعمر • محمد أمين جبون
+                    </p>
+                  </div>
+                </div>
+
+                {/* Main Heading */}
+                <h3
+                  id="story-modal-title"
+                  className="text-lg sm:text-2xl font-bold text-brand-navy tracking-tight leading-snug"
+                >
+                  من واقع التجربة إلى التأسيس: كيف تحولت المعاناة إلى جسر أمين؟
+                </h3>
+
+                {/* Paragraphs from the client */}
+                <div className="space-y-3.5 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  <p>
+                    تُعتبر <strong>M&A Overseas Consulting</strong> وجهتك الأولى والموثوقة للتوجيه الأكاديمي الدولي، حيث نكرس خبراتنا الميدانية لمساعدة الطلاب على الالتحاق بأبرز الجامعات والأكاديميات الأوروبية. تسعى رؤيتنا إلى جعل التعليم العالي عالمي المستوى في متناول اليد، عبر تقديم حلول متكاملة واستشارات مخصصة تلبي طموح كل طالب وعائلته.
+                  </p>
+
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border-r-4 border-brand-electric border-y border-l border-slate-100 text-slate-700 italic">
+                    «لم تُبْنَ M&A من فراغ، بل انطلقت من واقع تجربة ذاتية خاضها كل من علي ومحمد أمين أثناء رحلتهما الدراسية في الخارج. فقد اختبرا بنفسيهما حجم التحديات والمتاعب التي تواجه الشباب الراغبين في الهجرة التعليمية — بدءاً من تعقيدات أوراق القبول، ووصولاً إلى مساطر الفيزا وخطوات الاستقرار الأولية.»
+                  </div>
+
+                  <p>
+                    دفعهما هذا التحدي الشخصي إلى تأسيس منصة استشارية متخصصة تُشكل جسراً أميناً بين الطلاب وأحلامهم الأكاديمية في أوروبا. نحن لا نكتفي بتقديم النصح النظري، بل نأخذ بيد الطالب خطوة بخطوة، بدءاً من رسم الخطة الدراسية المناسبة واختيار التخصص والجامعة، ووصولاً إلى تأمين المقعد الجامعي والمنح التنافسية وتجهيز ملف التأشيرة باحترافية تامة.
+                  </p>
+
+                  <p>
+                    بفضل هذه الرؤية الميدانية الشاملة وتواجدنا الفعلي بين المغرب وأوروبا، تفخر مؤسستنا اليوم بتقديم الدعم لمئات الطلاب مع المحافظة على نسبة نجاح عالية في استصدار القبولات وتأشيرات السفر، لنظل الخيار الأمثل والداعم الأول لرحلتك نحو النجاح والتميز.
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+                <a
+                  href="https://wa.me/212775496303"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 transition-all shadow-sm"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light" />
+                  <span>احجز استشارتك مع المؤسسين</span>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setIsStoryModalOpen(false)}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-200/70 active:scale-95 transition-all cursor-pointer"
+                >
+                  إغلاق
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
