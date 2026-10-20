@@ -362,7 +362,7 @@ export function RegistrationSteps() {
       {/* ===================================================================== */}
       {/* MOBILE VERSION (<640px): Exact UI/UX from commit c53dae0              */}
       {/* ===================================================================== */}
-      <div className="block sm:hidden w-full pt-8 pb-16 overflow-hidden">
+      <div className="block sm:hidden w-full pt-8 pb-6 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
@@ -509,7 +509,7 @@ export function RegistrationSteps() {
         </div>
 
         {/* Desktop/Tablet Bottom CTA Card */}
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 -mt-6 pb-16 lg:pb-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 -mt-6 pb-6 sm:pb-8 lg:pb-10">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}

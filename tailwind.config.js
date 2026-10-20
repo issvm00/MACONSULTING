@@ -17,6 +17,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        calligraphy: ["var(--font-calligraphy)", "serif"],
       },
       spacing: {
         13: "3.25rem",

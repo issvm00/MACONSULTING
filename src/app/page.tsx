@@ -4,6 +4,7 @@ import { PartnersMarquee } from "@/components/PartnersMarquee";
 import { AboutTeam } from "@/components/AboutTeam";
 import { SelectedWorks } from "@/components/SelectedWorks";
 import { RegistrationSteps } from "@/components/RegistrationSteps";
+import { AudioReviews } from "@/components/AudioReviews";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <AboutTeam />
       <SelectedWorks />
       <RegistrationSteps />
+      <AudioReviews />
     </main>
   );
 }
