@@ -131,7 +131,7 @@ export function CtaFooter() {
   return (
     <footer
       dir="rtl"
-      className="relative w-full pt-2 sm:pt-6 pb-8 sm:pb-12 overflow-hidden select-none"
+      className="relative w-full pt-2 sm:pt-6 pb-8 sm:pb-12 overflow-x-clip select-none"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* ================================================================= */}

@@ -136,6 +136,7 @@ export function Navbar() {
   }, [isMobileMenuOpen]);
 
   const handleNavClick = useCallback((id: string) => {
+    document.body.style.overflow = "unset";
     setActiveSection(id);
     setIsMobileMenuOpen(false);
   }, []);

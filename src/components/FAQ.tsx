@@ -319,7 +319,7 @@ export function FAQ() {
     <section
       id="faq"
       dir="rtl"
-      className="relative w-full pt-8 sm:pt-12 lg:pt-14 pb-8 sm:pb-12 lg:pb-16 overflow-hidden scroll-mt-20"
+      className="relative w-full pt-8 sm:pt-12 lg:pt-14 pb-8 sm:pb-12 lg:pb-16 overflow-x-clip scroll-mt-20"
     >
       {/* Subtle Ambient Background Accents (Zero filter:blur GPU cost) */}
       <div
@@ -339,13 +339,14 @@ export function FAQ() {
           {/* --------------------------------------------------------------- */}
           {/* RIGHT COLUMN (5 Cols - Editorial Header & Desktop Sticky Card)  */}
           {/* --------------------------------------------------------------- */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.55, ease: TRANSITION_EASE }}
-            className="lg:col-span-5 lg:sticky lg:top-28 space-y-6 text-center lg:text-right"
-          >
+          <div className="lg:col-span-5 lg:sticky lg:top-28">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.55, ease: TRANSITION_EASE }}
+              className="space-y-6 text-center lg:text-right"
+            >
             {/* Editorial Section Header */}
             <div className="space-y-3">
               <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-bold text-brand-electric">
@@ -396,7 +397,8 @@ export function FAQ() {
             <div className="hidden lg:block">
               <AdvisorSupportCard />
             </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
           {/* --------------------------------------------------------------- */}
           {/* LEFT COLUMN (7 Cols - Interactive Filter Bar + FAQ Accordions)  */}
