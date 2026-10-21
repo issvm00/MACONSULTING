@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   MapPin,
   CheckCircle2,
-  Phone,
   ExternalLink,
 } from "lucide-react";
 
@@ -34,8 +33,14 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-// Crisp SVG Country Flag Tokens for Footer Destinations Column
-const FlagDot = memo(function FlagDot({ code }: { code: string }) {
+// Crisp SVG Country Flag Tokens for CTA Trust Strip & Footer Destinations Column
+const FlagDot = memo(function FlagDot({
+  code,
+  size = "sm",
+}: {
+  code: string;
+  size?: "sm" | "md";
+}) {
   const renderFlag = () => {
     switch (code) {
       case "LT":
@@ -100,7 +105,13 @@ const FlagDot = memo(function FlagDot({ code }: { code: string }) {
   };
 
   return (
-    <span className="relative w-4 h-4 rounded-full overflow-hidden border border-slate-200/90 shadow-2xs shrink-0 inline-flex bg-white">
+    <span
+      className={`relative rounded-full overflow-hidden shrink-0 inline-flex bg-white ${
+        size === "md"
+          ? "w-4.5 h-4.5 border border-white/80 shadow-2xs"
+          : "w-4 h-4 border border-slate-200/90 shadow-2xs"
+      }`}
+    >
       {renderFlag()}
     </span>
   );
@@ -117,13 +128,41 @@ const QUICK_LINKS = [
 ];
 
 const STUDY_DESTINATIONS = [
-  { code: "LT", label: "الدراسة في ليتوانيا" },
-  { code: "RO", label: "الدراسة في رومانيا" },
-  { code: "IT", label: "الدراسة في إيطاليا" },
-  { code: "ES", label: "الدراسة في إسبانيا" },
-  { code: "HU", label: "الدراسة في المجر (هنغاريا)" },
-  { code: "MT", label: "الدراسة في مالطا" },
-  { code: "IE", label: "الدراسة في أيرلندا" },
+  {
+    code: "LT",
+    name: "ليتوانيا",
+    label: "الدراسة في ليتوانيا",
+  },
+  {
+    code: "RO",
+    name: "رومانيا",
+    label: "الدراسة في رومانيا",
+  },
+  {
+    code: "IT",
+    name: "إيطاليا",
+    label: "الدراسة في إيطاليا",
+  },
+  {
+    code: "ES",
+    name: "إسبانيا",
+    label: "الدراسة في إسبانيا",
+  },
+  {
+    code: "HU",
+    name: "المجر",
+    label: "الدراسة في المجر",
+  },
+  {
+    code: "MT",
+    name: "مالطا",
+    label: "الدراسة في مالطا",
+  },
+  {
+    code: "IE",
+    name: "أيرلندا",
+    label: "الدراسة في أيرلندا",
+  },
 ];
 
 export function CtaFooter() {
@@ -132,7 +171,7 @@ export function CtaFooter() {
   return (
     <footer
       dir="rtl"
-      className="relative w-full pt-4 sm:pt-8 pb-8 sm:pb-12 overflow-hidden select-none"
+      className="relative w-full pt-2 sm:pt-6 pb-8 sm:pb-12 overflow-hidden select-none"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* ================================================================= */}
@@ -143,7 +182,7 @@ export function CtaFooter() {
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.6, ease: TRANSITION_EASE }}
-          className="relative w-full rounded-[28px] sm:rounded-[38px] overflow-hidden px-6 py-12 sm:px-12 sm:py-16 lg:py-20 text-center shadow-[0_24px_60px_-14px_rgba(29,78,216,0.32)] border border-blue-400/35 transform-gpu"
+          className="relative w-full rounded-[28px] sm:rounded-[38px] overflow-hidden px-5 py-11 sm:px-12 sm:py-16 lg:py-20 text-center shadow-[0_24px_60px_-14px_rgba(29,78,216,0.34)] border border-blue-400/35 transform-gpu"
           style={{
             background:
               "linear-gradient(125deg, #09193A 0%, #1746B8 34%, #2563EB 66%, #38BDF8 100%)",
@@ -167,7 +206,7 @@ export function CtaFooter() {
               >
                 <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.48" />
                 <stop offset="45%" stopColor="#2563EB" stopOpacity="0.22" />
-                <stop offset="100%" stopColor="#071228" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#071228" stopOpacity="0.68" />
               </linearGradient>
 
               <linearGradient
@@ -177,19 +216,14 @@ export function CtaFooter() {
                 x2="0%"
                 y2="100%"
               >
-                <stop offset="0%" stopColor="#BAE6FD" stopOpacity="0.42" />
-                <stop offset="50%" stopColor="#38BDF8" stopOpacity="0.2" />
+                <stop offset="0%" stopColor="#BAE6FD" stopOpacity="0.44" />
+                <stop offset="50%" stopColor="#38BDF8" stopOpacity="0.22" />
                 <stop offset="100%" stopColor="#1D4ED8" stopOpacity="0" />
               </linearGradient>
 
-              <radialGradient
-                id="ctaCornerSun"
-                cx="88%"
-                cy="18%"
-                r="58%"
-              >
-                <stop offset="0%" stopColor="#7DD3FC" stopOpacity="0.45" />
-                <stop offset="55%" stopColor="#3B82F6" stopOpacity="0.14" />
+              <radialGradient id="ctaCornerSun" cx="88%" cy="18%" r="58%">
+                <stop offset="0%" stopColor="#7DD3FC" stopOpacity="0.48" />
+                <stop offset="55%" stopColor="#3B82F6" stopOpacity="0.15" />
                 <stop offset="100%" stopColor="#0B1B3D" stopOpacity="0" />
               </radialGradient>
             </defs>
@@ -216,7 +250,7 @@ export function CtaFooter() {
             className="absolute inset-0 rounded-[28px] sm:rounded-[38px] pointer-events-none shadow-[inset_0_1.5px_1px_rgba(255,255,255,0.28)]"
           />
 
-          {/* Centered CTA Content */}
+          {/* Centered CTA Content (Pure Headline + Subtext + White Pill Button) */}
           <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center space-y-4 sm:space-y-5">
             <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-white tracking-tight leading-[1.28] [text-wrap:balance]">
               ركّز على طموحك... واترك إجراءات القبول والتأشيرة علينا
@@ -229,9 +263,9 @@ export function CtaFooter() {
             </p>
 
             {/* Crisp Pure White Pill Action Button */}
-            <div className="pt-2 sm:pt-3">
+            <div className="pt-1.5 sm:pt-2">
               <a
-                href="https://wa.me/212775496303"
+                href="https://wa.me/212775496303?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%20%D9%81%D8%B1%D9%8A%D9%82%20M%26A%D8%8C%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D8%AD%D8%AC%D8%B2%20%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9%20%D9%85%D8%AC%D8%A7%D9%86%D9%8A%D8%A9%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A9%20%D9%81%D9%8A%20%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2.5 px-7 sm:px-9 py-3.5 sm:py-4 rounded-full bg-white text-brand-navy hover:bg-blue-50 active:scale-[0.97] font-bold text-xs sm:text-sm shadow-[0_14px_30px_-6px_rgba(7,18,40,0.35)] hover:shadow-[0_18px_38px_-6px_rgba(255,255,255,0.28)] transition-[background-color,transform,box-shadow] duration-200 group whitespace-nowrap"
@@ -245,13 +279,13 @@ export function CtaFooter() {
         </motion.div>
 
         {/* ================================================================= */}
-        {/* 2. ARCHITECTURAL 4-COLUMN FOOTER GRID                             */}
+        {/* 2. ARCHITECTURAL 4-COLUMN FOOTER GRID (2-Col Paired on Mobile)    */}
         {/* ================================================================= */}
-        <div className="mt-14 sm:mt-16 lg:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 items-start text-right">
+        <div className="mt-12 sm:mt-16 lg:mt-20 grid grid-cols-2 lg:grid-cols-12 gap-y-10 gap-x-6 sm:gap-10 lg:gap-8 items-start text-right">
           {/* --------------------------------------------------------------- */}
           {/* COLUMN 1 (Right - 4 Cols): Brand Identity, Bio & Social Icons   */}
           {/* --------------------------------------------------------------- */}
-          <div className="sm:col-span-2 lg:col-span-4 space-y-4">
+          <div className="col-span-2 lg:col-span-4 space-y-4">
             <Link
               href="#hero"
               className="inline-flex items-center gap-3 group"
@@ -267,7 +301,10 @@ export function CtaFooter() {
                   isLogoLoaded ? "opacity-100" : "opacity-0"
                 }`}
               />
-              <span className="w-[1px] h-6 bg-slate-200/90" aria-hidden="true" />
+              <span
+                className="w-[1px] h-6 bg-slate-200/90"
+                aria-hidden="true"
+              />
               <div className="flex flex-col text-right">
                 <span className="font-bold text-brand-navy text-xs flex items-center gap-1 whitespace-nowrap">
                   <span>M&A OVERSEAS</span>
@@ -314,9 +351,9 @@ export function CtaFooter() {
           </div>
 
           {/* --------------------------------------------------------------- */}
-          {/* COLUMN 2 (2 Cols): Quick Navigation Links                       */}
+          {/* COLUMN 2 (1 Col on Mobile, 2 Cols on Desktop): Quick Links      */}
           {/* --------------------------------------------------------------- */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="col-span-1 lg:col-span-2 space-y-3.5">
             <h3 className="text-sm font-bold text-brand-navy tracking-tight">
               تصفح سريع
             </h3>
@@ -335,33 +372,38 @@ export function CtaFooter() {
           </div>
 
           {/* --------------------------------------------------------------- */}
-          {/* COLUMN 3 (2 Cols): 7 Official European Destinations             */}
+          {/* COLUMN 3 (1 Col on Mobile, 2 Cols on Desktop): 7 Destinations   */}
           {/* --------------------------------------------------------------- */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="col-span-1 lg:col-span-2 space-y-3.5">
             <h3 className="text-sm font-bold text-brand-navy tracking-tight">
               الوجهات المعتمدة
             </h3>
             <ul className="space-y-2.5 text-xs sm:text-[13px] font-medium text-slate-500">
-              {STUDY_DESTINATIONS.map((dest) => (
-                <li key={dest.code}>
-                  <a
-                    href="https://wa.me/212775496303"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-brand-electric transition-colors duration-150 inline-flex items-center gap-2 group"
-                  >
-                    <FlagDot code={dest.code} />
-                    <span>{dest.label}</span>
-                  </a>
-                </li>
-              ))}
+              {STUDY_DESTINATIONS.map((dest) => {
+                const whatsappQuery = encodeURIComponent(
+                  `السلام عليكم فريق M&A، أرغب في استشارة مجانية حول ${dest.label}`
+                );
+                return (
+                  <li key={dest.code}>
+                    <a
+                      href={`https://wa.me/212775496303?text=${whatsappQuery}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-brand-electric transition-colors duration-150 inline-flex items-center gap-2 group"
+                    >
+                      <FlagDot code={dest.code} />
+                      <span>{dest.label}</span>
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
           {/* --------------------------------------------------------------- */}
           {/* COLUMN 4 (Left - 4 Cols): Office & Direct Action Pill Box       */}
           {/* --------------------------------------------------------------- */}
-          <div className="sm:col-span-2 lg:col-span-4 space-y-4">
+          <div className="col-span-2 lg:col-span-4 space-y-4">
             <h3 className="text-sm font-bold text-brand-navy tracking-tight">
               المقر الرسمي والتواصل المباشر
             </h3>
@@ -381,25 +423,29 @@ export function CtaFooter() {
 
             {/* Interactive Capsule Bar (Matches the exact pill-input aesthetic of the reference image) */}
             <div className="p-1.5 rounded-full bg-white border border-slate-200/90 shadow-[0_8px_24px_-6px_rgba(11,27,61,0.05)] flex items-center justify-between gap-2 max-w-md">
-              <div className="flex items-center gap-2.5 pr-3.5 min-w-0">
+              <a
+                href="tel:+212775496303"
+                className="flex items-center gap-2 pr-3 hover:text-brand-electric transition-colors"
+                title="اتصال هاتفي مباشر"
+              >
                 <div className="w-7 h-7 rounded-full bg-blue-50 text-brand-electric flex items-center justify-center shrink-0">
-                  <Phone className="w-3.5 h-3.5" />
+                  <MessageCircle className="w-3.5 h-3.5" />
                 </div>
                 <span
                   dir="ltr"
-                  className="text-xs sm:text-[13px] font-bold text-brand-navy tabular-nums truncate"
+                  className="text-xs sm:text-[13px] font-bold text-brand-navy hover:text-brand-electric tabular-nums whitespace-nowrap transition-colors"
                 >
                   +212 775-496303
                 </span>
-              </div>
+              </a>
 
               <a
                 href="https://wa.me/212775496303"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-brand-electric hover:bg-brand-navy text-white text-xs font-bold transition-all duration-200 active:scale-95 shrink-0 shadow-xs group whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand-electric hover:bg-brand-navy text-white text-xs font-bold transition-all duration-200 active:scale-95 shrink-0 shadow-xs group whitespace-nowrap"
               >
-                <span>تواصل الآن</span>
+                <span>واتساب مباشر</span>
                 <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-200 group-hover:-translate-x-0.5" />
               </a>
             </div>

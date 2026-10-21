@@ -319,7 +319,7 @@ export function FAQ() {
     <section
       id="faq"
       dir="rtl"
-      className="relative w-full pt-8 sm:pt-12 lg:pt-14 pb-16 sm:pb-24 overflow-hidden scroll-mt-20"
+      className="relative w-full pt-8 sm:pt-12 lg:pt-14 pb-8 sm:pb-12 lg:pb-16 overflow-hidden scroll-mt-20"
     >
       {/* Subtle Ambient Background Accents (Zero filter:blur GPU cost) */}
       <div
@@ -463,11 +463,6 @@ export function FAQ() {
                 ))}
               </motion.div>
             </AnimatePresence>
-
-            {/* Mobile & Tablet (<1024px): Advisor Support Card placed logically AFTER reading the questions */}
-            <div className="block lg:hidden pt-3">
-              <AdvisorSupportCard />
-            </div>
           </motion.div>
         </div>
       </div>
