@@ -451,7 +451,7 @@ export const SelectedWorks: React.FC = () => {
 
                               {/* Center Play Button */}
                               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-[#0B1B3D]/65 border border-white/45 flex items-center justify-center transition-[transform,background-color] duration-300 sm:group-hover:scale-110 sm:group-hover:bg-brand-electric/80 relative z-10 shadow-lg">
+                                <div className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-[#0B1B3D]/65 border border-white/45 flex items-center justify-center transition-[transform,background-color] duration-300 sm:group-hover:scale-110 sm:group-hover:bg-brand-electric/80 relative z-10 shadow-lg">
                                   <Play
                                     size={20}
                                     className="text-white fill-white ml-0.5 relative z-10"

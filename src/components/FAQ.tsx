@@ -173,7 +173,7 @@ const AdvisorSupportCard = memo(function AdvisorSupportCard() {
         </div>
 
         <div className="w-9 h-9 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-electric shrink-0">
-          <ShieldCheck className="w-4.5 h-4.5 stroke-[2]" />
+          <ShieldCheck className="w-[18px] h-[18px] stroke-[2]" />
         </div>
       </div>
 
@@ -259,7 +259,7 @@ const AccordionRow = memo(function AccordionRow({
           }`}
           aria-hidden="true"
         >
-          <ChevronDown className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
+          <ChevronDown className="w-4 h-4 sm:w-[18px] sm:h-[18px] stroke-[2.2]" />
         </span>
       </button>
 
@@ -426,7 +426,7 @@ export function FAQ() {
                       onClick={() => handleCategoryChange(tab.id)}
                       className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all duration-200 whitespace-nowrap shrink-0 cursor-pointer border active:scale-95 ${
                         isSelected
-                          ? "bg-brand-navy text-white border-brand-navy shadow-xs"
+                          ? "bg-brand-navy text-white border-brand-navy shadow-sm"
                           : "bg-white/95 text-slate-600 border-slate-200/85 hover:border-blue-200 hover:text-brand-electric"
                       }`}
                     >

@@ -81,7 +81,7 @@ export function PartnersMarquee() {
       {partner.type === "badge" ? (
         /* Square Emblem Badge with Typography */
         <div className="flex items-center gap-3">
-          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-2xs border border-slate-100 flex-shrink-0 bg-slate-50">
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-sm border border-slate-100 flex-shrink-0 bg-slate-50">
             <Image
               src={partner.logo}
               alt={partner.name}

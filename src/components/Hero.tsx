@@ -78,7 +78,7 @@ function FlagCircle({ code, name }: { code: string; name: string }) {
   return (
     <div
       title={name}
-      className="relative w-4 h-4 sm:w-[18px] sm:h-[18px] rounded-full overflow-hidden border border-slate-200/90 shadow-2xs flex-shrink-0 bg-white"
+      className="relative w-4 h-4 sm:w-[18px] sm:h-[18px] rounded-full overflow-hidden border border-slate-200/90 shadow-sm flex-shrink-0 bg-white"
     >
       {renderFlagContent()}
     </div>
@@ -291,7 +291,7 @@ export function Hero() {
 
                 <a
                   href="#results"
-                  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-sm sm:text-base font-bold text-brand-navy bg-white hover:bg-slate-50 active:scale-[0.98] border border-slate-200/90 shadow-xs transition-[background-color,transform,border-color] duration-200"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-sm sm:text-base font-bold text-brand-navy bg-white hover:bg-slate-50 active:scale-[0.98] border border-slate-200/90 shadow-sm transition-[background-color,transform,border-color] duration-200"
                 >
                   <PlayCircle className="w-4 h-4 text-brand-electric shrink-0" />
                   <span>شاهد تجارب الطلاب</span>

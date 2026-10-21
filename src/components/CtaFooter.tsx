@@ -33,14 +33,8 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-// Crisp SVG Country Flag Tokens for CTA Trust Strip & Footer Destinations Column
-const FlagDot = memo(function FlagDot({
-  code,
-  size = "sm",
-}: {
-  code: string;
-  size?: "sm" | "md";
-}) {
+// Crisp SVG Country Flag Tokens for Footer Destinations Column
+const FlagDot = memo(function FlagDot({ code }: { code: string }) {
   const renderFlag = () => {
     switch (code) {
       case "LT":
@@ -105,13 +99,7 @@ const FlagDot = memo(function FlagDot({
   };
 
   return (
-    <span
-      className={`relative rounded-full overflow-hidden shrink-0 inline-flex bg-white ${
-        size === "md"
-          ? "w-4.5 h-4.5 border border-white/80 shadow-2xs"
-          : "w-4 h-4 border border-slate-200/90 shadow-2xs"
-      }`}
-    >
+    <span className="relative w-4 h-4 rounded-full overflow-hidden shrink-0 inline-flex bg-white border border-slate-200/90 shadow-sm">
       {renderFlag()}
     </span>
   );
@@ -128,41 +116,13 @@ const QUICK_LINKS = [
 ];
 
 const STUDY_DESTINATIONS = [
-  {
-    code: "LT",
-    name: "ليتوانيا",
-    label: "الدراسة في ليتوانيا",
-  },
-  {
-    code: "RO",
-    name: "رومانيا",
-    label: "الدراسة في رومانيا",
-  },
-  {
-    code: "IT",
-    name: "إيطاليا",
-    label: "الدراسة في إيطاليا",
-  },
-  {
-    code: "ES",
-    name: "إسبانيا",
-    label: "الدراسة في إسبانيا",
-  },
-  {
-    code: "HU",
-    name: "المجر",
-    label: "الدراسة في المجر",
-  },
-  {
-    code: "MT",
-    name: "مالطا",
-    label: "الدراسة في مالطا",
-  },
-  {
-    code: "IE",
-    name: "أيرلندا",
-    label: "الدراسة في أيرلندا",
-  },
+  { code: "LT", label: "الدراسة في ليتوانيا" },
+  { code: "RO", label: "الدراسة في رومانيا" },
+  { code: "IT", label: "الدراسة في إيطاليا" },
+  { code: "ES", label: "الدراسة في إسبانيا" },
+  { code: "HU", label: "الدراسة في المجر" },
+  { code: "MT", label: "الدراسة في مالطا" },
+  { code: "IE", label: "الدراسة في أيرلندا" },
 ];
 
 export function CtaFooter() {
@@ -329,7 +289,7 @@ export function CtaFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="حساب M&A Overseas Consulting الرسمي على انستغرام"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-2xs transition-all duration-200 active:scale-95 text-xs font-bold group"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
               >
                 <InstagramIcon className="w-4 h-4 text-slate-500 group-hover:text-brand-electric transition-colors" />
                 <span dir="ltr" className="text-[11px] tracking-tight">
@@ -343,7 +303,7 @@ export function CtaFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="التواصل عبر واتساب"
-                className="w-9 h-9 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-2xs flex items-center justify-center transition-all duration-200 active:scale-95"
+                className="w-9 h-9 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm flex items-center justify-center transition-all duration-200 active:scale-95"
               >
                 <MessageCircle className="w-4 h-4" />
               </a>
@@ -443,7 +403,7 @@ export function CtaFooter() {
                 href="https://wa.me/212775496303"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand-electric hover:bg-brand-navy text-white text-xs font-bold transition-all duration-200 active:scale-95 shrink-0 shadow-xs group whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand-electric hover:bg-brand-navy text-white text-xs font-bold transition-all duration-200 active:scale-95 shrink-0 shadow-sm group whitespace-nowrap"
               >
                 <span>واتساب مباشر</span>
                 <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-200 group-hover:-translate-x-0.5" />
@@ -455,7 +415,7 @@ export function CtaFooter() {
         {/* ================================================================= */}
         {/* 3. BOTTOM SOFT WHITE PILL BAR (EXACT REFERENCE FOOTER STRIP)      */}
         {/* ================================================================= */}
-        <div className="mt-12 sm:mt-14 px-5 py-4 sm:px-7 sm:py-4 rounded-2xl sm:rounded-full bg-white/90 border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right">
+        <div className="mt-12 sm:mt-14 px-5 py-4 sm:px-7 sm:py-4 rounded-2xl sm:rounded-full bg-white/90 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right">
           <p className="text-xs text-slate-500 font-medium">
             © {new Date().getFullYear()} M&A Overseas Consulting. جميع الحقوق
             محفوظة.

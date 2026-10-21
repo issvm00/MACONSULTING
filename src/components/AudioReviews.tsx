@@ -973,7 +973,7 @@ export function AudioReviews() {
               {!isHighResPreviewLoaded && (
                 <div
                   aria-hidden="true"
-                  className="absolute top-3 left-3 w-8 h-8 rounded-full bg-brand-navy/10 backdrop-blur-xs flex items-center justify-center pointer-events-none"
+                  className="absolute top-3 left-3 w-8 h-8 rounded-full bg-brand-navy/10 backdrop-blur-sm flex items-center justify-center pointer-events-none"
                 >
                   <Loader2 className="w-4 h-4 text-brand-electric animate-spin" />
                 </div>

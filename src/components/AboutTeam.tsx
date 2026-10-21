@@ -300,10 +300,14 @@ export function AboutTeam() {
           >
             {/* Primary Trust Anchor Card */}
             <div className="apple-glass rounded-3xl p-6 sm:p-7 relative overflow-hidden border border-slate-200/90 shadow-[0_12px_32px_-10px_rgba(11,27,61,0.06)]">
-              {/* Subtle Ambient Radial Glow */}
+              {/* Subtle Ambient Radial Glow (Zero filter:blur GPU cost) */}
               <div
                 aria-hidden="true"
-                className="absolute top-0 right-0 w-48 h-48 bg-brand-electric/5 rounded-full blur-2xl pointer-events-none"
+                className="absolute top-0 right-0 w-48 h-48 rounded-full pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0) 70%)",
+                }}
               />
 
               <div className="relative z-10 space-y-4 text-right">
@@ -389,7 +393,7 @@ export function AboutTeam() {
             {/* ============================================================= */}
             {/* 1. DESKTOP & TABLET VIEW: Fixed 3-Column Bento Grid (>= 640px) */}
             {/* ============================================================= */}
-            <div className="hidden sm:grid sm:grid-cols-3 gap-4 lg:gap-4.5">
+            <div className="hidden sm:grid sm:grid-cols-3 gap-4 lg:gap-[18px]">
               {teamMembers.map((member, index) => (
                 <motion.div
                   key={member.id}
@@ -420,7 +424,7 @@ export function AboutTeam() {
                     <button
                       type="button"
                       onClick={() => mobileSwiperRef.current?.slidePrev()}
-                      className="w-8 h-8 rounded-full bg-white border border-slate-200/90 text-brand-navy flex items-center justify-center active:scale-90 shadow-2xs transition-transform"
+                      className="w-8 h-8 rounded-full bg-white border border-slate-200/90 text-brand-navy flex items-center justify-center active:scale-90 shadow-sm transition-transform"
                       aria-label="السابق"
                     >
                       <ChevronLeft className="w-4 h-4" />
@@ -433,7 +437,7 @@ export function AboutTeam() {
                     <button
                       type="button"
                       onClick={() => mobileSwiperRef.current?.slideNext()}
-                      className="w-8 h-8 rounded-full bg-white border border-slate-200/90 text-brand-navy flex items-center justify-center active:scale-90 shadow-2xs transition-transform"
+                      className="w-8 h-8 rounded-full bg-white border border-slate-200/90 text-brand-navy flex items-center justify-center active:scale-90 shadow-sm transition-transform"
                       aria-label="التالي"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -586,7 +590,7 @@ export function AboutTeam() {
                     {teamMembers.map((m) => (
                       <div
                         key={m.id}
-                        className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-2xs"
+                        className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-sm"
                       >
                         <Image
                           src={m.image}

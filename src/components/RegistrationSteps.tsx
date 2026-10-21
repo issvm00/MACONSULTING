@@ -153,7 +153,7 @@ function DesktopStepMilestone({
             className={`w-full h-full rounded-full flex items-center justify-center transition-shadow duration-250 ${
               isSolid
                 ? "bg-gradient-to-br from-blue-600 to-brand-electric text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)]"
-                : "bg-white border border-slate-200/90 text-brand-electric shadow-xs group-hover:shadow-[0_10px_24px_rgba(37,99,235,0.14)]"
+                : "bg-white border border-slate-200/90 text-brand-electric shadow-sm group-hover:shadow-[0_10px_24px_rgba(37,99,235,0.14)]"
             }`}
           >
             <Icon className="w-8 h-8 lg:w-9 lg:h-9 stroke-[1.8] transition-transform duration-250 ease-out group-hover:scale-110" />
@@ -162,7 +162,7 @@ function DesktopStepMilestone({
 
         {/* Number Badge (Alternating Top / Bottom) */}
         <div
-          className={`absolute left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white border-2 flex items-center justify-center font-bold text-sm shadow-xs transition-colors duration-250 z-20 tabular-nums ${
+          className={`absolute left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white border-2 flex items-center justify-center font-bold text-sm shadow-sm transition-colors duration-250 z-20 tabular-nums ${
             isBadgeTop ? "-top-3.5" : "-bottom-3.5"
           } ${
             isSolid
@@ -222,7 +222,7 @@ function MobileStepMilestone({
             className={`w-full h-full rounded-full flex items-center justify-center transition-all duration-300 ${
               isSolid
                 ? "bg-gradient-to-br from-blue-600 to-brand-electric text-white shadow-[0_10px_26px_rgba(37,99,235,0.35)]"
-                : "bg-white border border-slate-200/90 text-brand-electric shadow-xs group-hover:shadow-[0_10px_26px_rgba(37,99,235,0.15)]"
+                : "bg-white border border-slate-200/90 text-brand-electric shadow-sm group-hover:shadow-[0_10px_26px_rgba(37,99,235,0.15)]"
             }`}
           >
             <Icon className="w-8 h-8 stroke-[1.8] transition-transform duration-300 group-hover:scale-110" />
@@ -231,7 +231,7 @@ function MobileStepMilestone({
 
         {/* Number Badge (Alternating Top / Bottom) */}
         <div
-          className={`absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-2 flex items-center justify-center font-black text-xs shadow-xs transition-all duration-300 z-20 ${
+          className={`absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border-2 flex items-center justify-center font-black text-xs shadow-sm transition-all duration-300 z-20 ${
             isBadgeTop ? "-top-3" : "-bottom-3"
           } border-slate-300 text-brand-navy group-hover:border-brand-electric group-hover:text-brand-electric`}
         >
@@ -276,7 +276,7 @@ function ScrollStepCounter({
   return (
     <div className="mt-6 flex flex-col items-center gap-2 select-none">
       {/* Dynamic Step Counter Pill + 8 Micro Dots */}
-      <div className="flex items-center gap-3 px-3.5 py-1 rounded-full bg-white/95 border border-slate-200/85 shadow-2xs">
+      <div className="flex items-center gap-3 px-3.5 py-1 rounded-full bg-white/95 border border-slate-200/85 shadow-sm">
         <span className="text-xs font-bold text-brand-navy tabular-nums">
           المرحلة{" "}
           <span className="text-brand-electric">{formattedCurrent}</span>{" "}
@@ -408,9 +408,13 @@ export function RegistrationSteps() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="p-8 rounded-3xl apple-glass border-blue-200/80 shadow-[0_16px_40px_-10px_rgba(37,99,235,0.1)] relative overflow-hidden"
+            style={{
+              backgroundImage: `
+                radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 100% 100%, rgba(96, 165, 250, 0.08) 0%, transparent 45%)
+              `,
+            }}
           >
-            <div className="absolute -top-20 -left-20 w-60 h-60 bg-brand-electric/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col items-center justify-between gap-6 text-center">
               <div className="max-w-2xl">
