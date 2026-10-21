@@ -165,6 +165,7 @@ const badgeVariants = (delay: number) => ({
 
 export function Hero() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isHeroImageLoaded, setIsHeroImageLoaded] = useState(false);
   const heroRef = React.useRef<HTMLDivElement | null>(null);
   const [isInView, setIsInView] = useState(true);
 
@@ -322,7 +323,7 @@ export function Hero() {
                   }}
                 />
 
-                {/* 2. Student Avatar Image (Crisp, centered, Next.js WebP optimized) */}
+                {/* 2. Student Avatar Image (Crisp, centered, Next.js WebP optimized with smooth weak-network reveal) */}
                 <div className="relative w-full h-full flex items-end justify-center z-10 select-none pointer-events-none">
                   <div className="relative w-[88%] h-[92%]">
                     <Image
@@ -331,7 +332,10 @@ export function Hero() {
                       fill
                       sizes="(max-width: 640px) 325px, 360px"
                       referrerPolicy="no-referrer"
-                      className="object-contain object-bottom"
+                      onLoad={() => setIsHeroImageLoaded(true)}
+                      className={`object-contain object-bottom transition-opacity duration-500 ease-out ${
+                        isHeroImageLoaded ? "opacity-100" : "opacity-0"
+                      }`}
                       priority
                     />
                   </div>

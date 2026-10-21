@@ -19,6 +19,7 @@ const navLinks = [
   { label: "من نحن وفريقنا", href: "#about" },
   { label: "تجارب الطلاب", href: "#results" },
   { label: "مراحل التسجيل", href: "#processus" },
+  { label: "الأسئلة الشائعة", href: "#faq" },
 ];
 
 export function Navbar() {
@@ -105,12 +106,12 @@ export function Navbar() {
         {/* ========================================================= */}
         {/* Desktop Navigation Links (Arabic RTL)                     */}
         {/* ========================================================= */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-bold text-slate-700">
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6 xl:gap-7 text-xs lg:text-sm font-bold text-slate-700">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="relative py-1 text-slate-600 hover:text-brand-electric active:scale-[0.97] transition-[color,transform] duration-150 group whitespace-nowrap"
+              className="relative py-1 text-slate-600 hover:text-brand-electric active:scale-[0.97] transition-[color,transform] duration-150 group whitespace-nowrap shrink-0"
             >
               <span>{link.label}</span>
               {/* Hardware-accelerated scaleX underline */}

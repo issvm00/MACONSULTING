@@ -16,6 +16,7 @@ import {
   Star,
   ArrowLeft,
   X,
+  Loader2,
 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Keyboard } from "swiper/modules";
@@ -47,11 +48,11 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
 }
 
-// Memoized 28-Bar Waveform so timeupdate ticks never re-render the 28 DOM bars
+// Memoized 28-Bar Waveform with zero box-shadow filter overhead inside 3D space
 const WaveformEqualizer = memo(function WaveformEqualizer({
-  isPlaying,
+  isAnimating,
 }: {
-  isPlaying: boolean;
+  isAnimating: boolean;
 }) {
   return (
     <div className="w-[76%] h-6 flex items-center justify-between gap-[3px] mb-4">
@@ -63,14 +64,12 @@ const WaveformEqualizer = memo(function WaveformEqualizer({
           <div
             key={i}
             className={`w-[2.5px] rounded-full origin-center ${
-              isCenterAccent
-                ? "bg-[#00d2ff] shadow-[0_0_8px_rgba(0,210,255,0.9)]"
-                : "bg-white/30"
+              isCenterAccent ? "bg-[#00d2ff]" : "bg-white/30"
             }`}
             style={{
               height: `${height}%`,
-              transform: isPlaying ? undefined : "scaleY(0.22)",
-              animation: isPlaying
+              transform: isAnimating ? undefined : "scaleY(0.22)",
+              animation: isAnimating
                 ? `eq-play 0.8s ease-in-out ${delay.toFixed(2)}s infinite`
                 : "none",
             }}
@@ -84,20 +83,22 @@ const WaveformEqualizer = memo(function WaveformEqualizer({
 interface AudioReviewCardProps {
   review: AudioReview;
   index: number;
-  isActive: boolean;
   cardIsPlaying: boolean;
+  cardIsBuffering: boolean;
   cardCurrentTime: number;
   cardDuration: number;
   onPlayClick: (review: AudioReview, index: number) => void;
-  onSeekToRatio: (review: AudioReview, ratio: number) => void;
+  onSeekToRatio: (review: AudioReview, index: number, ratio: number) => void;
 }
 
-// Memoized Card so inactive slides never re-render during audio timeupdate
+// Pure GPU-Cached Card Component:
+// Notice it does NOT depend on `currentIndex` / `isActive`, so swiping between cards
+// causes ZERO React re-renders and ZERO shadow/opacity repaints on the 5 slides!
 const AudioReviewCard = memo(function AudioReviewCard({
   review,
   index,
-  isActive,
   cardIsPlaying,
+  cardIsBuffering,
   cardCurrentTime,
   cardDuration,
   onPlayClick,
@@ -107,7 +108,7 @@ const AudioReviewCard = memo(function AudioReviewCard({
   const isScrubbingRef = useRef<boolean>(false);
 
   const progressPercent =
-    isActive && cardDuration > 0
+    cardDuration > 0 && cardCurrentTime > 0
       ? Math.min(100, Math.max(0, (cardCurrentTime / cardDuration) * 100))
       : 0;
 
@@ -120,27 +121,26 @@ const AudioReviewCard = memo(function AudioReviewCard({
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isActive) return;
     e.stopPropagation();
     isScrubbingRef.current = true;
     e.currentTarget.setPointerCapture(e.pointerId);
     const ratio = computeRatioFromClientX(e.clientX);
     if (ratio !== null) {
-      onSeekToRatio(review, ratio);
+      onSeekToRatio(review, index, ratio);
     }
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isActive || !isScrubbingRef.current) return;
+    if (!isScrubbingRef.current) return;
     e.stopPropagation();
     const ratio = computeRatioFromClientX(e.clientX);
     if (ratio !== null) {
-      onSeekToRatio(review, ratio);
+      onSeekToRatio(review, index, ratio);
     }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isActive || !isScrubbingRef.current) return;
+    if (!isScrubbingRef.current) return;
     e.stopPropagation();
     isScrubbingRef.current = false;
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
@@ -148,35 +148,19 @@ const AudioReviewCard = memo(function AudioReviewCard({
     }
   };
 
+  const isAudioActuallyFlowing = cardIsPlaying && !cardIsBuffering;
+
   return (
     <div
-      className={`
-        relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9
-        bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d]
-        border transition-[border-color,opacity,box-shadow] duration-300
-        flex flex-col items-center justify-between overflow-hidden transform-gpu
-        ${
-          isActive
-            ? "border-white/15 shadow-[0_24px_50px_-12px_rgba(7,14,28,0.55)] opacity-100"
-            : "border-white/10 shadow-[0_14px_30px_-10px_rgba(7,14,28,0.35)] opacity-90 cursor-pointer"
-        }
-      `}
+      className="relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9 bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d] border border-white/14 shadow-[0_18px_36px_-10px_rgba(7,14,28,0.45)] flex flex-col items-center justify-between overflow-hidden transform-gpu [backface-visibility:hidden]"
     >
-      {/* Subtle Top Inner Specular Highlight */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 rounded-[32px] pointer-events-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.14)]"
-      />
-
       {/* Zero-Blur-Filter Hardware-Accelerated Radial Halo Behind Center Play Button */}
       <div
         aria-hidden="true"
-        className={`absolute top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full pointer-events-none transition-opacity duration-300 ${
-          cardIsPlaying ? "opacity-95" : "opacity-55"
-        }`}
+        className="absolute top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 rounded-full pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, rgba(0, 180, 216, 0.34) 0%, rgba(0, 180, 216, 0.12) 42%, rgba(0, 180, 216, 0) 70%)",
+            "radial-gradient(circle, rgba(0, 180, 216, 0.28) 0%, rgba(0, 180, 216, 0.09) 44%, rgba(0, 180, 216, 0) 70%)",
         }}
       />
 
@@ -192,8 +176,12 @@ const AudioReviewCard = memo(function AudioReviewCard({
       {/* 1. TOP CENTER: GLASS PILL BADGE IN ARABIC     */}
       {/* ============================================= */}
       <div dir="rtl" className="relative z-10 flex justify-center w-full">
-        <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#09101d]/85 border border-white/10 shadow-inner">
-          <span className="w-2 h-2 rounded-full bg-[#00d2ff] shadow-[0_0_10px_#00d2ff]" />
+        <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#09101d]/90 border border-white/10">
+          <span
+            className={`w-2 h-2 rounded-full bg-[#00d2ff] ${
+              isAudioActuallyFlowing ? "animate-ping" : ""
+            }`}
+          />
           <span className="font-sans text-xs font-bold tracking-wide text-[#38bdf8]">
             {review.title}
           </span>
@@ -213,11 +201,21 @@ const AudioReviewCard = memo(function AudioReviewCard({
           aria-label={
             cardIsPlaying ? "إيقاف التسجيل الصوتي" : "تشغيل التسجيل الصوتي"
           }
-          className="swiper-no-swiping relative w-28 h-28 sm:w-[118px] sm:h-[118px] rounded-full border border-[#00d2ff]/35 bg-[#0e1b2e]/60 shadow-[0_0_35px_rgba(0,210,255,0.18)] hover:shadow-[0_0_45px_rgba(0,210,255,0.32)] hover:border-[#00d2ff]/60 flex items-center justify-center transition-[transform,border-color,box-shadow] duration-200 active:scale-95 group cursor-pointer"
+          className="swiper-no-swiping relative w-28 h-28 sm:w-[118px] sm:h-[118px] rounded-full border border-[#00d2ff]/35 bg-[#0e1b2e]/70 hover:border-[#00d2ff]/60 flex items-center justify-center transition-transform duration-150 active:scale-95 group cursor-pointer"
         >
+          {/* Animated Outer Ring when buffering on slow network */}
+          {cardIsBuffering && (
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#00d2ff] border-r-[#00d2ff]/50 animate-spin pointer-events-none"
+            />
+          )}
+
           {/* Inner Concentric Circle */}
-          <div className="w-[88px] h-[88px] sm:w-[94px] sm:h-[94px] rounded-full border border-[#00d2ff]/20 bg-[#122036]/85 flex items-center justify-center transition-transform duration-200 group-hover:scale-[1.03]">
-            {cardIsPlaying ? (
+          <div className="w-[88px] h-[88px] sm:w-[94px] sm:h-[94px] rounded-full border border-[#00d2ff]/20 bg-[#122036]/90 flex items-center justify-center transition-transform duration-150 group-hover:scale-[1.03]">
+            {cardIsBuffering ? (
+              <Loader2 className="w-8 h-8 text-[#00d2ff] animate-spin" />
+            ) : cardIsPlaying ? (
               <Pause className="w-8 h-8 text-white fill-white" />
             ) : (
               <Play className="w-8 h-8 text-white fill-white ml-1" />
@@ -231,7 +229,7 @@ const AudioReviewCard = memo(function AudioReviewCard({
       {/* ============================================= */}
       <div className="relative z-10 w-full flex flex-col items-center">
         {/* 28-Bar Simulated Waveform Equalizer */}
-        <WaveformEqualizer isPlaying={cardIsPlaying} />
+        <WaveformEqualizer isAnimating={isAudioActuallyFlowing} />
 
         {/* Interactive Progress Bar with Touch-Scrubbing Hit Area */}
         <div className="swiper-no-swiping w-full space-y-2 mb-5">
@@ -241,18 +239,16 @@ const AudioReviewCard = memo(function AudioReviewCard({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className={`relative w-full py-2.5 -my-2.5 flex items-center touch-none ${
-              isActive ? "cursor-pointer" : "pointer-events-none"
-            }`}
+            className="relative w-full py-2.5 -my-2.5 flex items-center touch-none cursor-pointer"
           >
             <div className="relative w-full h-1.5 rounded-full bg-[#153259] flex items-center">
               {/* Active Fill */}
               <div
-                className="h-full rounded-full bg-[#00d2ff] shadow-[0_0_10px_rgba(0,210,255,0.75)] relative"
+                className="h-full rounded-full bg-[#00d2ff] relative"
                 style={{ width: `${progressPercent}%` }}
               >
-                {/* Glowing Cyan Thumb Indicator */}
-                <div className="w-3.5 h-3.5 rounded-full bg-[#00d2ff] shadow-[0_0_12px_#00d2ff] absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2" />
+                {/* Cyan Thumb Indicator */}
+                <div className="w-3.5 h-3.5 rounded-full bg-[#00d2ff] absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2" />
               </div>
             </div>
           </div>
@@ -264,12 +260,12 @@ const AudioReviewCard = memo(function AudioReviewCard({
           </div>
         </div>
 
-        {/* 5 Golden Stars + 5.0 Score Centered at Bottom */}
+        {/* 5 Golden Stars + 5.0 Score Centered at Bottom (Zero SVG drop-shadow filter cost) */}
         <div className="flex items-center justify-center gap-1.5 pt-1">
           {Array.from({ length: review.rating }).map((_, i) => (
             <Star
               key={i}
-              className="w-4 h-4 text-[#F59E0B] fill-[#F59E0B] drop-shadow-[0_2px_4px_rgba(245,158,11,0.3)]"
+              className="w-4 h-4 text-[#F59E0B] fill-[#F59E0B]"
             />
           ))}
           <span className="text-white font-bold text-sm sm:text-[15px] ml-1.5 tabular-nums">
@@ -281,33 +277,61 @@ const AudioReviewCard = memo(function AudioReviewCard({
   );
 });
 
-// Memoized Infinite Loop Marquee so audio state updates never re-render the 40 Next.js Images
-const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
-  isPaused,
+// Single Marquee Document Card with smooth progressive fade-in and eager preloading when near section
+const MarqueeDocumentCard = memo(function MarqueeDocumentCard({
+  src,
+  index,
+  shouldEagerLoad,
   onSelectImage,
 }: {
-  isPaused: boolean;
+  src: string;
+  index: number;
+  shouldEagerLoad: boolean;
   onSelectImage: (src: string) => void;
 }) {
-  const renderCard = (src: string, keyPrefix: string, index: number) => (
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
     <div
-      key={`${keyPrefix}-${index}`}
       onClick={() => onSelectImage(src)}
       className="apple-glass group relative w-[185px] h-[230px] sm:w-[225px] sm:h-[280px] p-2 sm:p-2.5 rounded-2xl flex-shrink-0 cursor-pointer overflow-hidden"
     >
       <div className="relative w-full h-full rounded-xl overflow-hidden bg-white ring-1 ring-slate-100/90">
+        {!isLoaded && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-2 rounded-lg bg-slate-100/75"
+          />
+        )}
         <Image
           src={src}
           alt={`وثيقة قبول جامعي ${index + 1}`}
           fill
           sizes="(max-width: 640px) 185px, 225px"
+          loading={shouldEagerLoad ? "eager" : "lazy"}
           referrerPolicy="no-referrer"
-          className="object-contain p-1 transition-transform duration-300 group-hover:scale-[1.03]"
+          onLoad={() => setIsLoaded(true)}
+          className={`object-contain p-1 transition-[transform,opacity] duration-300 group-hover:scale-[1.03] ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
         />
       </div>
     </div>
   );
+});
 
+// Memoized Infinite Loop Marquee with direct DOM ref so we can freeze it in 0ms during touch-swipe
+const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
+  trackRef,
+  isPaused,
+  shouldEagerLoad,
+  onSelectImage,
+}: {
+  trackRef: React.RefObject<HTMLDivElement | null>;
+  isPaused: boolean;
+  shouldEagerLoad: boolean;
+  onSelectImage: (src: string) => void;
+}) {
   return (
     <div
       dir="ltr"
@@ -325,6 +349,7 @@ const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
 
       {/* Continuous Seamless Infinite Track */}
       <div
+        ref={trackRef}
         className="animate-marquee-infinite flex items-center py-3"
         style={{
           animationDuration: "68s",
@@ -332,17 +357,29 @@ const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
         }}
       >
         <div className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0">
-          {reviewImages.map((src, index) =>
-            renderCard(src, "reviews-track-a", index)
-          )}
+          {reviewImages.map((src, index) => (
+            <MarqueeDocumentCard
+              key={`reviews-track-a-${index}`}
+              src={src}
+              index={index}
+              shouldEagerLoad={shouldEagerLoad}
+              onSelectImage={onSelectImage}
+            />
+          ))}
         </div>
         <div
           aria-hidden="true"
           className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0"
         >
-          {reviewImages.map((src, index) =>
-            renderCard(src, "reviews-track-b", index)
-          )}
+          {reviewImages.map((src, index) => (
+            <MarqueeDocumentCard
+              key={`reviews-track-b-${index}`}
+              src={src}
+              index={index}
+              shouldEagerLoad={shouldEagerLoad}
+              onSelectImage={onSelectImage}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -352,25 +389,52 @@ const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
 export function AudioReviews() {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [isMarqueeInView, setIsMarqueeInView] = useState<boolean>(true);
+  const [shouldPreloadMarquee, setShouldPreloadMarquee] =
+    useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [activeAudioId, setActiveAudioId] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isBuffering, setIsBuffering] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isHighResPreviewLoaded, setIsHighResPreviewLoaded] =
+    useState<boolean>(false);
 
   const swiperRef = useRef<SwiperType | null>(null);
   const hlsAudioRef = useRef<HlsAudioHandle | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
   const audioDeckRef = useRef<HTMLDivElement | null>(null);
+  const marqueeTrackRef = useRef<HTMLDivElement | null>(null);
   const activeAudioIdRef = useRef<number | null>(null);
+  const isMarqueeInViewRef = useRef<boolean>(true);
+  const hasPreviewRef = useRef<boolean>(false);
 
   useEffect(() => {
     activeAudioIdRef.current = activeAudioId;
   }, [activeAudioId]);
 
   useEffect(() => {
+    isMarqueeInViewRef.current = isMarqueeInView;
+  }, [isMarqueeInView]);
+
+  useEffect(() => {
+    hasPreviewRef.current = Boolean(previewImage);
+  }, [previewImage]);
+
+  useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  // Direct 0ms DOM helper to freeze marquee animation while user's finger is swiping the 3D cards
+  const setMarqueeSwipingPause = useCallback((swiping: boolean) => {
+    const trackEl = marqueeTrackRef.current;
+    if (!trackEl) return;
+    if (swiping) {
+      trackEl.style.animationPlayState = "paused";
+    } else if (isMarqueeInViewRef.current && !hasPreviewRef.current) {
+      trackEl.style.animationPlayState = "";
+    }
   }, []);
 
   // Completely stops audio AND aborts background network downloading
@@ -379,6 +443,7 @@ export function AudioReviews() {
       activeAudioIdRef.current = null;
       setActiveAudioId(null);
       setIsPlaying(false);
+      setIsBuffering(false);
       setCurrentTime(0);
       setDuration(0);
     }
@@ -428,6 +493,7 @@ export function AudioReviews() {
         if (isPlaying) {
           hlsAudioRef.current?.pause();
           setIsPlaying(false);
+          setIsBuffering(false);
         } else {
           hlsAudioRef.current?.play(review.audioUrl, targetDuration);
         }
@@ -443,7 +509,10 @@ export function AudioReviews() {
   );
 
   const handleSeekToRatio = useCallback(
-    (review: AudioReview, ratio: number) => {
+    (review: AudioReview, slideIndex: number, ratio: number) => {
+      const swiper = swiperRef.current;
+      if (swiper && swiper.activeIndex !== slideIndex) return;
+
       const targetDuration =
         activeAudioIdRef.current === review.id && duration > 0
           ? duration
@@ -454,7 +523,6 @@ export function AudioReviews() {
         setCurrentTime(targetTime);
         hlsAudioRef.current?.seek(targetTime);
       } else {
-        // If user scrubs the progress bar before pressing Play, start from that position
         activeAudioIdRef.current = review.id;
         setActiveAudioId(review.id);
         setCurrentTime(targetTime);
@@ -474,16 +542,22 @@ export function AudioReviews() {
     setIsPlaying(playing);
   }, []);
 
+  const handleBufferingChange = useCallback((buffering: boolean) => {
+    setIsBuffering(buffering);
+  }, []);
+
   const handleAudioEnded = useCallback(() => {
     activeAudioIdRef.current = null;
     setActiveAudioId(null);
     setIsPlaying(false);
+    setIsBuffering(false);
     setCurrentTime(0);
   }, []);
 
   const handleSelectPreviewImage = useCallback(
     (src: string) => {
       stopCurrentAudio();
+      setIsHighResPreviewLoaded(false);
       setPreviewImage(src);
     },
     [stopCurrentAudio]
@@ -508,20 +582,35 @@ export function AudioReviews() {
     return () => deckObserver.disconnect();
   }, [stopCurrentAudio]);
 
-  // 2. Observe the whole section to pause the infinite marquee when offscreen
+  // 2. Observe the section to preload marquee images when user is within 700px
+  // and pause marquee animation when offscreen
   useEffect(() => {
     const sectionEl = sectionRef.current;
     if (!sectionEl || typeof IntersectionObserver === "undefined") return;
 
-    const sectionObserver = new IntersectionObserver(
+    const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
         setIsMarqueeInView(entry.isIntersecting);
       },
       { rootMargin: "100px 0px", threshold: 0 }
     );
 
-    sectionObserver.observe(sectionEl);
-    return () => sectionObserver.disconnect();
+    const preloadObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldPreloadMarquee(true);
+          preloadObserver.disconnect();
+        }
+      },
+      { rootMargin: "700px 0px", threshold: 0 }
+    );
+
+    visibilityObserver.observe(sectionEl);
+    preloadObserver.observe(sectionEl);
+    return () => {
+      visibilityObserver.disconnect();
+      preloadObserver.disconnect();
+    };
   }, []);
 
   // 3. Stop audio & abort background download if user switches browser tabs or locks phone
@@ -568,29 +657,22 @@ export function AudioReviews() {
       dir="rtl"
       className="relative w-full pt-4 sm:pt-6 lg:pt-8 pb-14 sm:pb-20 lg:pb-24 bg-transparent overflow-hidden select-none scroll-mt-20"
     >
-      {/* Subtle Dot Grid Pattern Background with smooth top fade */}
+      {/* Zero-Blur-Filter Ambient Radial Lighting (0ms Mobile GPU Cost) */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-[0.055] [mask-image:linear-gradient(to_bottom,transparent_0%,black_12%,black_100%)]"
-      >
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage:
-              "radial-gradient(#0B1B3D 1.25px, transparent 1.25px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-      </div>
-
-      {/* Soft Cyan / Light Blue Organic Ambient Waves */}
-      <div
-        aria-hidden="true"
-        className="absolute top-0 -right-24 w-[480px] h-[480px] rounded-full bg-gradient-to-bl from-[#38bdf8]/15 via-[#2563EB]/8 to-transparent blur-[90px] pointer-events-none"
+        className="absolute top-0 -right-24 w-[480px] h-[480px] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(56, 189, 248, 0.11) 0%, rgba(37, 99, 235, 0.04) 45%, transparent 70%)",
+        }}
       />
       <div
         aria-hidden="true"
-        className="absolute bottom-0 left-1/4 w-[420px] h-[420px] rounded-full bg-[#00d2ff]/10 blur-[100px] pointer-events-none"
+        className="absolute bottom-0 left-1/4 w-[420px] h-[420px] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(0, 210, 255, 0.08) 0%, transparent 70%)",
+        }}
       />
 
       {/* Singleton Hidden Audio Engine */}
@@ -598,6 +680,7 @@ export function AudioReviews() {
         ref={hlsAudioRef}
         onTimeUpdate={handleTimeUpdate}
         onPlayStateChange={handlePlayStateChange}
+        onBufferingChange={handleBufferingChange}
         onEnded={handleAudioEnded}
       />
 
@@ -687,17 +770,13 @@ export function AudioReviews() {
                     <ChevronLeft className="w-5 h-5 stroke-[2.2] transition-transform duration-200 group-hover:-translate-x-0.5" />
                   </button>
 
-                  {/* 3D Coverflow Swiper Viewport */}
-                  <div className="relative w-full max-w-[360px] sm:max-w-[520px] overflow-hidden py-6 px-2 sm:[mask-image:linear-gradient(to_right,transparent_0%,black_7%,black_93%,transparent_100%)]">
+                  {/* 3D Coverflow Swiper Viewport (Zero mask-image alpha buffer overhead) */}
+                  <div className="relative w-full max-w-[360px] sm:max-w-[520px] overflow-hidden py-6 px-2">
                     <Swiper
                       onSwiper={(swiper) => {
                         swiperRef.current = swiper;
                       }}
-                      speed={400}
-                      threshold={5}
-                      touchRatio={1.15}
-                      longSwipesRatio={0.25}
-                      resistanceRatio={0.75}
+                      speed={420}
                       effect={"coverflow"}
                       grabCursor={true}
                       centeredSlides={true}
@@ -718,11 +797,21 @@ export function AudioReviews() {
                       }}
                       modules={[EffectCoverflow, Keyboard]}
                       className="w-full !overflow-visible [touch-action:pan-y]"
+                      onTouchStart={() => {
+                        // Freeze bottom 40-image marquee in 0ms while user's finger is on the cards
+                        setMarqueeSwipingPause(true);
+                      }}
                       onSliderFirstMove={() => {
-                        // Immediately stop audio & abort background download the instant user starts swiping
+                        setMarqueeSwipingPause(true);
                         if (activeAudioIdRef.current !== null) {
                           stopCurrentAudio();
                         }
+                      }}
+                      onTouchEnd={() => {
+                        setMarqueeSwipingPause(false);
+                      }}
+                      onTransitionEnd={() => {
+                        setMarqueeSwipingPause(false);
                       }}
                       onSlideChange={(swiper) => {
                         if (activeAudioIdRef.current !== null) {
@@ -732,11 +821,12 @@ export function AudioReviews() {
                       }}
                     >
                       {audioReviews.map((review, index) => {
-                        const isActive = currentIndex === index;
                         const isThisCardActiveAudio =
-                          isActive && activeAudioId === review.id;
+                          activeAudioId === review.id;
                         const cardIsPlaying =
                           isThisCardActiveAudio && isPlaying;
+                        const cardIsBuffering =
+                          isThisCardActiveAudio && isBuffering;
                         const cardDuration =
                           isThisCardActiveAudio && duration > 0
                             ? duration
@@ -753,8 +843,8 @@ export function AudioReviews() {
                             <AudioReviewCard
                               review={review}
                               index={index}
-                              isActive={isActive}
                               cardIsPlaying={cardIsPlaying}
+                              cardIsBuffering={cardIsBuffering}
                               cardCurrentTime={cardCurrentTime}
                               cardDuration={cardDuration}
                               onPlayClick={handlePlayClick}
@@ -830,11 +920,13 @@ export function AudioReviews() {
       {/* INTEGRATED INFINITE LOOP STRIP FOR ACCEPTANCE & REVIEW IMAGES       */}
       {/* =================================================================== */}
       <ReviewImagesMarquee
+        trackRef={marqueeTrackRef}
         isPaused={!isMarqueeInView || Boolean(previewImage)}
+        shouldEagerLoad={shouldPreloadMarquee}
         onSelectImage={handleSelectPreviewImage}
       />
 
-      {/* Zero-Text Clean Lightbox Preview when a user clicks an image */}
+      {/* Zero-Text Progressive Lightbox Preview (0ms cached preview + HD crossfade) */}
       {previewImage && (
         <div
           onClick={() => setPreviewImage(null)}
@@ -853,14 +945,39 @@ export function AudioReviews() {
             className="relative w-full max-w-2xl h-[78vh] sm:h-[84vh] bg-white rounded-3xl p-3 sm:p-4 shadow-2xl overflow-hidden cursor-default"
           >
             <div className="relative w-full h-full rounded-2xl overflow-hidden bg-white">
+              {/* Layer 1: Instant 0ms Cached Thumbnail from Marquee */}
               <Image
                 src={previewImage}
                 alt="وثيقة قبول جامعي"
                 fill
-                sizes="(max-width: 768px) 95vw, 672px"
+                sizes="(max-width: 640px) 185px, 225px"
                 referrerPolicy="no-referrer"
                 className="object-contain"
               />
+
+              {/* Layer 2: High-Resolution Version Crossfading Over Top */}
+              <Image
+                src={previewImage}
+                alt="وثيقة قبول جامعي عالية الدقة"
+                fill
+                sizes="(max-width: 768px) 95vw, 672px"
+                priority
+                referrerPolicy="no-referrer"
+                onLoad={() => setIsHighResPreviewLoaded(true)}
+                className={`object-contain transition-opacity duration-300 ${
+                  isHighResPreviewLoaded ? "opacity-100" : "opacity-0"
+                }`}
+              />
+
+              {/* Subtle Corner Spinner while HD layer is sharpening on slow 3G */}
+              {!isHighResPreviewLoaded && (
+                <div
+                  aria-hidden="true"
+                  className="absolute top-3 left-3 w-8 h-8 rounded-full bg-brand-navy/10 backdrop-blur-xs flex items-center justify-center pointer-events-none"
+                >
+                  <Loader2 className="w-4 h-4 text-brand-electric animate-spin" />
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -5,14 +5,14 @@ import { AmbientBackground } from "@/components/AmbientBackground";
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-sans",
 });
 
 const arefRuqaa = Aref_Ruqaa({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "700"],
+  subsets: ["arabic"],
+  weight: ["400"],
   display: "swap",
   variable: "--font-calligraphy",
 });

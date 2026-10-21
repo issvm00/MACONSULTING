@@ -20,10 +20,11 @@ interface HlsAudioProps {
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   onEnded?: () => void;
   onPlayStateChange?: (isPlaying: boolean) => void;
+  onBufferingChange?: (isBuffering: boolean) => void;
 }
 
 export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
-  ({ onTimeUpdate, onEnded, onPlayStateChange }, ref) => {
+  ({ onTimeUpdate, onEnded, onPlayStateChange, onBufferingChange }, ref) => {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const hlsRef = useRef<Hls | null>(null);
     const simTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -35,6 +36,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       onTimeUpdate,
       onEnded,
       onPlayStateChange,
+      onBufferingChange,
     });
 
     useEffect(() => {
@@ -42,8 +44,9 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
         onTimeUpdate,
         onEnded,
         onPlayStateChange,
+        onBufferingChange,
       };
-    }, [onTimeUpdate, onEnded, onPlayStateChange]);
+    }, [onTimeUpdate, onEnded, onPlayStateChange, onBufferingChange]);
 
     const simStateRef = useRef<{
       active: boolean;
@@ -87,6 +90,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
           };
         }
 
+        callbacksRef.current.onBufferingChange?.(false);
         callbacksRef.current.onPlayStateChange?.(true);
         callbacksRef.current.onTimeUpdate?.(
           simStateRef.current.currentTime,
@@ -103,6 +107,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
               0,
               simStateRef.current.duration
             );
+            callbacksRef.current.onBufferingChange?.(false);
             callbacksRef.current.onPlayStateChange?.(false);
             callbacksRef.current.onEnded?.();
           } else {
@@ -146,6 +151,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
         }
       }
 
+      callbacksRef.current.onBufferingChange?.(false);
       callbacksRef.current.onPlayStateChange?.(false);
       callbacksRef.current.onTimeUpdate?.(0, 0);
     }, [clearSimTimer]);
@@ -154,6 +160,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       sessionIdRef.current += 1;
       if (simStateRef.current.active) {
         clearSimTimer();
+        callbacksRef.current.onBufferingChange?.(false);
         callbacksRef.current.onPlayStateChange?.(false);
         return;
       }
@@ -161,6 +168,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       if (audio && !audio.paused) {
         audio.pause();
       }
+      callbacksRef.current.onBufferingChange?.(false);
       callbacksRef.current.onPlayStateChange?.(false);
     }, [clearSimTimer]);
 
@@ -178,6 +186,9 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       }
       const audio = audioRef.current;
       if (audio && Number.isFinite(audio.duration) && audio.duration > 0) {
+        if (audio.readyState < 3 && !audio.paused) {
+          callbacksRef.current.onBufferingChange?.(true);
+        }
         audio.currentTime = Math.max(0, Math.min(time, audio.duration));
         callbacksRef.current.onTimeUpdate?.(audio.currentTime, audio.duration);
       }
@@ -213,6 +224,9 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
           audio.paused &&
           !simStateRef.current.active
         ) {
+          if (audio.readyState < 3) {
+            callbacksRef.current.onBufferingChange?.(true);
+          }
           if (
             initialTime !== undefined &&
             initialTime >= 0 &&
@@ -225,6 +239,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
             playPromise
               .then(() => {
                 if (sessionId !== sessionIdRef.current) return;
+                callbacksRef.current.onBufferingChange?.(false);
                 callbacksRef.current.onPlayStateChange?.(true);
               })
               .catch((err: unknown) => {
@@ -253,6 +268,10 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
         }
 
         currentSrcRef.current = encodedSrc;
+        // Immediately signal buffering state so slow-network users see instant feedback on tap
+        callbacksRef.current.onBufferingChange?.(true);
+        callbacksRef.current.onPlayStateChange?.(true);
+
         const isHls = encodedSrc.toLowerCase().endsWith(".m3u8");
 
         if (isHls) {
@@ -273,6 +292,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
                 .play()
                 .then(() => {
                   if (sessionId !== sessionIdRef.current) return;
+                  callbacksRef.current.onBufferingChange?.(false);
                   callbacksRef.current.onPlayStateChange?.(true);
                 })
                 .catch((err: unknown) => {
@@ -305,6 +325,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
               .play()
               .then(() => {
                 if (sessionId !== sessionIdRef.current) return;
+                callbacksRef.current.onBufferingChange?.(false);
                 callbacksRef.current.onPlayStateChange?.(true);
               })
               .catch((err: unknown) => {
@@ -339,6 +360,7 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
             playPromise
               .then(() => {
                 if (sessionId !== sessionIdRef.current) return;
+                callbacksRef.current.onBufferingChange?.(false);
                 callbacksRef.current.onPlayStateChange?.(true);
               })
               .catch((err: unknown) => {
@@ -371,6 +393,9 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
 
       const handleTimeUpdate = () => {
         if (!simStateRef.current.active && audio.duration > 0) {
+          if (!audio.paused && audio.readyState >= 3) {
+            callbacksRef.current.onBufferingChange?.(false);
+          }
           callbacksRef.current.onTimeUpdate?.(
             audio.currentTime,
             audio.duration
@@ -387,8 +412,21 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
         }
       };
 
+      const handleWaiting = () => {
+        if (!simStateRef.current.active && !audio.paused) {
+          callbacksRef.current.onBufferingChange?.(true);
+        }
+      };
+
+      const handlePlayingOrCanPlay = () => {
+        if (!simStateRef.current.active && !audio.paused) {
+          callbacksRef.current.onBufferingChange?.(false);
+        }
+      };
+
       const handleEnded = () => {
         if (!simStateRef.current.active) {
+          callbacksRef.current.onBufferingChange?.(false);
           callbacksRef.current.onPlayStateChange?.(false);
           callbacksRef.current.onTimeUpdate?.(0, audio.duration || 0);
           callbacksRef.current.onEnded?.();
@@ -399,6 +437,14 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
       audio.addEventListener("loadedmetadata", handleLoadedMetadata, {
         passive: true,
       });
+      audio.addEventListener("waiting", handleWaiting, { passive: true });
+      audio.addEventListener("stalled", handleWaiting, { passive: true });
+      audio.addEventListener("playing", handlePlayingOrCanPlay, {
+        passive: true,
+      });
+      audio.addEventListener("canplay", handlePlayingOrCanPlay, {
+        passive: true,
+      });
       audio.addEventListener("ended", handleEnded, { passive: true });
 
       return () => {
@@ -406,6 +452,10 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
         clearSimTimer();
         audio.removeEventListener("timeupdate", handleTimeUpdate);
         audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        audio.removeEventListener("waiting", handleWaiting);
+        audio.removeEventListener("stalled", handleWaiting);
+        audio.removeEventListener("playing", handlePlayingOrCanPlay);
+        audio.removeEventListener("canplay", handlePlayingOrCanPlay);
         audio.removeEventListener("ended", handleEnded);
         if (hlsRef.current) {
           try {

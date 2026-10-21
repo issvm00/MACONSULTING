@@ -136,11 +136,11 @@ const itemVariants = {
 // Reusable Pure Card UI used identically in both Desktop Grid and Mobile 3D Coverflow
 function MemberCard({
   member,
-  isPriority,
 }: {
   member: TeamMember;
-  isPriority?: boolean;
 }) {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
   return (
     <div
       dir="rtl"
@@ -155,8 +155,10 @@ function MemberCard({
             alt={`${member.name} (${member.nameEn}) - ${member.role}`}
             fill
             sizes="(max-width: 640px) 280px, (max-width: 1024px) 33vw, 240px"
-            className="object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out"
-            priority={isPriority}
+            onLoad={() => setIsImageLoaded(true)}
+            className={`object-cover object-top group-hover:scale-105 transition-[transform,opacity] duration-500 ease-out ${
+              isImageLoaded ? "opacity-100" : "opacity-0"
+            }`}
           />
         </div>
 
@@ -401,7 +403,7 @@ export function AboutTeam() {
                   }}
                   className="h-full"
                 >
-                  <MemberCard member={member} isPriority={index === 0} />
+                  <MemberCard member={member} />
                 </motion.div>
               ))}
             </div>
@@ -462,12 +464,12 @@ export function AboutTeam() {
                     className="w-full !overflow-visible [touch-action:pan-y]"
                     onSlideChange={(swiper) => setActiveMobileIndex(swiper.activeIndex)}
                   >
-                    {teamMembers.map((member, index) => (
+                    {teamMembers.map((member) => (
                       <SwiperSlide
                         key={member.id}
-                        className="!w-[272px] transition-transform duration-300"
+                        className="!w-[272px]"
                       >
-                        <MemberCard member={member} isPriority={index === 0} />
+                        <MemberCard member={member} />
                       </SwiperSlide>
                     ))}
                   </Swiper>
