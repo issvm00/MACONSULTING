@@ -152,7 +152,7 @@ const AudioReviewCard = memo(function AudioReviewCard({
 
   return (
     <div
-      className="relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9 bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d] border border-white/14 shadow-[0_18px_36px_-10px_rgba(7,14,28,0.45)] flex flex-col items-center justify-between overflow-hidden transform-gpu [backface-visibility:hidden]"
+      className="relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9 bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d] border border-white/15 shadow-[0_18px_36px_-10px_rgba(7,14,28,0.45)] flex flex-col items-center justify-between overflow-hidden transform-gpu [backface-visibility:hidden]"
     >
       {/* Zero-Blur-Filter Hardware-Accelerated Radial Halo Behind Center Play Button */}
       <div

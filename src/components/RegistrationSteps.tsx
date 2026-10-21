@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
+import Link from "next/link";
 import {
   motion,
   useScroll,
@@ -424,16 +425,14 @@ export function RegistrationSteps() {
               </div>
 
               <div className="w-full flex justify-center">
-                <a
-                  href="https://wa.me/212775496303"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/postuler"
                   className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full text-sm font-bold text-white bg-brand-navy hover:bg-brand-electric shadow-lg shadow-navy/15 hover:shadow-glow-blue transition-all duration-300 group"
                 >
                   <MessageCircle className="w-4 h-4 text-brand-electric-light" />
                   <span>احجز استشارة مجانية</span>
                   <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                </a>
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -534,18 +533,16 @@ export function RegistrationSteps() {
                 </h3>
               </div>
 
-              {/* Direct Action Single WhatsApp CTA Button */}
+              {/* Direct Action Single Consultation Funnel CTA Button */}
               <div className="w-full lg:w-auto flex justify-center lg:justify-end">
-                <a
-                  href="https://wa.me/212775496303"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/postuler"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full text-sm sm:text-base font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-lg shadow-brand-navy/15 transition-[background-color,transform,box-shadow] duration-200 group"
                 >
                   <MessageCircle className="w-4 h-4 text-brand-electric-light shrink-0" />
                   <span>احجز استشارة مجانية</span>
                   <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1 shrink-0" />
-                </a>
+                </Link>
               </div>
             </div>
           </motion.div>

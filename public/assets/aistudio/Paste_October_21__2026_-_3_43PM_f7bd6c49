@@ -1,0 +1,1069 @@
+ok mzyan ghdi nsaliw 7aliyan mn hadi ndozo lmar7ala jdida page jdia smitha /postuler ghdi nkhdmoha b2a3la mostwa dyal jawda wl7irafiya wt7wil an ghdi nkhli lk wa7d template ghdi nkhdmo page b7alha ghi hiya blhowya dyalna as2ila dyalna tari9tna flihada khas nfkro mzyzyan chno as2ila li khas njm3o chof ay haja fkr mzyan 
+bnisba example hada bghitk t7lilo mzyan wtfkr kifach n9adoh b2ansab tari9a 3ndna
+example 
+import React, { useState } from 'react';
+import { 
+  ArrowLeft, ArrowRight, Check,
+  Phone, User, Mail, MessageCircle, Home, Calendar,
+  Cpu, TrendingUp, Award, Globe, GraduationCap, Languages,
+  Sparkles, ShieldCheck, CheckCircle2, Clock, BookOpen
+} from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
+
+const CITY_NAME_MAP = {
+  casablanca: 'Casablanca',
+  fes: 'Fès',
+  };
+
+export default function Postuler({ onNavigate }) {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === 'rtl';
+
+  const getInitialParam = (key, defaultVal) => {
+    if (typeof window === 'undefined') return defaultVal;
+    const params = new URLSearchParams(window.location.search);
+    const val = params.get(key);
+    return val !== null ? val : defaultVal;
+  };
+
+  const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const goToStep = (newStep) => {
+    setStep(newStep);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Program Type: 'studienkolleg' or 'langue'
+  const [program, setProgram] = useState(() => getInitialParam('program', 'studienkolleg'));
+
+  // Studienkolleg Form State
+  const [bacType, setBacType] = useState(() => getInitialParam('bacType', 'pc_svt'));
+  const [bacYear, setBacYear] = useState('2026');
+  const [track, setTrack] = useState(() => getInitialParam('track', 't-kurs'));
+  const [city, setCity] = useState(() => getInitialParam('city', 'casablanca'));
+  const [germanLevel, setGermanLevel] = useState(() => getInitialParam('level', 'debutant'));
+  
+  // Langue & telc Form State
+  const [langLevel, setLangLevel] = useState(() => getInitialParam('level', 'b1'));
+  const [objective, setObjective] = useState(() => getInitialParam('objective', 'cours'));
+  const [sessionTime, setSessionTime] = useState('jour');
+
+  // Student Contact (Shared)
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [notes, setNotes] = useState('');
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language.startsWith('fr') ? 'ar' : 'fr';
+    i18n.changeLanguage(newLang);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const ref = `GP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    let messageText = '';
+    if (program === 'langue') {
+      const objLabels = {
+        cours: 'Cours de langue intensifs (A1 à C1)',
+        telc_b1: 'Préparation + Examen officiel telc B1',
+        telc_b2: 'Préparation + Examen officiel telc B2',
+        etudes: 'Projet d\'études ou professionnel en Allemagne'
+      };
+      const sessionLabels = {
+        jour: 'Cours du jour (Matin / Après-midi)',
+        soir: 'Cours du soir & Weekend'
+      };
+      messageText = 
+        `Bonjour GermanPath ! Je vous adresse ma demande d'inscription aux Cours d'Allemand / telc (Réf : ${ref}) :\n` +
+        `- Programme : Cours d'Allemand & Examens telc\n` +
+        `- Candidat : ${fullName}\n` +
+        `- Téléphone : ${phone}\n` +
+        `- Niveau visé : ${langLevel.toUpperCase()}\n` +
+        `- Objectif : ${objLabels[objective] || objective}\n` +
+        `- Centre : ${CITY_NAME_MAP[city]}\n` +
+        `- Créneau horaire : ${sessionLabels[sessionTime] || sessionTime}\n` +
+        (email ? `- Email : ${email}\n` : '') +
+        (notes ? `- Remarque : ${notes}\n` : '') +
+        `Je souhaite recevoir les prochaines dates de sessions et les horaires.`;
+    } else {
+      messageText = 
+        `Bonjour GermanPath Studienkolleg ! Je vous adresse ma demande d'inscription préliminaire (Réf : ${ref}) :\n` +
+        `- Programme : Année Préparatoire Studienkolleg\n` +
+        `- Candidat : ${fullName}\n` +
+        `- Téléphone : ${phone}\n` +
+        `- Baccalauréat : ${bacType} (${bacYear})\n` +
+        `- Parcours visé : ${track}\n` +
+        `- Centre au Maroc : ${CITY_NAME_MAP[city]}\n` +
+        `- Niveau d'allemand : ${germanLevel}\n` +
+        (email ? `- Email : ${email}\n` : '') +
+        (notes ? `- Remarque : ${notes}\n` : '') +
+        `Je souhaite convenir d'un rendez-vous d'orientation.`;
+    }
+
+    const encoded = encodeURIComponent(messageText);
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      window.open(`https://wa.me/212710244263?text=${encoded}`, '_blank');
+      onNavigate('/');
+    }, 500);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F4F6F9] text-slate-900 flex flex-col font-sans relative overflow-x-hidden">
+      
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 hidden md:block">
+        <div className="absolute -top-[12%] -left-[10%] w-[520px] h-[520px] rounded-full bg-gradient-to-br from-blue-200/40 via-sky-100/25 to-transparent blur-[110px]" />
+        <div className="absolute top-[28%] -right-[12%] w-[480px] h-[480px] rounded-full bg-gradient-to-bl from-amber-200/35 via-orange-100/15 to-transparent blur-[125px]" />
+        <div className="absolute -bottom-[10%] left-[10%] w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-indigo-200/30 via-blue-100/20 to-transparent blur-[120px]" />
+        <div 
+          className="absolute inset-0 opacity-[0.45]"
+          style={{ backgroundImage: `radial-gradient(rgba(100, 116, 139, 0.25) 1px, transparent 1px)`, backgroundSize: '24px 24px' }}
+        />
+      </div>
+
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-2xl saturate-[1.8] border-b border-black/5 h-16 sm:h-[70px] flex items-center shadow-xs">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between relative">
+          
+          <div className="flex items-center">
+            <button 
+              onClick={() => onNavigate('/')}
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-blue-950 transition-colors cursor-pointer py-1.5 px-2 rounded-lg hover:bg-slate-100/70 active:scale-[0.96]"
+            >
+              {isRtl ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+              <span>{t('postuler.header.accueil')}</span>
+            </button>
+          </div>
+
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+            <img
+              src="/logo.png"
+              alt="GermanPath"
+              className="h-7 sm:h-9 w-auto object-contain cursor-pointer"
+              onClick={() => onNavigate('/')}
+            />
+          </div>
+
+          <div className="flex items-center">
+            <div onClick={toggleLanguage} className="flex items-center gap-1.5 p-1 bg-slate-50 hover:bg-slate-100 transition-colors rounded-full border border-slate-200/80 cursor-pointer text-[11px] sm:text-xs shadow-sm">
+              <Globe className="w-4 h-4 text-slate-400 ms-1.5" />
+              <div className={`font-bold px-2.5 py-0.5 rounded-full transition-colors ${!isRtl ? 'bg-blue-900 text-white shadow-sm' : 'text-slate-600'}`}>FR</div>
+              <div className={`font-medium px-2.5 py-0.5 rounded-full transition-colors ${isRtl ? 'bg-blue-900 text-white shadow-sm' : 'text-slate-600'}`} dir="rtl">العربية</div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <main className="flex-grow py-6 sm:py-10 relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+
+          <div className="max-w-3xl mx-auto mb-6 sm:mb-8">
+            <div className="flex items-center justify-between text-xs sm:text-sm font-semibold mb-2.5">
+              <span className="text-slate-600">
+                {t('postuler.stepper.step', { step })}&nbsp;
+                <strong className="text-slate-900 font-bold">
+                  {step === 1 ? t('postuler.stepper.step1_title') :
+                   step === 2 ? t('postuler.stepper.step2_title') :
+                   step === 3 ? t('postuler.stepper.step3_title') :
+                   t('postuler.stepper.step4_title')}
+                </strong>
+              </span>
+              <span className="text-blue-950 font-bold bg-white/90 backdrop-blur-sm px-2.5 py-0.5 rounded-full text-xs border border-slate-200/90 shadow-2xs">
+                {t('postuler.stepper.badge', { step })}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 w-full">
+              {[1, 2, 3, 4].map((s) => (
+                <div key={s} className="h-1.5 flex-1 rounded-full overflow-hidden bg-slate-200/90 shadow-inner">
+                  <div 
+                    className="h-full bg-blue-600 transition-all duration-500 ease-out" 
+                    style={{ width: step >= s ? '100%' : '0%' }} 
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <div className="relative lg:col-span-7 bg-white md:bg-white/95 md:backdrop-blur-2xl rounded-3xl border border-slate-200/90 p-5 sm:p-9 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12),0_4px_16px_rgba(15,23,42,0.04)] ring-1 ring-slate-900/5">
+              <div className="absolute top-0 left-0 right-0 h-[220px] bg-gradient-to-b from-slate-50 via-white/50 to-transparent pointer-events-none rounded-t-3xl" />
+              <div className={`absolute top-0 ${isRtl ? 'left-0' : 'right-0'} w-[300px] h-[220px] bg-gradient-to-bl from-blue-50/60 via-transparent to-transparent pointer-events-none blur-2xl hidden md:block`} />
+              <div className={`absolute top-0 ${isRtl ? 'right-0' : 'left-0'} w-[300px] h-[200px] bg-gradient-to-br from-amber-50/40 via-transparent to-transparent pointer-events-none blur-2xl hidden md:block`} />
+
+              <div className="relative z-10 pt-1">
+              
+              {/* ÉTAPE 1 : CHOIX EXCLUSIF DU PROGRAMME */}
+              {step === 1 && (
+                <div className="space-y-6 sm:space-y-7">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-normal">
+                      {t('postuler.program_selector.title')}
+                    </h2>
+                    <p className="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                      {t('postuler.program_selector.desc')}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* OPTION 1: STUDIENKOLLEG */}
+                    <button
+                      type="button"
+                      onClick={() => setProgram('studienkolleg')}
+                      className={`p-5 sm:p-6 rounded-3xl border text-start transition-all duration-200 cursor-pointer flex flex-col justify-between active:scale-[0.99] ${
+                        program === 'studienkolleg'
+                          ? 'bg-blue-50/90 border-2 border-blue-600 ring-4 ring-blue-600/10 shadow-md'
+                          : 'bg-white/80 border border-slate-200/90 hover:border-slate-300 hover:bg-white shadow-2xs'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-3 w-full">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+                            program === 'studienkolleg' ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50 text-blue-800'
+                          }`}>
+                            <GraduationCap className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <strong className={`text-base sm:text-lg font-bold block ${program === 'studienkolleg' ? 'text-blue-950' : 'text-slate-900'}`}>
+                              {t('postuler.program_selector.studienkolleg')}
+                            </strong>
+                            <span className={`text-xs ${program === 'studienkolleg' ? 'text-blue-700 font-medium' : 'text-slate-500'}`}>
+                              {t('postuler.program_selector.studienkolleg_sub')}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          program === 'studienkolleg' ? 'bg-blue-600 text-white' : 'border-2 border-slate-300 bg-white'
+                        }`}>
+                          {program === 'studienkolleg' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-slate-100/90 space-y-2">
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <span>{t('postuler.program_selector.studienkolleg_point1')}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <span>{t('postuler.program_selector.studienkolleg_point2')}</span>
+                        </div>
+                      </div>
+                    </button>
+
+                    {/* OPTION 2: LANGUE & TELC */}
+                    <button
+                      type="button"
+                      onClick={() => setProgram('langue')}
+                      className={`p-5 sm:p-6 rounded-3xl border text-start transition-all duration-200 cursor-pointer flex flex-col justify-between active:scale-[0.99] ${
+                        program === 'langue'
+                          ? 'bg-blue-50/90 border-2 border-blue-600 ring-4 ring-blue-600/10 shadow-md'
+                          : 'bg-white/80 border border-slate-200/90 hover:border-slate-300 hover:bg-white shadow-2xs'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-3 w-full">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+                            program === 'langue' ? 'bg-blue-600 text-white shadow-sm' : 'bg-amber-50 text-amber-800'
+                          }`}>
+                            <Award className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <strong className={`text-base sm:text-lg font-bold block ${program === 'langue' ? 'text-blue-950' : 'text-slate-900'}`}>
+                              {t('postuler.program_selector.langue')}
+                            </strong>
+                            <span className={`text-xs ${program === 'langue' ? 'text-blue-700 font-medium' : 'text-slate-500'}`}>
+                              {t('postuler.program_selector.langue_sub')}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          program === 'langue' ? 'bg-blue-600 text-white' : 'border-2 border-slate-300 bg-white'
+                        }`}>
+                          {program === 'langue' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-slate-100/90 space-y-2">
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <span>{t('postuler.program_selector.langue_point1')}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <span>{t('postuler.program_selector.langue_point2')}</span>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className={`pt-3 flex ${isRtl ? 'justify-start' : 'justify-end'}`}>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(2)}
+                      className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-8 rounded-2xl bg-gradient-to-r from-blue-950 to-blue-900 hover:from-blue-900 hover:to-blue-800 text-white font-bold text-sm transition-all active:scale-[0.98] cursor-pointer shadow-md shadow-blue-950/20 ring-1 ring-white/10"
+                    >
+                      <span>{t('postuler.program_selector.continue')}</span>
+                      {isRtl ? (
+                        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                      ) : (
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ÉTAPE 2 : PARCOURS / NIVEAU (OPTIONS SELON LE PROGRAMME) */}
+              {step === 2 && (
+                <div className="space-y-6 sm:space-y-7">
+                  {program === 'studienkolleg' ? (
+                    <>
+                      <div>
+                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-normal">
+                          {t('postuler.step1.title')}
+                        </h2>
+                        <p className="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                          {t('postuler.step1.desc')}
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step1.filiere')}
+                        </label>
+                        <div className="grid grid-cols-2 gap-2.5">
+                          {[
+                            { id: 'sm', label: t('postuler.step1.filiere_sm') },
+                            { id: 'pc_svt', label: t('postuler.step1.filiere_pc') },
+                            { id: 'tech', label: t('postuler.step1.filiere_tech') },
+                            { id: 'eco', label: t('postuler.step1.filiere_eco') },
+                            { id: 'autre', label: t('postuler.step1.filiere_autre'), span: true }
+                          ].map((b) => {
+                            const isSelected = bacType === b.id;
+                            return (
+                              <button
+                                key={b.id}
+                                type="button"
+                                onClick={() => {
+                                  setBacType(b.id);
+                                  if (b.id === 'eco') setTrack('w-kurs');
+                                  else setTrack('t-kurs');
+                                }}
+                                className={`p-3.5 rounded-2xl text-start text-xs font-semibold transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.98] ${
+                                  b.span ? 'col-span-2' : ''
+                                } ${
+                                  isSelected
+                                    ? 'bg-blue-50/90 border-2 border-blue-600 text-blue-950 ring-2 ring-blue-600/20 shadow-xs'
+                                    : 'bg-slate-50/90 border border-slate-200/90 text-slate-700 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                }`}
+                              >
+                                <span>{b.label}</span>
+                                {isSelected && (
+                                  <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 ms-1.5">
+                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step1.annee')}
+                        </label>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {[
+                            { id: '2026', label: t('postuler.step1.annee_2026') },
+                            { id: '2025', label: t('postuler.step1.annee_2025') },
+                            { id: 'ancien', label: t('postuler.step1.annee_ancien') },
+                          ].map((y) => {
+                            const isSelected = bacYear === y.id;
+                            return (
+                              <button
+                                key={y.id}
+                                type="button"
+                                onClick={() => setBacYear(y.id)}
+                                className={`py-3 px-2 rounded-2xl text-center text-xs font-semibold transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+                                  isSelected
+                                    ? 'bg-blue-50/90 border-2 border-blue-600 text-blue-950 ring-2 ring-blue-600/20 shadow-xs font-bold'
+                                    : 'bg-slate-50/90 border border-slate-200/90 text-slate-700 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                }`}
+                              >
+                                {y.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 pt-1">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step1.parcours')}
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setTrack('t-kurs')}
+                            className={`p-4 rounded-2xl border text-start transition-all duration-150 cursor-pointer flex flex-col justify-between active:scale-[0.98] ${
+                              track === 't-kurs'
+                                ? 'bg-blue-50/90 border-2 border-blue-600 ring-2 ring-blue-600/20 shadow-xs'
+                                : 'bg-slate-50/90 border border-slate-200/90 hover:border-slate-300 hover:bg-white shadow-2xs'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-2 w-full">
+                              <div className="flex items-center gap-2">
+                                <Cpu className={`w-4 h-4 shrink-0 ${track === 't-kurs' ? 'text-blue-600' : 'text-slate-600'}`} />
+                                <strong className={`text-xs sm:text-sm font-bold ${track === 't-kurs' ? 'text-blue-950' : 'text-slate-900'}`}>
+                                  {t('postuler.step1.tkurs')}
+                                </strong>
+                              </div>
+                              {track === 't-kurs' && (
+                                <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
+                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                </div>
+                              )}
+                            </div>
+                            <p className={`text-[11px] leading-relaxed text-start ${track === 't-kurs' ? 'text-blue-800' : 'text-slate-500'}`}>
+                              {t('postuler.step1.tkurs_desc')}
+                            </p>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setTrack('w-kurs')}
+                            className={`p-4 rounded-2xl border text-start transition-all duration-150 cursor-pointer flex flex-col justify-between active:scale-[0.98] ${
+                              track === 'w-kurs'
+                                ? 'bg-blue-50/90 border-2 border-blue-600 ring-2 ring-blue-600/20 shadow-xs'
+                                : 'bg-slate-50/90 border border-slate-200/90 hover:border-slate-300 hover:bg-white shadow-2xs'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-2 w-full">
+                              <div className="flex items-center gap-2">
+                                <TrendingUp className={`w-4 h-4 shrink-0 ${track === 'w-kurs' ? 'text-blue-600' : 'text-slate-600'}`} />
+                                <strong className={`text-xs sm:text-sm font-bold ${track === 'w-kurs' ? 'text-blue-950' : 'text-slate-900'}`}>
+                                  {t('postuler.step1.wkurs')}
+                                </strong>
+                              </div>
+                              {track === 'w-kurs' && (
+                                <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
+                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                </div>
+                              )}
+                            </div>
+                            <p className={`text-[11px] leading-relaxed text-start ${track === 'w-kurs' ? 'text-blue-800' : 'text-slate-500'}`}>
+                              {t('postuler.step1.wkurs_desc')}
+                            </p>
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* PROGRAMME LANGUE & TELC */
+                    <>
+                      <div>
+                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-normal">
+                          {t('postuler.step1_langue.title')}
+                        </h2>
+                        <p className="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                          {t('postuler.step1_langue.desc')}
+                        </p>
+                      </div>
+
+                      {/* Niveau d'allemand */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step1_langue.niveau_label')}
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                          {[
+                            { id: 'a1', label: t('postuler.step1_langue.niveau_a1'), tag: 'A1' },
+                            { id: 'a2', label: t('postuler.step1_langue.niveau_a2'), tag: 'A2' },
+                            { id: 'b1', label: t('postuler.step1_langue.niveau_b1'), tag: 'B1' },
+                            { id: 'b2', label: t('postuler.step1_langue.niveau_b2'), tag: 'B2' },
+                            { id: 'c1', label: t('postuler.step1_langue.niveau_c1'), tag: 'C1' },
+                          ].map((lvl) => {
+                            const isSelected = langLevel === lvl.id;
+                            return (
+                              <button
+                                key={lvl.id}
+                                type="button"
+                                onClick={() => setLangLevel(lvl.id)}
+                                className={`p-3.5 rounded-2xl text-start text-xs font-semibold transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.98] ${
+                                  isSelected
+                                    ? 'bg-blue-50/90 border-2 border-blue-600 text-blue-950 ring-2 ring-blue-600/20 shadow-xs'
+                                    : 'bg-slate-50/90 border border-slate-200/90 text-slate-700 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                }`}
+                              >
+                                <div>
+                                  <span className="font-extrabold text-blue-900 block text-sm">{lvl.tag}</span>
+                                  <span className="text-[11px] text-slate-600">{lvl.label}</span>
+                                </div>
+                                {isSelected && (
+                                  <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 ms-1.5">
+                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Objectif principal */}
+                      <div className="space-y-2 pt-1">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step1_langue.objectif_label')}
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          {[
+                            { id: 'cours', label: t('postuler.step1_langue.obj_cours'), icon: BookOpen },
+                            { id: 'telc_b1', label: t('postuler.step1_langue.obj_telc_b1'), icon: Award },
+                            { id: 'telc_b2', label: t('postuler.step1_langue.obj_telc_b2'), icon: Award },
+                            { id: 'etudes', label: t('postuler.step1_langue.obj_etudes'), icon: Globe },
+                          ].map((obj) => {
+                            const isSelected = objective === obj.id;
+                            const IconComponent = obj.icon;
+                            return (
+                              <button
+                                key={obj.id}
+                                type="button"
+                                onClick={() => setObjective(obj.id)}
+                                className={`p-3.5 rounded-2xl border text-start transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.98] ${
+                                  isSelected
+                                    ? 'bg-blue-50/90 border-2 border-blue-600 ring-2 ring-blue-600/20 shadow-xs'
+                                    : 'bg-slate-50/90 border border-slate-200/90 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <IconComponent className={`w-4 h-4 shrink-0 ${isSelected ? 'text-blue-600' : 'text-slate-500'}`} />
+                                  <span className={`text-xs font-bold ${isSelected ? 'text-blue-950' : 'text-slate-800'}`}>
+                                    {obj.label}
+                                  </span>
+                                </div>
+                                {isSelected && (
+                                  <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 ms-2">
+                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      </>
+                  )}
+
+                  <div className="pt-3 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => goToStep(1)}
+                      className="inline-flex items-center gap-1.5 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-950 hover:bg-slate-100/70 transition-colors cursor-pointer active:scale-[0.96]"
+                    >
+                      {isRtl ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+                      <span>{t('postuler.step2.prev')}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => goToStep(3)}
+                      className="group inline-flex items-center gap-2 py-3.5 px-7 rounded-2xl bg-gradient-to-r from-blue-950 to-blue-900 hover:from-blue-900 hover:to-blue-800 text-white font-bold text-sm transition-all active:scale-[0.98] cursor-pointer shadow-md shadow-blue-950/20 ring-1 ring-white/10"
+                    >
+                      <span>{t('postuler.step2.continue')}</span>
+                      {isRtl ? (
+                        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                      ) : (
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ÉTAPE 3 : CENTRE & MODALITÉS */}
+              {step === 3 && (
+                <div className="space-y-6 sm:space-y-7">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-normal">
+                      {t('postuler.step2.title')}
+                    </h2>
+                    <p className="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                      {t('postuler.step2.desc')}
+                    </p>
+                  </div>
+
+                  {program === 'studienkolleg' ? (
+                    <>
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step2.centre')}
+                        </label>
+                        <div className="grid grid-cols-1 gap-2.5">
+                          {[
+                            { id: 'casablanca', label: 'Casablanca', sub: '44, av. de l’Armée Royale' },
+                            { id: 'fes', label: 'Fès', sub: 'Imb Lazrarak ETG 1 Bureau 10, 2 BD Bier Anzarane VN' },
+                          ].map((c) => {
+                            const isSelected = city === c.id;
+                            return (
+                              <button
+                                key={c.id}
+                                type="button"
+                                onClick={() => setCity(c.id)}
+                                className={`p-4 rounded-2xl border text-start transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.98] ${
+                                  isSelected
+                                    ? 'bg-blue-50/90 border-2 border-blue-600 text-blue-950 ring-2 ring-blue-600/20 shadow-xs'
+                                    : 'bg-slate-50/90 border border-slate-200/90 text-slate-700 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                }`}
+                              >
+                                <div className="text-start">
+                                  <div className="text-sm font-bold text-slate-900">{c.label}</div>
+                                  <div className={`text-xs mt-0.5 ${isSelected ? 'text-blue-700' : 'text-slate-500'}`} dir="ltr">
+                                    {c.sub}
+                                  </div>
+                                </div>
+                                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ms-3 transition-colors ${
+                                  isSelected ? 'bg-blue-600 text-white' : 'border border-slate-300 bg-white'
+                                }`}>
+                                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step2.niveau')}
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {[
+                            { id: 'debutant', title: t('postuler.step2.niv_deb'), desc: t('postuler.step2.niv_deb_desc') },
+                            { id: 'b1', title: t('postuler.step2.niv_b1'), desc: t('postuler.step2.niv_b1_desc') }
+                          ].map((lvl) => {
+                            const isSelected = germanLevel === lvl.id;
+                            return (
+                              <button
+                                key={lvl.id}
+                                type="button"
+                                onClick={() => setGermanLevel(lvl.id)}
+                                className={`p-4 rounded-2xl border text-start transition-all duration-150 cursor-pointer flex flex-col justify-between active:scale-[0.98] ${
+                                  isSelected
+                                    ? 'bg-blue-50/90 border-2 border-blue-600 ring-2 ring-blue-600/20 shadow-xs'
+                                    : 'bg-slate-50/90 border border-slate-200/90 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between mb-1.5 w-full">
+                                  <span className="text-xs sm:text-sm font-bold text-slate-900">{lvl.title}</span>
+                                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ms-2 transition-colors ${
+                                    isSelected ? 'bg-blue-600 text-white' : 'border border-slate-300 bg-white'
+                                  }`}>
+                                    {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                                  </div>
+                                </div>
+                                <p className={`text-[11px] sm:text-xs text-start leading-relaxed ${isSelected ? 'text-blue-800' : 'text-slate-500'}`}>
+                                  {lvl.desc}
+                                </p>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* PROGRAMME LANGUE & TELC STEP 3 */
+                    <>
+                      <div className="space-y-2">
+                          <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                            {t('postuler.step2.centre_langue')}
+                          </label>
+                          <div className="grid grid-cols-1 gap-2.5">
+                            {[
+                              { id: 'casablanca', label: 'Casablanca', sub: '44, av. de l’Armée Royale (14e étage)' },
+                              { id: 'fes', label: 'Fès', sub: 'Imb Lazrarak ETG 1 Bureau 10, 2 BD Bier Anzarane VN' },
+                            ].map((c) => {
+                              const isSelected = city === c.id;
+                              return (
+                                <button
+                                  key={c.id}
+                                  type="button"
+                                  onClick={() => setCity(c.id)}
+                                  className={`p-4 rounded-2xl border text-start transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.98] ${
+                                    isSelected
+                                      ? 'bg-blue-50/90 border-2 border-blue-600 text-blue-950 ring-2 ring-blue-600/20 shadow-xs'
+                                      : 'bg-slate-50/90 border border-slate-200/90 text-slate-700 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                  }`}
+                                >
+                                  <div className="text-start">
+                                    <div className="text-sm font-bold text-slate-900">{c.label}</div>
+                                    <div className={`text-xs mt-0.5 ${isSelected ? 'text-blue-700' : 'text-slate-500'}`} dir="ltr">
+                                      {c.sub}
+                                    </div>
+                                  </div>
+                                  <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ms-3 transition-colors ${
+                                    isSelected ? 'bg-blue-600 text-white' : 'border border-slate-300 bg-white'
+                                  }`}>
+                                    {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          {t('postuler.step2.session_label')}
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {[
+                            { id: 'jour', title: t('postuler.step2.session_jour'), icon: Clock },
+                            { id: 'soir', title: t('postuler.step2.session_soir'), icon: Calendar }
+                          ].map((sess) => {
+                            const isSelected = sessionTime === sess.id;
+                            const IconComponent = sess.icon;
+                            return (
+                              <button
+                                key={sess.id}
+                                type="button"
+                                onClick={() => setSessionTime(sess.id)}
+                                className={`p-4 rounded-2xl border text-start transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.98] ${
+                                  isSelected
+                                    ? 'bg-blue-50/90 border-2 border-blue-600 ring-2 ring-blue-600/20 shadow-xs'
+                                    : 'bg-slate-50/90 border border-slate-200/90 hover:border-slate-300 hover:bg-white shadow-2xs'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <IconComponent className={`w-4 h-4 shrink-0 ${isSelected ? 'text-blue-600' : 'text-slate-500'}`} />
+                                  <span className={`text-xs sm:text-sm font-bold ${isSelected ? 'text-blue-950' : 'text-slate-900'}`}>{sess.title}</span>
+                                </div>
+                                <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ms-2 transition-colors ${
+                                  isSelected ? 'bg-blue-600 text-white' : 'border border-slate-300 bg-white'
+                                }`}>
+                                  {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="pt-3 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => goToStep(2)}
+                      className="inline-flex items-center gap-1.5 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-950 hover:bg-slate-100/70 transition-colors cursor-pointer active:scale-[0.96]"
+                    >
+                      {isRtl ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+                      <span>{t('postuler.step2.prev')}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => goToStep(4)}
+                      className="group inline-flex items-center gap-2 py-3.5 px-7 rounded-2xl bg-gradient-to-r from-blue-950 to-blue-900 hover:from-blue-900 hover:to-blue-800 text-white font-bold text-sm transition-all active:scale-[0.98] cursor-pointer shadow-md shadow-blue-950/20 ring-1 ring-white/10"
+                    >
+                      <span>{t('postuler.step2.continue')}</span>
+                      {isRtl ? (
+                        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                      ) : (
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ÉTAPE 4 : COORDONNÉES & ENVOI */}
+              {step === 4 && (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-normal">
+                      {t('postuler.step3.title')}
+                    </h2>
+                    <p className="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                      <Trans i18nKey="postuler.step3.desc" values={{ city: CITY_NAME_MAP[city] }} components={{ 1: <strong /> }} />
+                    </p>
+                  </div>
+
+                  {/* RÉCAPITULATIF DE LA SÉLECTION */}
+                  <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80">
+                    <div className="flex items-center gap-2 mb-2.5 text-xs font-bold text-blue-950 uppercase tracking-wider">
+                      <Sparkles className="w-3.5 h-3.5 text-blue-700" />
+                      <span>{t('postuler.step4.recap_title')}</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                      <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80">
+                        <span className="block text-[10px] text-slate-500 font-medium">{t('postuler.step4.program_label')}</span>
+                        <strong className="block text-slate-900 font-bold text-xs truncate mt-0.5">
+                          {program === 'studienkolleg' ? 'Studienkolleg' : 'Allemand & telc'}
+                        </strong>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80">
+                        <span className="block text-[10px] text-slate-500 font-medium">{t('postuler.step4.track_label')}</span>
+                        <strong className="block text-slate-900 font-bold text-xs truncate mt-0.5">
+                          {program === 'studienkolleg' ? track.toUpperCase() : langLevel.toUpperCase()}
+                        </strong>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 col-span-2 sm:col-span-1">
+                        <span className="block text-[10px] text-slate-500 font-medium">{t('postuler.step4.centre_label')}</span>
+                        <strong className="block text-slate-900 font-bold text-xs truncate mt-0.5">
+                          {CITY_NAME_MAP[city]}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                        {t('postuler.step3.name')} <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 start-0 ps-3.5 flex items-center pointer-events-none text-slate-400">
+                          <User className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="text"
+                          required
+                          placeholder={t('postuler.step3.name_ph')}
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="w-full ps-10 pe-3.5 py-3 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all shadow-2xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                        {t('postuler.step3.phone')} <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 start-0 ps-3.5 flex items-center pointer-events-none text-slate-400">
+                          <Phone className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="tel"
+                          required
+                          placeholder={t('postuler.step3.phone_ph')}
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          dir="ltr"
+                          className={`w-full ps-10 pe-3.5 py-3 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all shadow-2xs ${isRtl ? 'text-right' : ''}`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                      {t('postuler.step3.email')}
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 start-0 ps-3.5 flex items-center pointer-events-none text-slate-400">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="email"
+                        placeholder={t('postuler.step3.email_ph')}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        dir="ltr"
+                        className={`w-full ps-10 pe-3.5 py-3 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all shadow-2xs ${isRtl ? 'text-right' : ''}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                      {t('postuler.step3.notes')}
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder={t('postuler.step3.notes_ph')}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all resize-none shadow-2xs"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => goToStep(3)}
+                      className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-950 hover:bg-slate-100/70 transition-colors cursor-pointer active:scale-[0.96]"
+                    >
+                      {isRtl ? <ArrowRight className="w-3.5 h-3.5" /> : <ArrowLeft className="w-3.5 h-3.5" />}
+                      <span>{t('postuler.step3.prev')}</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="inline-flex items-center gap-2 py-3.5 px-8 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold text-sm sm:text-base shadow-lg shadow-emerald-900/20 ring-1 ring-white/20 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      {isSubmitting ? (
+                        <span>{t('postuler.step3.submitting')}</span>
+                      ) : (
+                        <>
+                          <span>{t('postuler.step3.submit')}</span>
+                          <Check className="w-4 h-4 stroke-[2.5]" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+              </div>
+
+            </div>
+
+            <div className="lg:col-span-5 space-y-4">
+              
+              <div className="bg-white md:bg-white/90 md:backdrop-blur-2xl rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.08)] ring-1 ring-slate-900/5 space-y-4">
+                <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+                  <span className="text-xs font-bold text-slate-600">
+                    {program === 'langue' ? t('postuler.sidebar_langue.title') : t('postuler.sidebar.title')}
+                  </span>
+                  <span className="text-[11px] font-bold text-blue-900 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100/90 shadow-2xs">
+                    {program === 'langue' ? t('postuler.sidebar_langue.badge') : t('postuler.sidebar.badge')}
+                  </span>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  {program === 'langue' ? (
+                    <>
+                      <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
+                        <ShieldCheck className="w-4 h-4 text-blue-950 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-slate-900 block font-bold text-xs sm:text-[13px]">{t('postuler.sidebar_langue.item1_title')}</strong>
+                          <span className="text-slate-500 text-[11px] leading-relaxed block mt-0.5">{t('postuler.sidebar_langue.item1_desc')}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
+                        <Award className="w-4 h-4 text-blue-950 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-slate-900 block font-bold text-xs sm:text-[13px]">{t('postuler.sidebar_langue.item2_title')}</strong>
+                          <span className="text-slate-500 text-[11px] leading-relaxed block mt-0.5">{t('postuler.sidebar_langue.item2_desc')}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
+                        <CheckCircle2 className="w-4 h-4 text-blue-950 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-slate-900 block font-bold text-xs sm:text-[13px]">{t('postuler.sidebar_langue.item3_title')}</strong>
+                          <span className="text-slate-500 text-[11px] leading-relaxed block mt-0.5">{t('postuler.sidebar_langue.item3_desc')}</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
+                        <Award className="w-4 h-4 text-blue-950 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-slate-900 block font-bold text-xs sm:text-[13px]">{t('postuler.sidebar.item1_title')}</strong>
+                          <span className="text-slate-500 text-[11px] leading-relaxed block mt-0.5">{t('postuler.sidebar.item1_desc')}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
+                        <Calendar className="w-4 h-4 text-blue-950 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-slate-900 block font-bold text-xs sm:text-[13px]">{t('postuler.sidebar.item2_title')}</strong>
+                          <span className="text-slate-500 text-[11px] leading-relaxed block mt-0.5">{t('postuler.sidebar.item2_desc')}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
+                        <Home className="w-4 h-4 text-blue-950 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-slate-900 block font-bold text-xs sm:text-[13px]">{t('postuler.sidebar.item3_title')}</strong>
+                          <span className="text-slate-500 text-[11px] leading-relaxed block mt-0.5">{t('postuler.sidebar.item3_desc')}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-5 rounded-3xl bg-emerald-50/80 backdrop-blur-xl border border-emerald-200/80 text-xs text-slate-700 space-y-2 shadow-sm">
+                <div className="flex items-center gap-2 text-emerald-950 font-bold">
+                  <Phone className="w-4 h-4 text-emerald-600" />
+                  <span>{program === 'langue' ? t('postuler.sidebar_langue.assistance') : t('postuler.sidebar.assistance')}</span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  {program === 'langue' ? t('postuler.sidebar_langue.assistance_desc') : t('postuler.sidebar.assistance_desc')}
+                </p>
+                <div className="flex flex-col gap-1.5 pt-1">
+                  <a
+                    href="https://wa.me/212710244263"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-emerald-700 font-bold hover:underline active:scale-[0.98]"
+                    dir="ltr"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>WhatsApp : 0710 244 263</span>
+                  </a>
+                  <a
+                    href="mailto:contact@gpsk-marokko.com"
+                    className="inline-flex items-center gap-1.5 text-slate-700 font-semibold hover:text-slate-900 hover:underline active:scale-[0.98]"
+                    dir="ltr"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-blue-900" />
+                    <span>contact@gpsk-marokko.com</span>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+
+      <footer className="bg-white/80 backdrop-blur-xl border-t border-slate-200/70 py-6 text-xs text-slate-500 relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-start">
+          <p>{t('footer.rights', { year: new Date().getFullYear() })}</p>
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-slate-400">
+            <span className="text-slate-600">Casablanca</span>
+            <span>•</span>
+            <span className="text-slate-600">Fès</span>
+            <span>•</span>
+            <span className="text-slate-600">Glauchau (Allemagne)</span>
+          </div>
+          <div>
+            <span>Powered by </span>
+            <a 
+              href="https://wa.me/212659349471" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-sky-500 hover:text-sky-600 font-semibold transition-colors hover:underline"
+            >
+              UIDevelop.ma
+            </a>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+}

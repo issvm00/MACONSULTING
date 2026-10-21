@@ -154,7 +154,7 @@ export function Navbar() {
         className={`max-w-7xl mx-auto h-[58px] sm:h-[66px] rounded-full pr-4 pl-2.5 sm:px-5 lg:px-6 flex items-center justify-between gap-3 pointer-events-auto transform-gpu transition-[background-color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] relative ${
           isScrolled
             ? "bg-white/95 md:backdrop-blur-md border border-slate-200/90 shadow-[0_12px_32px_-8px_rgba(11,27,61,0.12),0_2px_6px_rgba(11,27,61,0.04)]"
-            : "bg-white/92 md:backdrop-blur-md border border-slate-200/80 shadow-[0_6px_24px_-6px_rgba(11,27,61,0.06)]"
+            : "bg-white/90 md:backdrop-blur-md border border-slate-200/80 shadow-[0_6px_24px_-6px_rgba(11,27,61,0.06)]"
         }`}
       >
         {/* ========================================================= */}
@@ -206,32 +206,28 @@ export function Navbar() {
         {/* ZONE 3A (Left - Desktop lg+): Pure Focused Primary CTA    */}
         {/* ========================================================= */}
         <div className="hidden lg:flex items-center shrink-0">
-          <a
-            href="https://wa.me/212775496303"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/postuler"
             className="inline-flex items-center gap-2 px-5 xl:px-6 py-2.5 rounded-full text-xs xl:text-[13px] font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.97] shadow-sm transition-[background-color,transform,box-shadow] duration-200 group whitespace-nowrap"
           >
             <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light shrink-0" />
             <span>احجز استشارة مجانية</span>
             <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover:-translate-x-1 shrink-0" />
-          </a>
+          </Link>
         </div>
 
         {/* ========================================================= */}
         {/* ZONE 3B (Left - Mobile & Tablet <lg): Action + Menu Pill  */}
         {/* ========================================================= */}
         <div className="flex lg:hidden items-center gap-2 shrink-0">
-          {/* Quick WhatsApp Consultation Pill */}
-          <a
-            href="https://wa.me/212775496303"
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* Quick Consultation Funnel Pill */}
+          <Link
+            href="/postuler"
             className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-[11px] sm:text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 shadow-sm transition-[background-color,transform] duration-150 whitespace-nowrap"
           >
             <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light shrink-0" />
             <span>استشارة مجانية</span>
-          </a>
+          </Link>
 
           {/* Tactile Circular Menu Trigger Button */}
           <button
@@ -322,19 +318,20 @@ export function Navbar() {
                   })}
                 </nav>
 
-                {/* Primary WhatsApp CTA Button inside Drawer */}
+                {/* Primary Consultation CTA Button inside Drawer */}
                 <div className="pt-1">
-                  <a
-                    href="https://wa.me/212775496303"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                  <Link
+                    href="/postuler"
+                    onClick={() => {
+                      document.body.style.overflow = "unset";
+                      setIsMobileMenuOpen(false);
+                    }}
                     className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-full text-sm font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-md shadow-brand-navy/15 transition-[background-color,transform]"
                   >
                     <MessageCircle className="w-4 h-4 text-brand-electric-light shrink-0" />
-                    <span>تحدث مع مستشار معتمد عبر واتساب</span>
+                    <span>تقييم الملف وحجز استشارة مجانية</span>
                     <ArrowLeft className="w-4 h-4 shrink-0" />
-                  </a>
+                  </Link>
                 </div>
 
                 {/* Official Office Address Footnote inside Mobile Drawer */}

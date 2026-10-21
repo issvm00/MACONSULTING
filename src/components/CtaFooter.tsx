@@ -224,16 +224,14 @@ export function CtaFooter() {
 
             {/* Crisp Pure White Pill Action Button */}
             <div className="pt-1.5 sm:pt-2">
-              <a
-                href="https://wa.me/212775496303?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%20%D9%81%D8%B1%D9%8A%D9%82%20M%26A%D8%8C%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D8%AD%D8%AC%D8%B2%20%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9%20%D9%85%D8%AC%D8%A7%D9%86%D9%8A%D8%A9%20%D9%84%D9%84%D8%AF%D8%B1%D8%A7%D8%B3%D8%A9%20%D9%81%D9%8A%20%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/postuler"
                 className="inline-flex items-center justify-center gap-2.5 px-7 sm:px-9 py-3.5 sm:py-4 rounded-full bg-white text-brand-navy hover:bg-blue-50 active:scale-[0.97] font-bold text-xs sm:text-sm shadow-[0_14px_30px_-6px_rgba(7,18,40,0.35)] hover:shadow-[0_18px_38px_-6px_rgba(255,255,255,0.28)] transition-[background-color,transform,box-shadow] duration-200 group whitespace-nowrap"
               >
                 <MessageCircle className="w-4 h-4 text-brand-electric shrink-0" />
                 <span>احجز استشارتك المجانية الآن</span>
                 <ArrowLeft className="w-4 h-4 text-brand-navy transition-transform duration-200 group-hover:-translate-x-1 shrink-0" />
-              </a>
+              </Link>
             </div>
           </div>
         </motion.div>
@@ -339,24 +337,17 @@ export function CtaFooter() {
               الوجهات المعتمدة
             </h3>
             <ul className="space-y-2.5 text-xs sm:text-[13px] font-medium text-slate-500">
-              {STUDY_DESTINATIONS.map((dest) => {
-                const whatsappQuery = encodeURIComponent(
-                  `السلام عليكم فريق M&A، أرغب في استشارة مجانية حول ${dest.label}`
-                );
-                return (
-                  <li key={dest.code}>
-                    <a
-                      href={`https://wa.me/212775496303?text=${whatsappQuery}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-brand-electric transition-colors duration-150 inline-flex items-center gap-2 group"
-                    >
-                      <FlagDot code={dest.code} />
-                      <span>{dest.label}</span>
-                    </a>
-                  </li>
-                );
-              })}
+              {STUDY_DESTINATIONS.map((dest) => (
+                <li key={dest.code}>
+                  <Link
+                    href={`/postuler?destination=${dest.code}`}
+                    className="hover:text-brand-electric transition-colors duration-150 inline-flex items-center gap-2 group"
+                  >
+                    <FlagDot code={dest.code} />
+                    <span>{dest.label}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

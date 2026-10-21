@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle,
@@ -278,16 +279,14 @@ export function Hero() {
                 variants={heroItemVariants}
                 className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
               >
-                <a
-                  href="https://wa.me/212775496303"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/postuler"
                   className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full text-sm sm:text-base font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-lg shadow-brand-navy/10 transition-[background-color,transform,box-shadow] duration-200 group"
                 >
                   <MessageCircle className="w-5 h-5 text-brand-electric-light shrink-0" />
                   <span>تحدث مع مستشار معتمد</span>
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200 shrink-0" />
-                </a>
+                </Link>
 
                 <a
                   href="#results"

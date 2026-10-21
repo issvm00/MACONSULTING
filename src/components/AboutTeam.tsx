@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck,
@@ -373,15 +374,13 @@ export function AboutTeam() {
                 </p>
               </div>
 
-              <a
-                href="https://wa.me/212775496303"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/postuler"
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-white text-brand-navy hover:bg-brand-electric hover:text-white text-xs font-bold transition-all duration-200 shrink-0 group shadow-sm active:scale-95"
               >
                 <span>احجز الآن</span>
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-              </a>
+              </Link>
             </div>
           </motion.div>
 
@@ -512,15 +511,13 @@ export function AboutTeam() {
                   </p>
                 </div>
 
-                <a
-                  href="https://wa.me/212775496303"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/postuler"
                   className="w-full inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-white text-brand-navy hover:bg-brand-electric hover:text-white text-xs font-bold transition-all duration-200 shrink-0 group shadow-sm active:scale-95"
                 >
                   <span>احجز الآن</span>
                   <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -643,16 +640,14 @@ export function AboutTeam() {
 
               {/* Footer Actions */}
               <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
-                <a
-                  href="https://wa.me/212775496303"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/postuler"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 transition-all shadow-sm"
                 >
                   <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light" />
                   <span>احجز استشارتك مع المؤسسين</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
-                </a>
+                </Link>
 
                 <button
                   type="button"
