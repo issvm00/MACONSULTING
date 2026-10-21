@@ -12,17 +12,10 @@ import {
   User,
   MessageCircle,
   MapPin,
-  Cpu,
-  TrendingUp,
   Award,
-  Globe,
-  GraduationCap,
   Sparkles,
   ShieldCheck,
   CheckCircle2,
-  BookOpen,
-  Stethoscope,
-  Building2,
   Copy,
   RotateCcw,
 } from "lucide-react";
@@ -62,7 +55,7 @@ const SmoothAvatar = memo(function SmoothAvatar({
 }) {
   const [loaded, setLoaded] = useState(false);
   return (
-    <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-white bg-slate-100 shadow-sm shrink-0">
+    <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-white bg-slate-100 shadow-sm shrink-0">
       <Image
         src={src}
         alt={alt}
@@ -86,22 +79,16 @@ const CountryFlag = memo(function CountryFlag({
   code: string;
   size?: "sm" | "md" | "lg";
 }) {
+  if (code === "UNDECIDED") {
+    return null;
+  }
+
   const sizeClasses =
     size === "lg"
-      ? "w-6 h-6 sm:w-6 sm:h-6"
+      ? "w-6 h-6 sm:w-7 sm:h-7"
       : size === "md"
-      ? "w-5 h-5"
+      ? "w-5 h-5 sm:w-6 sm:h-6"
       : "w-4 h-4";
-
-  if (code === "UNDECIDED") {
-    return (
-      <span
-        className={`${sizeClasses} rounded-full bg-blue-100 text-brand-electric flex items-center justify-center shrink-0`}
-      >
-        <Sparkles className="w-3.5 h-3.5" />
-      </span>
-    );
-  }
 
   const renderSvg = () => {
     switch (code) {
@@ -228,13 +215,13 @@ const DESTINATIONS = [
 const STUDY_LEVELS = [
   {
     id: "bac",
-    title: "بكالوريا 2026 أو حاصل عليها",
-    icon: GraduationCap,
+    title: "مرحلة البكالوريا (2026 أو حاصل عليها)",
+    shortTitle: "بكالوريا 2026 / حاصل عليها",
   },
   {
     id: "higher",
     title: "طالب جامعي (Bac+2 / إجازة)",
-    icon: Award,
+    shortTitle: "طالب جامعي / دبلوم عالي",
   },
 ];
 
@@ -265,32 +252,27 @@ const BAC_YEARS = [
 const TARGET_FIELDS = [
   {
     id: "eng_it",
-    title: "الهندسة والمعلوميات و AI",
-    icon: Cpu,
+    title: "الهندسة، المعلوميات و AI",
     fullWidth: false,
   },
   {
     id: "med_health",
     title: "الطب، الصيدلة وعلوم الصحة",
-    icon: Stethoscope,
     fullWidth: false,
   },
   {
     id: "business",
     title: "إدارة الأعمال والتجارة",
-    icon: TrendingUp,
     fullWidth: false,
   },
   {
     id: "prep_lang",
     title: "السنة التحضيرية للغة",
-    icon: BookOpen,
     fullWidth: false,
   },
   {
     id: "other_field",
     title: "تخصص آخر / أحتاج مساعدة للاختيار",
-    icon: Sparkles,
     fullWidth: true,
   },
 ];
@@ -299,19 +281,19 @@ const LANGUAGE_LEVELS = [
   {
     id: "beginner",
     tag: "A1 - A2",
-    title: "مبتدئ",
+    title: "مستوى مبتدئ (A1 - A2)",
     fullWidth: false,
   },
   {
     id: "intermediate",
     tag: "B1 - B2",
-    title: "متوسط إلى جيد",
+    title: "متوسط إلى جيد (B1 - B2)",
     fullWidth: false,
   },
   {
     id: "advanced",
     tag: "B2+ / IELTS",
-    title: "مستوى متقدم — جاهز للقبول المباشر",
+    title: "مستوى متقدم (B2+ / IELTS) — جاهز للقبول المباشر",
     fullWidth: true,
   },
 ];
@@ -325,30 +307,26 @@ const BUDGET_RANGES = [
 
 const CONSULT_MODES_BY_COUNTRY: Record<
   StudentCountry,
-  Array<{ id: string; title: string; icon: React.ElementType }>
+  Array<{ id: string; title: string }>
 > = {
   ma: [
     {
       id: "office_agadir",
       title: "حضورياً في مقر أكادير (إنزكان)",
-      icon: Building2,
     },
     {
       id: "remote_ma",
       title: "عن بُعد عبر واتساب (جميع المدن)",
-      icon: MessageCircle,
     },
   ],
   dz: [
     {
       id: "remote_dz_full",
       title: "مواكبة شاملة عن بُعد لطلاب الجزائر",
-      icon: Globe,
     },
     {
       id: "remote_dz_eu",
       title: "توجيه مباشر مع مكتبنا في أوروبا",
-      icon: MessageCircle,
     },
   ],
 };
@@ -477,7 +455,7 @@ export function PostulerWizard() {
       `• المستوى الدراسي: ${selectedStudyLevelObj.title}`,
       `• الشعبة وسنة البكالوريا: ${selectedStreamObj.label} (${selectedYearObj.label})`,
       `• التخصص المطلوب: ${selectedFieldObj.title}`,
-      `• مستوى اللغة: ${selectedLangObj.title} (${selectedLangObj.tag})`,
+      `• مستوى اللغة: ${selectedLangObj.title}`,
       `• الميزانية التقريبية: ${selectedBudgetObj.title}`,
       `• طريقة المواكبة: ${selectedConsultObj.title}`,
     ];
@@ -561,7 +539,7 @@ export function PostulerWizard() {
             href={`https://wa.me/${activeDesk.raw}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50/90 hover:bg-brand-electric text-brand-navy hover:text-white border border-blue-200/75 text-[11px] sm:text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap group"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50/90 hover:bg-brand-electric text-brand-navy hover:text-white border border-blue-200/75 text-[11px] sm:text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap group"
           >
             <MessageCircle className="w-3.5 h-3.5 text-brand-electric group-hover:text-white transition-colors shrink-0" />
             <span>تحتاج مساعدة؟</span>
@@ -572,11 +550,11 @@ export function PostulerWizard() {
       {/* =================================================================== */}
       {/* 2. MAIN WIZARD BODY                                                 */}
       {/* =================================================================== */}
-      <main className="flex-grow py-5 sm:py-9 relative z-10">
-        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
+      <main className="flex-grow py-6 sm:py-10 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top 4-Step Segmented Progress Bar */}
-          <div className="max-w-3xl mx-auto mb-5 sm:mb-8">
-            <div className="flex items-center justify-between gap-2 text-xs sm:text-sm font-semibold mb-2">
+          <div className="max-w-3xl mx-auto mb-6 sm:mb-9">
+            <div className="flex items-center justify-between gap-2 text-xs sm:text-sm font-semibold mb-2.5">
               <span className="text-slate-500 truncate">
                 الخطوة {step} من 4:{" "}
                 <strong className="text-brand-navy font-bold">
@@ -584,13 +562,13 @@ export function PostulerWizard() {
                 </strong>
               </span>
 
-              <span className="text-brand-electric font-bold bg-white px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs border border-slate-200/90 shadow-sm tabular-nums whitespace-nowrap shrink-0">
+              <span className="text-brand-electric font-bold bg-white px-3 py-1 rounded-full text-[11px] sm:text-xs border border-slate-200/90 shadow-sm tabular-nums whitespace-nowrap shrink-0">
                 {step * 25}% مكتمل
               </span>
             </div>
 
             {/* 4 Interactive Progress Segments */}
-            <div className="grid grid-cols-4 gap-2 w-full">
+            <div className="grid grid-cols-4 gap-2.5 w-full">
               {STEP_META.map((s) => {
                 const isCompletedOrCurrent = step >= s.number;
                 const canJumpBack = s.number < step && !submittedRef;
@@ -621,7 +599,7 @@ export function PostulerWizard() {
             {/* ============================================================= */}
             {/* RIGHT COLUMN (7 Cols): INTERACTIVE MULTI-STEP CARD            */}
             {/* ============================================================= */}
-            <div className="relative lg:col-span-7 apple-glass rounded-3xl sm:rounded-[32px] border border-slate-200/90 p-4 sm:p-7 lg:p-8 shadow-[0_20px_50px_-14px_rgba(11,27,61,0.09)] overflow-hidden">
+            <div className="relative lg:col-span-7 apple-glass rounded-3xl sm:rounded-[32px] border border-slate-200/90 p-5 sm:p-8 lg:p-9 shadow-[0_20px_50px_-14px_rgba(11,27,61,0.09)] overflow-hidden">
               {/* Zero-Blur GPU Radial Top Lighting */}
               <div
                 aria-hidden="true"
@@ -644,20 +622,20 @@ export function PostulerWizard() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.98, y: -10 }}
                       transition={{ duration: 0.28, ease: TRANSITION_EASE }}
-                      className="space-y-5 text-center py-2"
+                      className="space-y-6 text-center py-3"
                     >
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-blue-50 border border-blue-200/80 text-brand-electric flex items-center justify-center mx-auto shadow-sm">
-                        <CheckCircle2 className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.2]" />
+                      <div className="w-16 h-16 rounded-3xl bg-blue-50 border border-blue-200/80 text-brand-electric flex items-center justify-center mx-auto shadow-sm">
+                        <CheckCircle2 className="w-9 h-9 stroke-[2.2]" />
                       </div>
 
                       <div className="space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-brand-navy tabular-nums">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-brand-navy tabular-nums">
                           <span>مرجع الملف الرسمي:</span>
                           <span className="text-brand-electric">
                             {submittedRef}
                           </span>
                         </div>
-                        <h2 className="text-lg sm:text-2xl font-bold text-brand-navy">
+                        <h2 className="text-xl sm:text-2xl font-bold text-brand-navy">
                           تم تجهيز ملف طلبك بنجاح، {fullName}!
                         </h2>
                         <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
@@ -670,12 +648,12 @@ export function PostulerWizard() {
                       </div>
 
                       {/* Direct WhatsApp Launch Button */}
-                      <div className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                      <div className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-3">
                         <a
                           href={generatedWhatsappUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full sm:w-auto h-11 sm:h-12 px-6 rounded-xl sm:rounded-2xl bg-brand-electric hover:bg-brand-navy text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-electric/20 inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-95 group"
+                          className="w-full sm:w-auto h-12 px-7 rounded-2xl bg-brand-electric hover:bg-brand-navy text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-electric/20 inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-95 group"
                         >
                           <MessageCircle className="w-4 h-4 shrink-0" />
                           <span>فتح واتساب وإرسال الملف</span>
@@ -685,7 +663,7 @@ export function PostulerWizard() {
                         <button
                           type="button"
                           onClick={handleCopyDossier}
-                          className="w-full sm:w-auto h-11 sm:h-12 px-5 rounded-xl sm:rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-brand-navy font-bold text-xs inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-95 cursor-pointer"
+                          className="w-full sm:w-auto h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-brand-navy font-bold text-xs inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-95 cursor-pointer"
                         >
                           <Copy className="w-3.5 h-3.5 text-brand-electric shrink-0" />
                           <span>
@@ -724,18 +702,18 @@ export function PostulerWizard() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.22, ease: TRANSITION_EASE }}
-                      className="space-y-5"
+                      className="space-y-6 sm:space-y-7"
                     >
-                      <h1 className="text-[17px] sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
+                      <h1 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
                         لنبدأ بتخصيص ملفك الدراسي في أوروبا
                       </h1>
 
-                      {/* 1A: Student Country Selector (Zero-Fluff Single-Row Cards) */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      {/* 1A: Student Country Selector — Country Flag + Title + Check */}
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           1. من أي بلد تتواصل معنا؟
                         </label>
-                        <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {[
                             {
                               id: "ma" as StudentCountry,
@@ -754,16 +732,16 @@ export function PostulerWizard() {
                                 key={c.id}
                                 type="button"
                                 onClick={() => handleSelectCountry(c.id)}
-                                className={`h-[52px] sm:h-14 px-3 sm:px-4 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 active:scale-[0.98] ${
+                                className={`min-h-[60px] sm:min-h-[64px] px-3.5 sm:px-4 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
                                     : "bg-slate-50/80 border-slate-200/90 hover:border-blue-200 hover:bg-white"
                                 }`}
                               >
-                                <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                                  <CountryFlag code={c.flag} size="lg" />
+                                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                                  <CountryFlag code={c.flag} size="md" />
                                   <strong
-                                    className={`text-xs sm:text-sm font-bold whitespace-nowrap ${
+                                    className={`text-[13px] sm:text-[15px] font-bold leading-snug ${
                                       isSelected
                                         ? "text-brand-electric"
                                         : "text-brand-navy"
@@ -774,14 +752,14 @@ export function PostulerWizard() {
                                 </div>
 
                                 <div
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -790,12 +768,12 @@ export function PostulerWizard() {
                         </div>
                       </div>
 
-                      {/* 1B: Target European Destination (Zero-Fluff Direct Country Cards) */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      {/* 1B: Target European Destination — Country Flags Only */}
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           2. ما هي وجهتك الدراسية المفضلة في أوروبا؟
                         </label>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {DESTINATIONS.map((dest) => {
                             const isSelected = destination === dest.id;
                             return (
@@ -805,16 +783,16 @@ export function PostulerWizard() {
                                 onClick={() => setDestination(dest.id)}
                                 className={`${
                                   dest.fullWidth ? "col-span-2" : ""
-                                } h-12 sm:h-[52px] px-3 sm:px-4 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 active:scale-[0.98] ${
+                                } min-h-[60px] sm:min-h-[64px] px-4 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-3 active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
-                                    : "bg-white border-slate-200/90 hover:border-blue-200 hover:bg-slate-50/50"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
+                                    : "bg-white border-slate-200/90 hover:border-blue-200 hover:bg-slate-50/60"
                                 }`}
                               >
-                                <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="flex items-center gap-3 min-w-0">
                                   <CountryFlag code={dest.id} size="md" />
                                   <strong
-                                    className={`text-xs sm:text-sm font-bold whitespace-nowrap ${
+                                    className={`text-[13px] sm:text-[15px] font-bold leading-snug ${
                                       isSelected
                                         ? "text-brand-electric"
                                         : "text-brand-navy"
@@ -825,14 +803,14 @@ export function PostulerWizard() {
                                 </div>
 
                                 <div
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -842,14 +820,14 @@ export function PostulerWizard() {
                       </div>
 
                       {/* Step 1 Sleek Action Bar */}
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-                        <span className="text-[11px] text-slate-400 font-medium">
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                        <span className="text-xs text-slate-400 font-medium">
                           الخطوة 1 من 4
                         </span>
                         <button
                           type="button"
                           onClick={() => goToStep(2)}
-                          className="group h-11 px-6 rounded-xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          className="group h-12 px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
                         >
                           <span>متابعة للملف الدراسي</span>
                           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
@@ -866,62 +844,50 @@ export function PostulerWizard() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.22, ease: TRANSITION_EASE }}
-                      className="space-y-5"
+                      className="space-y-6 sm:space-y-7"
                     >
-                      <h2 className="text-[17px] sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
+                      <h2 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
                         حدد مستواك الدراسي والتخصص المطلوب
                       </h2>
 
-                      {/* 2A: Current Study Level */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      {/* 2A: Current Study Level — Pure Minimalist Cards (No Icons) */}
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           1. مستواك الدراسي الحالي:
                         </label>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {STUDY_LEVELS.map((lvl) => {
                             const isSelected = studyLevel === lvl.id;
-                            const IconComp = lvl.icon;
                             return (
                               <button
                                 key={lvl.id}
                                 type="button"
                                 onClick={() => setStudyLevel(lvl.id)}
-                                className={`h-[52px] sm:h-14 px-3 sm:px-4 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 active:scale-[0.98] ${
+                                className={`min-h-[62px] sm:min-h-[66px] px-4 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
                                     : "bg-slate-50/80 border-slate-200/90 hover:border-blue-200 hover:bg-white"
                                 }`}
                               >
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div
-                                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                                      isSelected
-                                        ? "bg-brand-electric text-white"
-                                        : "bg-white border border-slate-200 text-slate-600"
-                                    }`}
-                                  >
-                                    <IconComp className="w-3.5 h-3.5" />
-                                  </div>
-                                  <strong
-                                    className={`text-xs sm:text-sm font-bold leading-snug ${
-                                      isSelected
-                                        ? "text-brand-electric"
-                                        : "text-brand-navy"
-                                    }`}
-                                  >
-                                    {lvl.title}
-                                  </strong>
-                                </div>
+                                <strong
+                                  className={`text-[13px] sm:text-sm font-bold leading-snug ${
+                                    isSelected
+                                      ? "text-brand-electric"
+                                      : "text-brand-navy"
+                                  }`}
+                                >
+                                  {lvl.shortTitle}
+                                </strong>
 
                                 <div
-                                  className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -931,11 +897,11 @@ export function PostulerWizard() {
                       </div>
 
                       {/* 2B: Country-Adaptive Baccalaureate Stream */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           2. شعبة البكالوريا:
                         </label>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {currentStreams.map((b) => {
                             const isSelected = bacStream === b.id;
                             return (
@@ -943,24 +909,24 @@ export function PostulerWizard() {
                                 key={b.id}
                                 type="button"
                                 onClick={() => setBacStream(b.id)}
-                                className={`h-12 px-3 sm:px-4 rounded-2xl text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 active:scale-[0.98] ${
+                                className={`min-h-[62px] sm:min-h-[66px] px-4 py-3.5 rounded-2xl text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric text-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric text-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
                                     : "bg-slate-50/80 border border-slate-200/90 text-brand-navy hover:border-blue-200 hover:bg-white"
                                 }`}
                               >
-                                <strong className="text-xs sm:text-sm font-bold leading-snug">
+                                <strong className="text-[13px] sm:text-sm font-bold leading-snug">
                                   {b.label}
                                 </strong>
                                 <div
-                                  className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -970,11 +936,11 @@ export function PostulerWizard() {
                       </div>
 
                       {/* 2C: Baccalaureate / Graduation Year */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           3. سنة الحصول على البكالوريا (أو آخر شهادة):
                         </label>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
                           {BAC_YEARS.map((y) => {
                             const isSelected = bacYear === y.id;
                             return (
@@ -982,9 +948,9 @@ export function PostulerWizard() {
                                 key={y.id}
                                 type="button"
                                 onClick={() => setBacYear(y.id)}
-                                className={`h-11 px-2 rounded-xl text-center text-xs sm:text-sm font-bold transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+                                className={`min-h-[54px] sm:min-h-[58px] px-3 py-3 rounded-2xl text-center text-[13px] sm:text-sm font-bold transition-all duration-150 cursor-pointer active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric text-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric text-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
                                     : "bg-slate-50/80 border border-slate-200/90 text-slate-700 hover:border-blue-200 hover:bg-white"
                                 }`}
                               >
@@ -995,15 +961,14 @@ export function PostulerWizard() {
                         </div>
                       </div>
 
-                      {/* 2D: Target Academic Major */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      {/* 2D: Target Academic Major — Pure Minimalist Cards (No Icons) */}
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           4. التخصص المطلوب في أوروبا:
                         </label>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {TARGET_FIELDS.map((field) => {
                             const isSelected = targetField === field.id;
-                            const IconComp = field.icon;
                             return (
                               <button
                                 key={field.id}
@@ -1011,42 +976,31 @@ export function PostulerWizard() {
                                 onClick={() => setTargetField(field.id)}
                                 className={`${
                                   field.fullWidth ? "col-span-2" : ""
-                                } h-[52px] sm:h-14 px-3 sm:px-4 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 active:scale-[0.98] ${
+                                } min-h-[62px] sm:min-h-[66px] px-4 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
-                                    : "bg-white border-slate-200/90 hover:border-blue-200 hover:bg-slate-50/50"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
+                                    : "bg-white border-slate-200/90 hover:border-blue-200 hover:bg-slate-50/60"
                                 }`}
                               >
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div
-                                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                                      isSelected
-                                        ? "bg-brand-electric text-white"
-                                        : "bg-slate-100 text-slate-600"
-                                    }`}
-                                  >
-                                    <IconComp className="w-3.5 h-3.5" />
-                                  </div>
-                                  <strong
-                                    className={`text-xs sm:text-sm font-bold leading-snug ${
-                                      isSelected
-                                        ? "text-brand-electric"
-                                        : "text-brand-navy"
-                                    }`}
-                                  >
-                                    {field.title}
-                                  </strong>
-                                </div>
+                                <strong
+                                  className={`text-[13px] sm:text-sm font-bold leading-snug ${
+                                    isSelected
+                                      ? "text-brand-electric"
+                                      : "text-brand-navy"
+                                  }`}
+                                >
+                                  {field.title}
+                                </strong>
 
                                 <div
-                                  className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -1056,20 +1010,20 @@ export function PostulerWizard() {
                       </div>
 
                       {/* Step 2 Sleek Action Bar */}
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                         <button
                           type="button"
                           onClick={() => goToStep(1)}
-                          className="h-11 px-4 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer active:scale-95"
+                          className="h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95"
                         >
-                          <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                          <ArrowRight className="w-4 h-4 shrink-0" />
                           <span>السابق</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => goToStep(3)}
-                          className="group h-11 px-6 rounded-xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          className="group h-12 px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
                         >
                           <span>متابعة للخطوة 3</span>
                           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
@@ -1086,18 +1040,18 @@ export function PostulerWizard() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.22, ease: TRANSITION_EASE }}
-                      className="space-y-5"
+                      className="space-y-6 sm:space-y-7"
                     >
-                      <h2 className="text-[17px] sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
+                      <h2 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
                         حدد مستوى اللغة، الميزانية وطريقة المواكبة
                       </h2>
 
                       {/* 3A: English Level — First 2 Side-by-Side (grid-cols-2), 3rd Advanced Full-Width (col-span-2) */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           1. مستواك في اللغة الإنجليزية:
                         </label>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {LANGUAGE_LEVELS.map((lvl) => {
                             const isSelected = englishLevel === lvl.id;
                             return (
@@ -1107,39 +1061,31 @@ export function PostulerWizard() {
                                 onClick={() => setEnglishLevel(lvl.id)}
                                 className={`${
                                   lvl.fullWidth ? "col-span-2" : ""
-                                } h-[52px] sm:h-14 px-3 sm:px-4 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 active:scale-[0.98] ${
+                                } min-h-[62px] sm:min-h-[66px] px-4 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
                                     : "bg-slate-50/80 border-slate-200/90 hover:border-blue-200 hover:bg-white"
                                 }`}
                               >
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <span
-                                    dir="ltr"
-                                    className="px-2 py-0.5 rounded-md bg-blue-100/90 text-[11px] font-extrabold text-brand-electric shrink-0"
-                                  >
-                                    {lvl.tag}
-                                  </span>
-                                  <strong
-                                    className={`text-xs sm:text-sm font-bold truncate ${
-                                      isSelected
-                                        ? "text-brand-electric"
-                                        : "text-brand-navy"
-                                    }`}
-                                  >
-                                    {lvl.title}
-                                  </strong>
-                                </div>
+                                <strong
+                                  className={`text-[13px] sm:text-sm font-bold leading-snug ${
+                                    isSelected
+                                      ? "text-brand-electric"
+                                      : "text-brand-navy"
+                                  }`}
+                                >
+                                  {lvl.title}
+                                </strong>
 
                                 <div
-                                  className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -1148,12 +1094,12 @@ export function PostulerWizard() {
                         </div>
                       </div>
 
-                      {/* 3B: Annual Tuition Budget Range (2x2 Grid) */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      {/* 3B: Annual Tuition Budget Range — Spacious 2x2 Cards */}
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           2. الميزانية السنوية التقريبية:
                         </label>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {BUDGET_RANGES.map((b) => {
                             const isSelected = budgetRange === b.id;
                             return (
@@ -1161,14 +1107,14 @@ export function PostulerWizard() {
                                 key={b.id}
                                 type="button"
                                 onClick={() => setBudgetRange(b.id)}
-                                className={`h-12 sm:h-[52px] px-3 sm:px-4 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 active:scale-[0.98] ${
+                                className={`min-h-[62px] sm:min-h-[66px] px-4 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 active:scale-[0.98] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
-                                    : "bg-white border-slate-200/90 hover:border-blue-200 hover:bg-slate-50/50"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
+                                    : "bg-white border-slate-200/90 hover:border-blue-200 hover:bg-slate-50/60"
                                 }`}
                               >
                                 <strong
-                                  className={`text-xs sm:text-sm font-bold leading-snug ${
+                                  className={`text-[13px] sm:text-sm font-bold leading-snug ${
                                     isSelected
                                       ? "text-brand-electric"
                                       : "text-brand-navy"
@@ -1177,14 +1123,14 @@ export function PostulerWizard() {
                                   {b.title}
                                 </strong>
                                 <div
-                                  className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -1193,56 +1139,44 @@ export function PostulerWizard() {
                         </div>
                       </div>
 
-                      {/* 3C: Country-Adaptive Consultation Mode */}
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold text-slate-600">
+                      {/* 3C: Country-Adaptive Consultation Mode — Pure Minimalist Cards (No Icons) */}
+                      <div className="space-y-3">
+                        <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           3. طريقة الاستشارة والمواكبة:
                         </label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                           {currentConsultModes.map((mode) => {
                             const isSelected = consultMode === mode.id;
-                            const IconComp = mode.icon;
                             return (
                               <button
                                 key={mode.id}
                                 type="button"
                                 onClick={() => setConsultMode(mode.id)}
-                                className={`h-[52px] sm:h-14 px-3.5 sm:px-4 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 active:scale-[0.99] ${
+                                className={`min-h-[62px] sm:min-h-[66px] px-4 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] ${
                                   isSelected
-                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-2 ring-brand-electric/15 shadow-sm"
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
                                     : "bg-slate-50/80 border-slate-200/90 hover:border-blue-200 hover:bg-white"
                                 }`}
                               >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <div
-                                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                                      isSelected
-                                        ? "bg-brand-electric text-white"
-                                        : "bg-white border border-slate-200 text-brand-navy"
-                                    }`}
-                                  >
-                                    <IconComp className="w-4 h-4" />
-                                  </div>
-                                  <strong
-                                    className={`text-xs sm:text-sm font-bold leading-snug ${
-                                      isSelected
-                                        ? "text-brand-electric"
-                                        : "text-brand-navy"
-                                    }`}
-                                  >
-                                    {mode.title}
-                                  </strong>
-                                </div>
+                                <strong
+                                  className={`text-[13px] sm:text-sm font-bold leading-snug ${
+                                    isSelected
+                                      ? "text-brand-electric"
+                                      : "text-brand-navy"
+                                  }`}
+                                >
+                                  {mode.title}
+                                </strong>
 
                                 <div
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shrink-0 ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? "bg-brand-electric text-white"
                                       : "border border-slate-300 bg-white"
                                   }`}
                                 >
                                   {isSelected && (
-                                    <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
+                                    <Check className="w-3 h-3 stroke-[3]" />
                                   )}
                                 </div>
                               </button>
@@ -1252,20 +1186,20 @@ export function PostulerWizard() {
                       </div>
 
                       {/* Step 3 Sleek Action Bar */}
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                         <button
                           type="button"
                           onClick={() => goToStep(2)}
-                          className="h-11 px-4 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer active:scale-95"
+                          className="h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95"
                         >
-                          <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                          <ArrowRight className="w-4 h-4 shrink-0" />
                           <span>السابق</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => goToStep(4)}
-                          className="group h-11 px-6 rounded-xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          className="group h-12 px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
                         >
                           <span>متابعة لتأكيد الملف</span>
                           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
@@ -1283,13 +1217,13 @@ export function PostulerWizard() {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.22, ease: TRANSITION_EASE }}
                     >
-                      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-                        <h2 className="text-[17px] sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
+                      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                        <h2 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
                           أدخل معلومات التواصل لإرسال ملفك عبر واتساب
                         </h2>
 
                         {/* Live Selection Recap Box */}
-                        <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-2">
+                        <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-2.5">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-brand-navy">
                               <Sparkles className="w-3.5 h-3.5 text-brand-electric shrink-0" />
@@ -1298,18 +1232,18 @@ export function PostulerWizard() {
                             <button
                               type="button"
                               onClick={() => goToStep(1)}
-                              className="text-[11px] font-bold text-brand-electric hover:underline cursor-pointer whitespace-nowrap"
+                              className="text-xs font-bold text-brand-electric hover:underline cursor-pointer whitespace-nowrap"
                             >
                               تعديل الاختيارات
                             </button>
                           </div>
 
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                            <div className="p-2.5 rounded-xl bg-white border border-slate-200/80">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+                            <div className="p-3 rounded-xl bg-white border border-slate-200/80">
                               <span className="block text-[10px] text-slate-500 font-medium">
                                 الوجهة
                               </span>
-                              <div className="flex items-center gap-1.5 mt-0.5">
+                              <div className="flex items-center gap-1.5 mt-1">
                                 <CountryFlag
                                   code={selectedDestinationObj.id}
                                   size="sm"
@@ -1320,20 +1254,20 @@ export function PostulerWizard() {
                               </div>
                             </div>
 
-                            <div className="p-2.5 rounded-xl bg-white border border-slate-200/80">
+                            <div className="p-3 rounded-xl bg-white border border-slate-200/80">
                               <span className="block text-[10px] text-slate-500 font-medium">
                                 التخصص
                               </span>
-                              <strong className="block text-brand-navy font-bold text-xs truncate mt-0.5">
+                              <strong className="block text-brand-navy font-bold text-xs truncate mt-1">
                                 {selectedFieldObj.title}
                               </strong>
                             </div>
 
-                            <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 col-span-2 sm:col-span-1">
+                            <div className="p-3 rounded-xl bg-white border border-slate-200/80 col-span-2 sm:col-span-1">
                               <span className="block text-[10px] text-slate-500 font-medium">
                                 بلد الإقامة
                               </span>
-                              <div className="flex items-center gap-1.5 mt-0.5">
+                              <div className="flex items-center gap-1.5 mt-1">
                                 <CountryFlag
                                   code={studentCountry === "ma" ? "MA" : "DZ"}
                                   size="sm"
@@ -1350,9 +1284,9 @@ export function PostulerWizard() {
                         </div>
 
                         {/* Form Inputs */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                            <label className="block text-xs sm:text-[13px] font-bold text-slate-600 mb-2">
                               الاسم الكامل للطالب(ة){" "}
                               <span className="text-red-500">*</span>
                             </label>
@@ -1367,13 +1301,13 @@ export function PostulerWizard() {
                                 placeholder="مثال: أمين بنعلي"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
-                                className="select-text w-full pr-10 pl-3.5 py-2.5 sm:py-3 bg-slate-50/90 border border-slate-200/90 rounded-xl sm:rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all shadow-sm"
+                                className="select-text w-full pr-10 pl-4 py-3.5 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all shadow-sm"
                               />
                             </div>
                           </div>
 
                           <div>
-                            <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                            <label className="block text-xs sm:text-[13px] font-bold text-slate-600 mb-2">
                               رقم الهاتف (واتساب){" "}
                               <span className="text-red-500">*</span>
                             </label>
@@ -1393,14 +1327,14 @@ export function PostulerWizard() {
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 dir="ltr"
-                                className="select-text w-full pr-10 pl-3.5 py-2.5 sm:py-3 bg-slate-50/90 border border-slate-200/90 rounded-xl sm:rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all shadow-sm text-right"
+                                className="select-text w-full pr-10 pl-4 py-3.5 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all shadow-sm text-right"
                               />
                             </div>
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          <label className="block text-xs sm:text-[13px] font-bold text-slate-600 mb-2">
                             {studentCountry === "ma"
                               ? "المدينة الحالية في المغرب"
                               : "الولاية / المدينة في الجزائر"}{" "}
@@ -1421,13 +1355,13 @@ export function PostulerWizard() {
                               }
                               value={studentCity}
                               onChange={(e) => setStudentCity(e.target.value)}
-                              className="select-text w-full pr-10 pl-3.5 py-2.5 sm:py-3 bg-slate-50/90 border border-slate-200/90 rounded-xl sm:rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all shadow-sm"
+                              className="select-text w-full pr-10 pl-4 py-3.5 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all shadow-sm"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                          <label className="block text-xs sm:text-[13px] font-bold text-slate-600 mb-2">
                             سؤال أو ملاحظة إضافية للمستشار (اختياري)
                           </label>
                           <textarea
@@ -1435,24 +1369,24 @@ export function PostulerWizard() {
                             placeholder="اكتب أي استفسار حول التخصص، المنح أو الإجراءات..."
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
-                            className="select-text w-full px-3.5 py-2.5 bg-slate-50/90 border border-slate-200/90 rounded-xl sm:rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all resize-none shadow-sm"
+                            className="select-text w-full px-4 py-3 bg-slate-50/90 border border-slate-200/90 rounded-2xl text-sm text-brand-navy placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-electric/10 focus:border-brand-electric transition-all resize-none shadow-sm"
                           />
                         </div>
 
                         {/* Step 4 Sleek Single-Line Action Bar */}
-                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2.5">
+                        <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                           <button
                             type="button"
                             onClick={() => goToStep(3)}
-                            className="h-11 px-4 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer active:scale-95 shrink-0"
+                            className="h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95 shrink-0"
                           >
-                            <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                            <ArrowRight className="w-4 h-4 shrink-0" />
                             <span>السابق</span>
                           </button>
 
                           <button
                             type="submit"
-                            className="group h-11 px-5 sm:px-7 rounded-xl bg-brand-electric hover:bg-brand-navy text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-electric/20 inline-flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98] transition-all cursor-pointer"
+                            className="group h-12 px-6 sm:px-8 rounded-2xl bg-brand-electric hover:bg-brand-navy text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-electric/20 inline-flex items-center justify-center gap-2.5 whitespace-nowrap active:scale-[0.98] transition-all cursor-pointer"
                           >
                             <MessageCircle className="w-4 h-4 shrink-0" />
                             <span>إرسال الملف عبر واتساب</span>
@@ -1469,40 +1403,40 @@ export function PostulerWizard() {
             {/* ============================================================= */}
             {/* LEFT COLUMN (5 Cols): STICKY AUTHORITY & GOOGLE MAPS SIDEBAR  */}
             {/* ============================================================= */}
-            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4">
+            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-5">
               {/* Card 1: Concise Founders & 3 Direct Guarantees */}
-              <div className="apple-glass rounded-3xl border border-slate-200/90 p-4 sm:p-6 shadow-[0_16px_40px_-12px_rgba(11,27,61,0.07)] space-y-3.5">
+              <div className="apple-glass rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-[0_16px_40px_-12px_rgba(11,27,61,0.07)] space-y-4">
                 {/* Founders Identity Row */}
-                <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-3 pb-3.5 border-b border-slate-100">
                   <div className="flex -space-x-2 space-x-reverse overflow-hidden shrink-0">
                     {FOUNDERS.map((f) => (
                       <SmoothAvatar key={f.name} src={f.image} alt={f.name} />
                     ))}
                   </div>
                   <div className="min-w-0">
-                    <strong className="text-xs sm:text-[13px] font-bold text-brand-navy block truncate">
+                    <strong className="text-xs sm:text-sm font-bold text-brand-navy block truncate">
                       فريق M&A Overseas Consulting
                     </strong>
-                    <span className="text-[11px] text-slate-500 font-medium block truncate">
+                    <span className="text-[11px] sm:text-xs text-slate-500 font-medium block truncate mt-0.5">
                       مرافقة شخصية مباشرة بدون وسطاء
                     </span>
                   </div>
                 </div>
 
                 {/* Live Interactive Selection Tracker */}
-                <div className="p-3 rounded-2xl bg-blue-50/60 border border-blue-200/75 space-y-2">
-                  <div className="flex items-center justify-between text-[11px] font-bold text-brand-navy">
+                <div className="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200/75 space-y-2.5">
+                  <div className="flex items-center justify-between text-xs font-bold text-brand-navy">
                     <span className="flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-brand-electric shrink-0" />
                       <span>اختياراتك الحالية</span>
                     </span>
-                    <span className="text-[10px] text-brand-electric font-bold whitespace-nowrap">
+                    <span className="text-[11px] text-brand-electric font-bold whitespace-nowrap">
                       تحديث تلقائي
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="p-2 rounded-xl bg-white border border-slate-200/80 flex items-center gap-1.5 min-w-0">
+                  <div className="grid grid-cols-2 gap-2.5 text-xs">
+                    <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 flex items-center gap-2 min-w-0">
                       <CountryFlag
                         code={studentCountry === "ma" ? "MA" : "DZ"}
                         size="sm"
@@ -1512,7 +1446,7 @@ export function PostulerWizard() {
                       </span>
                     </div>
 
-                    <div className="p-2 rounded-xl bg-white border border-slate-200/80 flex items-center gap-1.5 min-w-0">
+                    <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 flex items-center gap-2 min-w-0">
                       <CountryFlag code={selectedDestinationObj.id} size="sm" />
                       <span className="font-bold text-brand-navy truncate">
                         {selectedDestinationObj.name}
@@ -1522,30 +1456,30 @@ export function PostulerWizard() {
                 </div>
 
                 {/* 3 Concise Zero-Fluff Guarantee Pills */}
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-slate-50/90 border border-slate-200/70">
-                    <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100 text-brand-electric flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-3.5 h-3.5" />
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/90 border border-slate-200/70">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-100 text-brand-electric flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-4 h-4" />
                     </div>
-                    <strong className="text-brand-navy font-bold text-xs">
+                    <strong className="text-brand-navy font-bold text-xs sm:text-[13px]">
                       قبول جامعي رسمي مضمون 100%
                     </strong>
                   </div>
 
-                  <div className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-slate-50/90 border border-slate-200/70">
-                    <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100 text-brand-electric flex items-center justify-center shrink-0">
-                      <Award className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/90 border border-slate-200/70">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-100 text-brand-electric flex items-center justify-center shrink-0">
+                      <Award className="w-4 h-4" />
                     </div>
-                    <strong className="text-brand-navy font-bold text-xs">
+                    <strong className="text-brand-navy font-bold text-xs sm:text-[13px]">
                       إعداد احترافي لملف التأشيرة والمنح
                     </strong>
                   </div>
 
-                  <div className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-slate-50/90 border border-slate-200/70">
-                    <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100 text-brand-electric flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/90 border border-slate-200/70">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-100 text-brand-electric flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-4 h-4" />
                     </div>
-                    <strong className="text-brand-navy font-bold text-xs">
+                    <strong className="text-brand-navy font-bold text-xs sm:text-[13px]">
                       استقبال في المطار وتأمين السكن الجامعي
                     </strong>
                   </div>
@@ -1553,8 +1487,8 @@ export function PostulerWizard() {
               </div>
 
               {/* Card 2: Official Google Maps Location Card (Agadir - Inzegane) */}
-              <div className="rounded-3xl border border-slate-200/90 bg-white p-1.5 shadow-[0_16px_40px_-12px_rgba(11,27,61,0.08)] overflow-hidden relative">
-                <div className="relative w-full h-[250px] sm:h-[265px] rounded-[20px] overflow-hidden bg-slate-100">
+              <div className="rounded-3xl border border-slate-200/90 bg-white p-1.5 shadow-[0_16px_40px_-12px_rgba(11,27,61,0.08)] overflow-hidden relative transform-gpu">
+                <div className="relative w-full h-[255px] sm:h-[270px] rounded-[20px] overflow-hidden bg-slate-100">
                   {/* Top-Right Floating Pill Badge */}
                   <a
                     href="https://maps.app.goo.gl/BuLbU3tDXHJ3aFes7"
