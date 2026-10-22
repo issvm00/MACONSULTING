@@ -35,9 +35,9 @@ const waveHeights = [
   65, 45, 60, 35, 25, 40, 20, 30, 15,
 ];
 
-// 20 Official Admission / Acceptance Images in /public/reviewsimage
+// 23 Official Admission / Acceptance Images in /public/reviewsimage
 const reviewImages: string[] = Array.from(
-  { length: 20 },
+  { length: 23 },
   (_, index) => `/reviewsimage/${index + 1}.webp`
 );
 

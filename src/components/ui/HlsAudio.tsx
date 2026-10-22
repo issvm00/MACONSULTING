@@ -339,8 +339,17 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
             startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
           }
         } else {
-          // Standard MP3/Audio file: synchronous assignment + play() for iOS Safari compatibility
-          audio.src = encodedSrc;
+          // Standard MP3/OGG Audio file: synchronous assignment + play() for iOS Safari compatibility
+          let resolvedSrc = encodedSrc;
+          // Safari on iOS versions without OGG container support
+          if (
+            encodedSrc.toLowerCase().endsWith(".ogg") &&
+            audio.canPlayType("audio/ogg") === ""
+          ) {
+            resolvedSrc = encodedSrc.replace(/\.ogg$/i, ".mp3");
+          }
+
+          audio.src = resolvedSrc;
           if (initialTime !== undefined && initialTime > 0) {
             const setInitialSeek = () => {
               if (
@@ -366,6 +375,29 @@ export const HlsAudio = forwardRef<HlsAudioHandle, HlsAudioProps>(
               .catch((err: unknown) => {
                 if (sessionId !== sessionIdRef.current) return;
                 if (err instanceof DOMException && err.name === "AbortError") {
+                  return;
+                }
+                // If .ogg playback failed to decode, attempt .mp3 fallback before simulation
+                if (
+                  resolvedSrc.toLowerCase().endsWith(".ogg") &&
+                  resolvedSrc === encodedSrc
+                ) {
+                  const fallbackMp3 = encodedSrc.replace(/\.ogg$/i, ".mp3");
+                  audio.src = fallbackMp3;
+                  audio
+                    .play()
+                    .then(() => {
+                      if (sessionId !== sessionIdRef.current) return;
+                      callbacksRef.current.onBufferingChange?.(false);
+                      callbacksRef.current.onPlayStateChange?.(true);
+                    })
+                    .catch(() => {
+                      startSimulatedPlayback(
+                        encodedSrc,
+                        fallbackDuration,
+                        sessionId
+                      );
+                    });
                   return;
                 }
                 startSimulatedPlayback(encodedSrc, fallbackDuration, sessionId);
