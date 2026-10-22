@@ -22,27 +22,45 @@ import {
 
 const TRANSITION_EASE = [0.22, 1, 0.36, 1] as const;
 
-type StudentCountry = "ma" | "dz";
+type StudentCountry = "ma" | "other";
 
-// WhatsApp Routing Numbers per Country Desk
-const WHATSAPP_NUMBERS: Record<
-  StudentCountry,
-  { raw: string; deskLabel: string }
-> = {
-  ma: {
-    raw: "212775496303",
-    deskLabel: "مكتب المغرب الرسمي (أكادير - إنزكان)",
+type AdvisorId = "karima" | "marouane" | "salma";
+
+// Dedicated WhatsApp Advisors (Step 5 Choice for Student/Parent Comfort)
+const ADVISORS: {
+  id: AdvisorId;
+  name: string;
+  fullTitle: string;
+  greetingTitle: string;
+  rawPhone: string;
+}[] = [
+  {
+    id: "karima",
+    name: "كريمة",
+    fullTitle: "المستشارة كريمة",
+    greetingTitle: "أستاذة كريمة",
+    rawPhone: "212709680036",
   },
-  dz: {
-    raw: "37062202955",
-    deskLabel: "المكتب الأوروبي المخصص لطلاب الجزائر",
+  {
+    id: "marouane",
+    name: "مروان",
+    fullTitle: "المستشار مروان",
+    greetingTitle: "أستاذ مروان",
+    rawPhone: "37066059704",
   },
-};
+  {
+    id: "salma",
+    name: "سلمى",
+    fullTitle: "المستشارة سلمى",
+    greetingTitle: "أستاذة سلمى",
+    rawPhone: "212775496303",
+  },
+];
 
 const FOUNDERS = [
   { name: "علي بنعمر", image: "/team/ali_benamar.jpg" },
+  { name: "محمد أمين جابون", image: "/team/amine_jaboune.jpg" },
   { name: "مروان بنعمر", image: "/team/marouan_ben_amar.jpg" },
-  { name: "محمد أمين جبون", image: "/team/amine_jaboune.jpg" },
 ];
 
 // Progressive Avatar Loader for Weak Mobile Networks
@@ -71,7 +89,7 @@ const SmoothAvatar = memo(function SmoothAvatar({
   );
 });
 
-// Crisp SVG Country Flags (Morocco, Algeria + 7 European Study Destinations)
+// Crisp SVG Country Flags (Morocco, International Globe + 7 European Study Destinations)
 const CountryFlag = memo(function CountryFlag({
   code,
   size = "md",
@@ -105,20 +123,50 @@ const CountryFlag = memo(function CountryFlag({
             />
           </svg>
         );
-      case "DZ": // Algeria
+      case "OTHER": // International Globe Icon for "بلد آخر"
         return (
           <svg viewBox="0 0 24 24" className="w-full h-full">
-            <rect x="0" width="12" height="24" fill="#006233" />
-            <rect x="12" width="12" height="24" fill="#FFFFFF" />
-            <circle cx="12" cy="12" r="4.6" fill="#D21034" />
-            <circle cx="13.2" cy="12" r="3.7" fill="#FFFFFF" />
-            <path
-              d="M12 12L9.5 7.6A4.6 4.6 0 0 0 9.5 16.4Z"
-              fill="#D21034"
+            <rect width="24" height="24" fill="#EFF6FF" />
+            <circle
+              cx="12"
+              cy="12"
+              r="7.2"
+              fill="none"
+              stroke="#2563EB"
+              strokeWidth="1.5"
             />
-            <polygon
-              points="13.8,9.8 14.3,11.2 15.8,11.2 14.6,12.1 15.0,13.5 13.8,12.6 12.6,13.5 13.0,12.1 11.8,11.2 13.3,11.2"
-              fill="#D21034"
+            <ellipse
+              cx="12"
+              cy="12"
+              rx="3.4"
+              ry="7.2"
+              fill="none"
+              stroke="#2563EB"
+              strokeWidth="1.3"
+            />
+            <line
+              x1="4.8"
+              y1="12"
+              x2="19.2"
+              y2="12"
+              stroke="#2563EB"
+              strokeWidth="1.3"
+            />
+            <line
+              x1="6"
+              y1="8.8"
+              x2="18"
+              y2="8.8"
+              stroke="#2563EB"
+              strokeWidth="1.1"
+            />
+            <line
+              x1="6"
+              y1="15.2"
+              x2="18"
+              y2="15.2"
+              stroke="#2563EB"
+              strokeWidth="1.1"
             />
           </svg>
         );
@@ -215,12 +263,12 @@ const DESTINATIONS = [
 const STUDY_LEVELS = [
   {
     id: "bac",
-    title: "مرحلة البكالوريا (2026 أو حاصل عليها)",
-    shortTitle: "بكالوريا 2026 / حاصل عليها",
+    title: "مرحلة البكالوريا / الثانوية العامة (حاليًا أو حاصل عليها)",
+    shortTitle: "بكالوريا / ثانوية عامة",
   },
   {
     id: "higher",
-    title: "طالب جامعي (Bac+2 / إجازة)",
+    title: "طالب جامعي (Bac+2 / إجازة / بكالوريوس)",
     shortTitle: "طالب جامعي / دبلوم عالي",
   },
 ];
@@ -235,18 +283,19 @@ const BAC_STREAMS_BY_COUNTRY: Record<
     { id: "eco", label: "علوم اقتصادية وتدبير" },
     { id: "lettres", label: "آداب وعلوم إنسانية" },
   ],
-  dz: [
-    { id: "dz_sci", label: "علوم تجريبية" },
-    { id: "dz_math", label: "رياضيات أو تقني رياضي" },
-    { id: "dz_eco", label: "تسيير واقتصاد" },
-    { id: "dz_lettres", label: "آداب وفلسفة / لغات" },
+  other: [
+    { id: "intl_sci", label: "المسار العلمي (علوم / رياضيات)" },
+    { id: "intl_eco", label: "اقتصاد وإدارة أعمال" },
+    { id: "intl_lettres", label: "آداب، لغات وعلوم إنسانية" },
+    { id: "intl_tech", label: "مسار تقني / تكنولوجي أو شهادة دولية" },
   ],
 };
 
 const BAC_YEARS = [
-  { id: "2026", label: "دفعة 2026" },
-  { id: "2025", label: "سنة 2025" },
-  { id: "2024_before", label: "2024 أو قبل" },
+  { id: "this_year", label: "هذه السنة" },
+  { id: "last_year", label: "السنة الفائتة" },
+  { id: "two_years_ago", label: "قبل سنتين" },
+  { id: "more_than_two", label: "أكثر من سنتين" },
 ];
 
 const TARGET_FIELDS = [
@@ -319,13 +368,13 @@ const CONSULT_MODES_BY_COUNTRY: Record<
       title: "عن بُعد عبر واتساب (جميع المدن)",
     },
   ],
-  dz: [
+  other: [
     {
-      id: "remote_dz_full",
-      title: "مواكبة شاملة عن بُعد لطلاب الجزائر",
+      id: "remote_intl_full",
+      title: "استشارة ومواكبة شاملة عن بُعد (عبر واتساب)",
     },
     {
-      id: "remote_dz_eu",
+      id: "remote_intl_eu",
       title: "توجيه مباشر مع مكتبنا في أوروبا",
     },
   ],
@@ -335,7 +384,8 @@ const STEP_META = [
   { number: 1, title: "البلد والوجهة الدراسية" },
   { number: 2, title: "المستوى والتخصص" },
   { number: 3, title: "اللغة والميزانية" },
-  { number: 4, title: "تأكيد وإرسال الملف" },
+  { number: 4, title: "المعلومات الشخصية" },
+  { number: 5, title: "اختيار المستشار والإرسال" },
 ];
 
 export function PostulerWizard() {
@@ -349,7 +399,7 @@ export function PostulerWizard() {
   // Step 2 State
   const [studyLevel, setStudyLevel] = useState<string>("bac");
   const [bacStream, setBacStream] = useState<string>("pc_svt");
-  const [bacYear, setBacYear] = useState<string>("2026");
+  const [bacYear, setBacYear] = useState<string>("this_year");
   const [targetField, setTargetField] = useState<string>("eng_it");
 
   // Step 3 State
@@ -363,14 +413,18 @@ export function PostulerWizard() {
   const [studentCity, setStudentCity] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
 
+  // Step 5 State (Selected Advisor)
+  const [selectedAdvisorId, setSelectedAdvisorId] =
+    useState<AdvisorId>("karima");
+
   // Submission / Confirmation State
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
   const [generatedWhatsappUrl, setGeneratedWhatsappUrl] = useState<string>("");
   const [generatedMessageText, setGeneratedMessageText] = useState<string>("");
-  const [copiedDossier, setCopiedDossier] = useState<boolean>(false);
+  const [copiedRequest, setCopiedRequest] = useState<boolean>(false);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Read optional query parameters on mount (e.g. ?destination=RO or ?country=dz)
+  // Read optional query parameters on mount (e.g. ?destination=RO or ?country=other)
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -379,28 +433,32 @@ export function PostulerWizard() {
       setDestination(destParam);
     }
     const countryParam = params.get("country")?.toLowerCase();
-    if (countryParam === "dz" || countryParam === "algeria") {
-      setStudentCountry("dz");
-      setBacStream("dz_sci");
-      setConsultMode("remote_dz_full");
+    if (
+      countryParam === "other" ||
+      countryParam === "dz" ||
+      countryParam === "algeria"
+    ) {
+      setStudentCountry("other");
+      setBacStream("intl_sci");
+      setConsultMode("remote_intl_full");
     }
     return () => {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
     };
   }, []);
 
-  // Synchronize country-specific defaults when switching between Morocco and Algeria
+  // Synchronize country-specific defaults when switching between Morocco and Other Countries
   const handleSelectCountry = useCallback((country: StudentCountry) => {
     setStudentCountry(country);
     if (country === "ma") {
-      setBacStream((prev) => (prev.startsWith("dz_") ? "pc_svt" : prev));
+      setBacStream((prev) => (prev.startsWith("intl_") ? "pc_svt" : prev));
       setConsultMode((prev) =>
-        prev.startsWith("remote_dz") ? "remote_ma" : prev
+        prev.startsWith("remote_intl") ? "remote_ma" : prev
       );
     } else {
-      setBacStream((prev) => (!prev.startsWith("dz_") ? "dz_sci" : prev));
+      setBacStream((prev) => (!prev.startsWith("intl_") ? "intl_sci" : prev));
       setConsultMode((prev) =>
-        !prev.startsWith("remote_dz") ? "remote_dz_full" : prev
+        !prev.startsWith("remote_intl") ? "remote_intl_full" : prev
       );
     }
   }, []);
@@ -432,36 +490,58 @@ export function PostulerWizard() {
   const selectedConsultObj =
     currentConsultModes.find((c) => c.id === consultMode) ||
     currentConsultModes[0];
-  const activeDesk = WHATSAPP_NUMBERS[studentCountry];
+  const selectedAdvisorObj =
+    ADVISORS.find((a) => a.id === selectedAdvisorId) || ADVISORS[0];
+
+  const handleStep4Next = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim() || !phone.trim() || !studentCity.trim()) {
+      return;
+    }
+    goToStep(5);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const cleanName = fullName.trim();
+    const cleanPhone = phone.trim();
+    const cleanCity = studentCity.trim();
+    const cleanNotes = notes.trim();
+
+    if (!cleanName || !cleanPhone || !cleanCity) {
+      goToStep(4);
+      return;
+    }
+
     const year = new Date().getFullYear();
     const randomDigits = Math.floor(1000 + Math.random() * 9000);
-    const refCode = `MA-${studentCountry.toUpperCase()}-${year}-${randomDigits}`;
+    const refPrefix = studentCountry === "ma" ? "MA" : "INTL";
+    const refCode = `MA-${refPrefix}-${year}-${randomDigits}`;
 
-    const countryName =
-      studentCountry === "ma" ? "المغرب 🇲🇦" : "الجزائر 🇩🇿";
+    const locationSummary =
+      studentCountry === "ma"
+        ? `المغرب 🇲🇦 (${cleanCity})`
+        : `${cleanCity} 🌍`;
 
     const messageLines = [
-      `السلام عليكم فريق M&A Overseas Consulting،`,
-      `أود تقديم طلب استشارة وتقييم ملف للدراسة في أوروبا (مرجع الملف: ${refCode}):`,
+      `السلام عليكم ${selectedAdvisorObj.greetingTitle} (فريق M&A Overseas Consulting)،`,
+      `أود تقديم طلب استشارة وتوجيه للدراسة في أوروبا (رقم المرجع: ${refCode}):`,
       ``,
-      `• الطالب(ة): ${fullName.trim()}`,
-      `• البلد والمدينة: ${countryName} (${studentCity.trim()})`,
-      `• رقم الهاتف: ${phone.trim()}`,
+      `• الطالب(ة): ${cleanName}`,
+      `• البلد والمدينة: ${locationSummary}`,
+      `• رقم الهاتف: ${cleanPhone}`,
       `• الوجهة المفضلة: ${selectedDestinationObj.name}`,
       `• المستوى الدراسي: ${selectedStudyLevelObj.title}`,
-      `• الشعبة وسنة البكالوريا: ${selectedStreamObj.label} (${selectedYearObj.label})`,
+      `• المسار وسنة الشهادة: ${selectedStreamObj.label} (${selectedYearObj.label})`,
       `• التخصص المطلوب: ${selectedFieldObj.title}`,
       `• مستوى اللغة: ${selectedLangObj.title}`,
       `• الميزانية التقريبية: ${selectedBudgetObj.title}`,
       `• طريقة المواكبة: ${selectedConsultObj.title}`,
     ];
 
-    if (notes.trim()) {
-      messageLines.push(`• ملاحظة إضافية: ${notes.trim()}`);
+    if (cleanNotes) {
+      messageLines.push(`• ملاحظة إضافية: ${cleanNotes}`);
     }
 
     messageLines.push(
@@ -470,13 +550,17 @@ export function PostulerWizard() {
     );
 
     const fullText = messageLines.join("\n");
-    const whatsappUrl = `https://wa.me/${activeDesk.raw}?text=${encodeURIComponent(
+    const whatsappUrl = `https://wa.me/${selectedAdvisorObj.rawPhone}?text=${encodeURIComponent(
       fullText
     )}`;
 
     setGeneratedMessageText(fullText);
     setGeneratedWhatsappUrl(whatsappUrl);
     setSubmittedRef(refCode);
+
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     // Trigger anchor click to open WhatsApp cleanly in a new tab
     const tempAnchor = document.createElement("a");
@@ -488,12 +572,24 @@ export function PostulerWizard() {
     document.body.removeChild(tempAnchor);
   };
 
-  const handleCopyDossier = useCallback(() => {
+  const handleCopyRequest = useCallback(async () => {
     if (!generatedMessageText || typeof navigator === "undefined") return;
-    navigator.clipboard?.writeText(generatedMessageText);
-    setCopiedDossier(true);
+    try {
+      await navigator.clipboard?.writeText(generatedMessageText);
+    } catch {
+      // Fallback for restricted clipboard contexts
+      const textarea = document.createElement("textarea");
+      textarea.value = generatedMessageText;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    setCopiedRequest(true);
     if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopiedDossier(false), 2500);
+    copyTimerRef.current = setTimeout(() => setCopiedRequest(false), 2500);
   }, [generatedMessageText]);
 
   return (
@@ -536,7 +632,7 @@ export function PostulerWizard() {
 
           {/* Left: Direct WhatsApp Support Capsule */}
           <a
-            href={`https://wa.me/${activeDesk.raw}`}
+            href={`https://wa.me/${selectedAdvisorObj.rawPhone}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50/90 hover:bg-brand-electric text-brand-navy hover:text-white border border-blue-200/75 text-[11px] sm:text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap group"
@@ -552,23 +648,23 @@ export function PostulerWizard() {
       {/* =================================================================== */}
       <main className="flex-grow py-6 sm:py-10 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top 4-Step Segmented Progress Bar */}
+          {/* Top 5-Step Segmented Progress Bar */}
           <div className="max-w-3xl mx-auto mb-6 sm:mb-9">
             <div className="flex items-center justify-between gap-2 text-xs sm:text-sm font-semibold mb-2.5">
               <span className="text-slate-500 truncate">
-                الخطوة {step} من 4:{" "}
+                الخطوة {step} من 5:{" "}
                 <strong className="text-brand-navy font-bold">
                   {STEP_META[step - 1]?.title}
                 </strong>
               </span>
 
               <span className="text-brand-electric font-bold bg-white px-3 py-1 rounded-full text-[11px] sm:text-xs border border-slate-200/90 shadow-sm tabular-nums whitespace-nowrap shrink-0">
-                {step * 25}% مكتمل
+                {step * 20}% مكتمل
               </span>
             </div>
 
-            {/* 4 Interactive Progress Segments */}
-            <div className="grid grid-cols-4 gap-2.5 w-full">
+            {/* 5 Interactive Progress Segments */}
+            <div className="grid grid-cols-5 gap-2 sm:gap-2.5 w-full">
               {STEP_META.map((s) => {
                 const isCompletedOrCurrent = step >= s.number;
                 const canJumpBack = s.number < step && !submittedRef;
@@ -630,18 +726,18 @@ export function PostulerWizard() {
 
                       <div className="space-y-2">
                         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-brand-navy tabular-nums">
-                          <span>مرجع الملف الرسمي:</span>
+                          <span>مرجع الطلب الرسمي:</span>
                           <span className="text-brand-electric">
                             {submittedRef}
                           </span>
                         </div>
                         <h2 className="text-xl sm:text-2xl font-bold text-brand-navy">
-                          تم تجهيز ملف طلبك بنجاح، {fullName}!
+                          تم تجهيز طلب الاستشارة بنجاح، {fullName}!
                         </h2>
                         <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                          اضغط على الزر أسفله لفتح واتساب وإرسال ملفك مباشرة إلى{" "}
+                          اضغط على الزر أسفله لفتح واتساب وإرسال معلوماتك مباشرة إلى{" "}
                           <strong className="text-brand-navy">
-                            {activeDesk.deskLabel}
+                            {selectedAdvisorObj.fullTitle}
                           </strong>
                           .
                         </p>
@@ -656,20 +752,22 @@ export function PostulerWizard() {
                           className="w-full sm:w-auto h-12 px-7 rounded-2xl bg-brand-electric hover:bg-brand-navy text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-electric/20 inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-95 group"
                         >
                           <MessageCircle className="w-4 h-4 shrink-0" />
-                          <span>فتح واتساب وإرسال الملف</span>
+                          <span>
+                            فتح واتساب مع {selectedAdvisorObj.fullTitle}
+                          </span>
                           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
                         </a>
 
                         <button
                           type="button"
-                          onClick={handleCopyDossier}
+                          onClick={handleCopyRequest}
                           className="w-full sm:w-auto h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-brand-navy font-bold text-xs inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-95 cursor-pointer"
                         >
                           <Copy className="w-3.5 h-3.5 text-brand-electric shrink-0" />
                           <span>
-                            {copiedDossier
-                              ? "تم نسخ تفاصيل الملف ✓"
-                              : "نسخ نص الملف"}
+                            {copiedRequest
+                              ? "تم نسخ تفاصيل الطلب ✓"
+                              : "نسخ نص الطلب"}
                           </span>
                         </button>
                       </div>
@@ -681,7 +779,7 @@ export function PostulerWizard() {
                           className="inline-flex items-center gap-1.5 hover:text-brand-electric transition-colors cursor-pointer"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
-                          <span>تعديل معطيات الملف</span>
+                          <span>تعديل المعلومات</span>
                         </button>
 
                         <Link
@@ -705,10 +803,10 @@ export function PostulerWizard() {
                       className="space-y-6 sm:space-y-7"
                     >
                       <h1 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
-                        لنبدأ بتخصيص ملفك الدراسي في أوروبا
+                        حدد بلد الإقامة والوجهة الدراسية المفضلة
                       </h1>
 
-                      {/* 1A: Student Country Selector — Country Flag + Title + Check */}
+                      {/* 1A: Student Country Selector — Country Flag / Globe + Title + Check */}
                       <div className="space-y-3">
                         <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
                           1. من أي بلد تتواصل معنا؟
@@ -718,12 +816,12 @@ export function PostulerWizard() {
                             {
                               id: "ma" as StudentCountry,
                               flag: "MA",
-                              title: "المملكة المغربية",
+                              title: "المغرب",
                             },
                             {
-                              id: "dz" as StudentCountry,
-                              flag: "DZ",
-                              title: "الجمهورية الجزائرية",
+                              id: "other" as StudentCountry,
+                              flag: "OTHER",
+                              title: "بلد آخر",
                             },
                           ].map((c) => {
                             const isSelected = studentCountry === c.id;
@@ -820,16 +918,16 @@ export function PostulerWizard() {
                       </div>
 
                       {/* Step 1 Sleek Action Bar */}
-                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                        <span className="text-xs text-slate-400 font-medium">
-                          الخطوة 1 من 4
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2.5 sm:gap-3">
+                        <span className="text-xs text-slate-400 font-medium whitespace-nowrap shrink-0">
+                          الخطوة 1 من 5
                         </span>
                         <button
                           type="button"
                           onClick={() => goToStep(2)}
-                          className="group h-12 px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          className="group h-12 px-4 sm:px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm min-w-0"
                         >
-                          <span>متابعة للملف الدراسي</span>
+                          <span className="truncate">متابعة للمعلومات الدراسية</span>
                           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
                         </button>
                       </div>
@@ -896,10 +994,12 @@ export function PostulerWizard() {
                         </div>
                       </div>
 
-                      {/* 2B: Country-Adaptive Baccalaureate Stream */}
+                      {/* 2B: Country-Adaptive Baccalaureate / High School Stream */}
                       <div className="space-y-3">
                         <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
-                          2. شعبة البكالوريا:
+                          {studentCountry === "ma"
+                            ? "2. شعبة البكالوريا:"
+                            : "2. المسار الدراسي (البكالوريا / الثانوية العامة):"}
                         </label>
                         <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                           {currentStreams.map((b) => {
@@ -935,12 +1035,14 @@ export function PostulerWizard() {
                         </div>
                       </div>
 
-                      {/* 2C: Baccalaureate / Graduation Year */}
+                      {/* 2C: Baccalaureate / Graduation Year — Evergreen Relative Options */}
                       <div className="space-y-3">
                         <label className="block text-xs sm:text-[13px] font-bold text-slate-600">
-                          3. سنة الحصول على البكالوريا (أو آخر شهادة):
+                          {studentCountry === "ma"
+                            ? "3. سنة الحصول على البكالوريا (أو آخر شهادة):"
+                            : "3. سنة التخرج (البكالوريا / الثانوية أو آخر شهادة):"}
                         </label>
-                        <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                           {BAC_YEARS.map((y) => {
                             const isSelected = bacYear === y.id;
                             return (
@@ -1010,11 +1112,11 @@ export function PostulerWizard() {
                       </div>
 
                       {/* Step 2 Sleek Action Bar */}
-                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2.5 sm:gap-3">
                         <button
                           type="button"
                           onClick={() => goToStep(1)}
-                          className="h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95"
+                          className="h-12 px-4 sm:px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95 shrink-0"
                         >
                           <ArrowRight className="w-4 h-4 shrink-0" />
                           <span>السابق</span>
@@ -1023,9 +1125,9 @@ export function PostulerWizard() {
                         <button
                           type="button"
                           onClick={() => goToStep(3)}
-                          className="group h-12 px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          className="group h-12 px-5 sm:px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm min-w-0"
                         >
-                          <span>متابعة للخطوة 3</span>
+                          <span className="truncate">الخطوة التالية</span>
                           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
                         </button>
                       </div>
@@ -1186,11 +1288,11 @@ export function PostulerWizard() {
                       </div>
 
                       {/* Step 3 Sleek Action Bar */}
-                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2.5 sm:gap-3">
                         <button
                           type="button"
                           onClick={() => goToStep(2)}
-                          className="h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95"
+                          className="h-12 px-4 sm:px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95 shrink-0"
                         >
                           <ArrowRight className="w-4 h-4 shrink-0" />
                           <span>السابق</span>
@@ -1199,16 +1301,16 @@ export function PostulerWizard() {
                         <button
                           type="button"
                           onClick={() => goToStep(4)}
-                          className="group h-12 px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2.5 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          className="group h-12 px-5 sm:px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm min-w-0"
                         >
-                          <span>متابعة لتأكيد الملف</span>
+                          <span className="truncate">الخطوة التالية</span>
                           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
                         </button>
                       </div>
                     </motion.div>
-                  ) : (
+                  ) : step === 4 ? (
                     /* ======================================================= */
-                    /* STEP 4: CONTACT DETAILS & DIRECT WHATSAPP SUBMISSION    */
+                    /* STEP 4: PERSONAL CONTACT INFORMATION                    */
                     /* ======================================================= */
                     <motion.div
                       key="step-4"
@@ -1217,9 +1319,12 @@ export function PostulerWizard() {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.22, ease: TRANSITION_EASE }}
                     >
-                      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                      <form
+                        onSubmit={handleStep4Next}
+                        className="space-y-5 sm:space-y-6"
+                      >
                         <h2 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
-                          أدخل معلومات التواصل لإرسال ملفك عبر واتساب
+                          أدخل معلوماتك الشخصية للانتقال لاختيار المستشار
                         </h2>
 
                         {/* Live Selection Recap Box */}
@@ -1227,7 +1332,7 @@ export function PostulerWizard() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-brand-navy">
                               <Sparkles className="w-3.5 h-3.5 text-brand-electric shrink-0" />
-                              <span>ملخص ملفك</span>
+                              <span>ملخص اختياراتك</span>
                             </div>
                             <button
                               type="button"
@@ -1269,13 +1374,15 @@ export function PostulerWizard() {
                               </span>
                               <div className="flex items-center gap-1.5 mt-1">
                                 <CountryFlag
-                                  code={studentCountry === "ma" ? "MA" : "DZ"}
+                                  code={
+                                    studentCountry === "ma" ? "MA" : "OTHER"
+                                  }
                                   size="sm"
                                 />
                                 <strong className="text-brand-navy font-bold text-xs truncate">
                                   {studentCountry === "ma"
                                     ? "المغرب"
-                                    : "الجزائر"}{" "}
+                                    : studentCity.trim() || "بلد آخر"}{" "}
                                   ({selectedLangObj.tag})
                                 </strong>
                               </div>
@@ -1297,6 +1404,7 @@ export function PostulerWizard() {
                               <input
                                 type="text"
                                 required
+                                maxLength={80}
                                 autoComplete="name"
                                 placeholder="مثال: أمين بنعلي"
                                 value={fullName}
@@ -1317,12 +1425,14 @@ export function PostulerWizard() {
                               </div>
                               <input
                                 type="tel"
+                                inputMode="tel"
                                 required
+                                maxLength={25}
                                 autoComplete="tel"
                                 placeholder={
                                   studentCountry === "ma"
                                     ? "06XX-XXXXXX"
-                                    : "05XX-XXXXXX / +213..."
+                                    : "+XXX XX XXX XXXX"
                                 }
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
@@ -1337,7 +1447,7 @@ export function PostulerWizard() {
                           <label className="block text-xs sm:text-[13px] font-bold text-slate-600 mb-2">
                             {studentCountry === "ma"
                               ? "المدينة الحالية في المغرب"
-                              : "الولاية / المدينة في الجزائر"}{" "}
+                              : "البلد والمدينة الحالية"}{" "}
                             <span className="text-red-500">*</span>
                           </label>
                           <div className="relative">
@@ -1347,11 +1457,12 @@ export function PostulerWizard() {
                             <input
                               type="text"
                               required
+                              maxLength={80}
                               autoComplete="address-level2"
                               placeholder={
                                 studentCountry === "ma"
                                   ? "أكادير، الدار البيضاء، الرباط، مراكش..."
-                                  : "الجزائر العاصمة، وهران، قسنطينة، سطيف..."
+                                  : "مثال: الجزائر، تونس، مصر، السعودية، قطر..."
                               }
                               value={studentCity}
                               onChange={(e) => setStudentCity(e.target.value)}
@@ -1366,6 +1477,7 @@ export function PostulerWizard() {
                           </label>
                           <textarea
                             rows={2}
+                            maxLength={400}
                             placeholder="اكتب أي استفسار حول التخصص، المنح أو الإجراءات..."
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
@@ -1373,12 +1485,12 @@ export function PostulerWizard() {
                           />
                         </div>
 
-                        {/* Step 4 Sleek Single-Line Action Bar */}
-                        <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                        {/* Step 4 Sleek Action Bar -> Advances to Step 5 */}
+                        <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2.5 sm:gap-3">
                           <button
                             type="button"
                             onClick={() => goToStep(3)}
-                            className="h-12 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95 shrink-0"
+                            className="h-12 px-4 sm:px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95 shrink-0"
                           >
                             <ArrowRight className="w-4 h-4 shrink-0" />
                             <span>السابق</span>
@@ -1386,10 +1498,134 @@ export function PostulerWizard() {
 
                           <button
                             type="submit"
-                            className="group h-12 px-6 sm:px-8 rounded-2xl bg-brand-electric hover:bg-brand-navy text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-electric/20 inline-flex items-center justify-center gap-2.5 whitespace-nowrap active:scale-[0.98] transition-all cursor-pointer"
+                            className="group flex-1 sm:flex-initial min-w-0 h-12 px-4 sm:px-7 rounded-2xl bg-brand-navy hover:bg-brand-electric text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          >
+                            <span className="truncate">متابعة لاختيار المستشار</span>
+                            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
+                          </button>
+                        </div>
+                      </form>
+                    </motion.div>
+                  ) : (
+                    /* ======================================================= */
+                    /* STEP 5: CHOOSE PREFERRED ADVISOR & SEND VIA WHATSAPP    */
+                    /* ======================================================= */
+                    <motion.div
+                      key="step-5"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.22, ease: TRANSITION_EASE }}
+                    >
+                      <form
+                        onSubmit={handleSubmit}
+                        className="space-y-6 sm:space-y-7"
+                      >
+                        <div className="space-y-2">
+                          <h2 className="text-lg sm:text-2xl font-bold text-brand-navy leading-snug tracking-tight">
+                            اختر المستشار(ة) المفضل للتواصل معك عبر واتساب
+                          </h2>
+                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            حرصاً على راحتك وخصوصيتك، يمكنك كطالب(ة) أو ولي أمر
+                            اختيار التواصل المباشر مع{" "}
+                            <strong className="text-brand-navy">مستشارة</strong>{" "}
+                            أو{" "}
+                            <strong className="text-brand-navy">مستشار</strong>{" "}
+                            حسب ما يناسبك:
+                          </p>
+                        </div>
+
+                        {/* 3 Selectable Advisor Cards — Pure Minimalist (Advisor Title Only) */}
+                        <div className="space-y-3">
+                          {ADVISORS.map((advisor) => {
+                            const isSelected = selectedAdvisorId === advisor.id;
+                            return (
+                              <button
+                                key={advisor.id}
+                                type="button"
+                                onClick={() => setSelectedAdvisorId(advisor.id)}
+                                className={`w-full min-h-[60px] sm:min-h-[64px] px-4 sm:px-5 py-3.5 rounded-2xl border text-right transition-all duration-150 cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99] ${
+                                  isSelected
+                                    ? "bg-blue-50/90 border-2 border-brand-electric ring-4 ring-brand-electric/10 shadow-sm"
+                                    : "bg-slate-50/80 border-slate-200/90 hover:border-blue-200 hover:bg-white"
+                                }`}
+                              >
+                                <strong
+                                  className={`text-sm sm:text-base font-bold leading-snug ${
+                                    isSelected
+                                      ? "text-brand-electric"
+                                      : "text-brand-navy"
+                                  }`}
+                                >
+                                  {advisor.fullTitle}
+                                </strong>
+
+                                <div
+                                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                                    isSelected
+                                      ? "bg-brand-electric text-white shadow-sm"
+                                      : "border border-slate-300 bg-white"
+                                  }`}
+                                >
+                                  {isSelected && (
+                                    <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3]" />
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Quick Summary of Applicant Before Sending */}
+                        <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50/90 border border-slate-200/80 space-y-2 text-xs">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-slate-500 font-bold whitespace-nowrap">
+                              بيانات مقدم الطلب
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => goToStep(4)}
+                              className="text-brand-electric font-bold hover:underline cursor-pointer whitespace-nowrap"
+                            >
+                              تعديل البيانات
+                            </button>
+                          </div>
+                          <div className="pt-2 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                            <strong
+                              dir="auto"
+                              className="text-brand-navy font-bold text-xs sm:text-[13px] break-words"
+                            >
+                              {fullName}
+                            </strong>
+                            <span
+                              dir="ltr"
+                              className="text-slate-600 font-bold tabular-nums text-xs"
+                            >
+                              {phone}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Step 5 Final Submit Bar */}
+                        <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2.5 sm:gap-3">
+                          <button
+                            type="button"
+                            onClick={() => goToStep(4)}
+                            className="h-12 px-4 sm:px-5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm inline-flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer active:scale-95 shrink-0"
+                          >
+                            <ArrowRight className="w-4 h-4 shrink-0" />
+                            <span>السابق</span>
+                          </button>
+
+                          <button
+                            type="submit"
+                            className="group flex-1 sm:flex-initial min-w-0 h-12 px-4 sm:px-7 rounded-2xl bg-brand-electric hover:bg-brand-navy text-white font-bold text-xs sm:text-sm shadow-md shadow-brand-electric/20 inline-flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98] transition-all cursor-pointer"
                           >
                             <MessageCircle className="w-4 h-4 shrink-0" />
-                            <span>إرسال الملف عبر واتساب</span>
+                            <span className="truncate">
+                              إرسال إلى {selectedAdvisorObj.fullTitle}
+                              <span className="hidden sm:inline"> عبر واتساب</span>
+                            </span>
                             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" />
                           </button>
                         </div>
@@ -1438,11 +1674,13 @@ export function PostulerWizard() {
                   <div className="grid grid-cols-2 gap-2.5 text-xs">
                     <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 flex items-center gap-2 min-w-0">
                       <CountryFlag
-                        code={studentCountry === "ma" ? "MA" : "DZ"}
+                        code={studentCountry === "ma" ? "MA" : "OTHER"}
                         size="sm"
                       />
                       <span className="font-bold text-brand-navy truncate">
-                        {studentCountry === "ma" ? "المغرب" : "الجزائر"}
+                        {studentCountry === "ma"
+                          ? "المغرب"
+                          : studentCity.trim() || "بلد آخر"}
                       </span>
                     </div>
 
@@ -1538,7 +1776,25 @@ export function PostulerWizard() {
               rel="noopener noreferrer"
               className="text-brand-electric hover:underline font-bold"
             >
-              @overseas_consulting_
+              انستغرام
+            </a>
+            <span className="text-slate-300">·</span>
+            <a
+              href="https://www.facebook.com/centremaconsulting/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-electric hover:underline font-bold"
+            >
+              فيسبوك
+            </a>
+            <span className="text-slate-300">·</span>
+            <a
+              href="https://www.youtube.com/@ALI_IN_LITHUANIA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-electric hover:underline font-bold"
+            >
+              يوتيوب
             </a>
           </div>
         </div>

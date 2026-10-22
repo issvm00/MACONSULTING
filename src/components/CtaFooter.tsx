@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   MapPin,
   CheckCircle2,
-  ExternalLink,
 } from "lucide-react";
 
 const TRANSITION_EASE = [0.22, 1, 0.36, 1] as const;
@@ -29,6 +28,41 @@ function InstagramIcon({ className }: { className?: string }) {
       <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
       <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+// Crisp SVG Facebook Icon
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
+// Crisp SVG YouTube Icon
+function YoutubeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+      <path d="m10 15 5-3-5-3v6Z" fill="currentColor" stroke="none" />
     </svg>
   );
 }
@@ -281,19 +315,41 @@ export function CtaFooter() {
             </p>
 
             {/* Social Media Action Row */}
-            <div className="pt-1 flex items-center gap-2.5">
+            <div className="pt-1 flex flex-wrap items-center gap-2">
               <a
                 href="https://www.instagram.com/overseas_consulting_"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="حساب M&A Overseas Consulting الرسمي على انستغرام"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
+                title="@overseas_consulting_"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
               >
-                <InstagramIcon className="w-4 h-4 text-slate-500 group-hover:text-brand-electric transition-colors" />
-                <span dir="ltr" className="text-[11px] tracking-tight">
-                  @overseas_consulting_
-                </span>
-                <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-brand-electric transition-colors" />
+                <InstagramIcon className="w-3.5 h-3.5 text-slate-500 group-hover:text-brand-electric transition-colors shrink-0" />
+                <span>انستغرام</span>
+              </a>
+
+              <a
+                href="https://www.facebook.com/centremaconsulting/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="صفحة M&A Overseas Consulting الرسمية على فيسبوك"
+                title="Centre M&A Consulting على فيسبوك"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-[#1877F2] hover:border-blue-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
+              >
+                <FacebookIcon className="w-3.5 h-3.5 text-slate-500 group-hover:text-[#1877F2] transition-colors shrink-0" />
+                <span>فيسبوك</span>
+              </a>
+
+              <a
+                href="https://www.youtube.com/@ALI_IN_LITHUANIA"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="القناة الرسمية على يوتيوب @ALI_IN_LITHUANIA"
+                title="@ALI_IN_LITHUANIA على يوتيوب"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-[#DC2626] hover:border-red-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
+              >
+                <YoutubeIcon className="w-4 h-4 text-slate-500 group-hover:text-[#DC2626] transition-colors shrink-0" />
+                <span>يوتيوب</span>
               </a>
 
               <a
@@ -301,7 +357,8 @@ export function CtaFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="التواصل عبر واتساب"
-                className="w-9 h-9 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm flex items-center justify-center transition-all duration-200 active:scale-95"
+                title="واتساب مباشر"
+                className="w-9 h-9 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm flex items-center justify-center transition-all duration-200 active:scale-95 shrink-0"
               >
                 <MessageCircle className="w-4 h-4" />
               </a>
@@ -412,7 +469,7 @@ export function CtaFooter() {
             محفوظة.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs text-slate-500 font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs text-slate-500 font-medium">
             <a
               href="#about"
               className="hover:text-brand-electric transition-colors"
@@ -446,7 +503,29 @@ export function CtaFooter() {
               rel="noopener noreferrer"
               className="hover:text-brand-electric transition-colors font-semibold text-brand-navy"
             >
-              انستغرام الرسمي
+              انستغرام
+            </a>
+            <span aria-hidden="true" className="text-slate-300">
+              ·
+            </span>
+            <a
+              href="https://www.facebook.com/centremaconsulting/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-brand-electric transition-colors font-semibold text-brand-navy"
+            >
+              فيسبوك
+            </a>
+            <span aria-hidden="true" className="text-slate-300">
+              ·
+            </span>
+            <a
+              href="https://www.youtube.com/@ALI_IN_LITHUANIA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-brand-electric transition-colors font-semibold text-brand-navy"
+            >
+              يوتيوب
             </a>
           </div>
         </div>

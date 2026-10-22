@@ -42,6 +42,24 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
+// Crisp SVG YouTube Icon
+function YoutubeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+      <path d="m10 15 5-3-5-3v6Z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 // Official Instagram Verified Badge SVG
 function VerifiedBadge() {
   return (
@@ -60,12 +78,18 @@ interface TeamMember {
   name: string;
   nameEn: string;
   role: string;
-  tagline: string;
+  degreeBadge: string;
+  highlights: string[];
+  bio: string;
   image: string;
   instagram: {
     handle: string;
     url: string;
     followers?: string;
+  };
+  youtube?: {
+    handle: string;
+    url: string;
   };
   isVerified: boolean;
 }
@@ -76,12 +100,41 @@ const teamMembers: TeamMember[] = [
     name: "علي بنعمر",
     nameEn: "Ali Benamar",
     role: "المؤسس ومستشار التعليم الدولي",
-    tagline: "مرافقة وتوجيه الطلبة نحو كبرى جامعات أوروبا مع حضور ميداني دائم.",
+    degreeBadge: "ماجستير في التسويق والتجارة الدولية",
+    highlights: [
+      "ماجستير في التسويق والتجارة الدولية",
+      "رئيس قسم الامتثال في شركة دولية",
+      "خبير في إعداد ومراجعة الوثائق الأكاديمية والإدارية",
+    ],
+    bio: "يحمل علي بنعمر شهادة الماجستير في التسويق والتجارة الدولية، ويشغل حاليًا منصب رئيس قسم الامتثال في شركة دولية، حيث يتمتع بخبرة في مجال الأعمال الدولية والامتثال التنظيمي والإدارة الاستراتيجية، إضافةً إلى خبرته في إعداد الوثائق الإدارية والأكاديمية ومراجعتها ومتابعة الملفات. ومن خلال تأسيسه لشركة M&A Overseas Consulting، يسعى إلى مرافقة الطلبة وتوجيههم نحو الفرص الأكاديمية المناسبة في أوروبا، مع توفير الدعم اللازم لإعداد الوثائق واستكمال إجراءات التقديم والقبول الجامعي.",
     image: "/team/ali_benamar.jpg",
     instagram: {
       handle: "benamar_a34",
       url: "https://www.instagram.com/benamar_a34/",
       followers: "19K+",
+    },
+    youtube: {
+      handle: "ALI_IN_LITHUANIA",
+      url: "https://www.youtube.com/@ALI_IN_LITHUANIA",
+    },
+    isVerified: true,
+  },
+  {
+    id: "amine",
+    name: "محمد أمين جابون",
+    nameEn: "M'Amine Jaboune",
+    role: "المدير التنفيذي ومستشار التعليم الدولي",
+    degreeBadge: "باحث دكتوراه • ماجستير علاقات دولية",
+    highlights: [
+      "باحث بسلك الدكتوراه في علوم التربية",
+      "ماجستير في العلاقات الدولية",
+      "مسؤول الشراكات الجامعية والتخطيط الأكاديمي",
+    ],
+    bio: "يحمل محمد أمين جابون شهادة الماجستير في العلاقات الدولية، ويواصل حاليًا دراسته لنيل شهادة الدكتوراه في علوم التربية. وبصفته شريكًا مؤسسًا لشركة M&A Overseas Consulting، يساهم في رسم رؤيتها الاستراتيجية وتطوير خدماتها في مجال التعليم الدولي. كما يتولى مسؤولية بناء وتطوير الشراكات مع الجامعات والمؤسسات التعليمية الدولية، وتعزيز علاقات التعاون الأكاديمي بما يفتح آفاقًا تعليمية جديدة أمام الطلبة. ويشارك كذلك في التخطيط الأكاديمي وتوجيه الطلبة خلال مراحل التقديم والقبول الجامعي، ومساعدتهم على اختيار المسارات التعليمية التي تتناسب مع مؤهلاتهم وطموحاتهم المستقبلية.",
+    image: "/team/amine_jaboune.jpg",
+    instagram: {
+      handle: "amine_jaboune",
+      url: "https://www.instagram.com/amine_jaboune/",
     },
     isVerified: true,
   },
@@ -90,25 +143,18 @@ const teamMembers: TeamMember[] = [
     name: "مروان بنعمر",
     nameEn: "Marouan Ben Amar",
     role: "مدير العمليات والتنسيق الإداري",
-    tagline: "إشراف دقيق على ملفات القبول والتأشيرات والتواصل المباشر مع العائلات.",
+    degreeBadge: "ليسانس في العلوم الاقتصادية",
+    highlights: [
+      "شهادة الليسانس في العلوم الاقتصادية",
+      "الإشراف على تنسيق العمليات والإجراءات الإدارية",
+      "متابعة ملفات القبول والتواصل مع الطلبة وعائلاتهم",
+    ],
+    bio: "يحمل مروان بنعمر شهادة الليسانس في العلوم الاقتصادية، ويتولى الإشراف على تنسيق العمليات ومتابعة الإجراءات الإدارية داخل الشركة. ويساهم في تنظيم ملفات الطلبة، ومتابعة وثائق القبول والتسجيل، وتنسيق التواصل مع الطلبة وعائلاتهم، بما يضمن سير الإجراءات بكفاءة وسلاسة ويوفر تجربة مرافقة منظمة طوال رحلتهم الدراسية.",
     image: "/team/marouan_ben_amar.jpg",
     instagram: {
       handle: "marouan.ben.amar",
       url: "https://www.instagram.com/marouan.ben.amar/",
       followers: "6K+",
-    },
-    isVerified: true,
-  },
-  {
-    id: "amine",
-    name: "محمد أمين جبون",
-    nameEn: "M'Amine Jaboune",
-    role: "المدير التنفيذي ومستشار التعليم الدولي",
-    tagline: "التخطيط الأكاديمي الاستراتيجي وتأمين القبولات والمنح المخفّضة للطلبة.",
-    image: "/team/amine_jaboune.jpg",
-    instagram: {
-      handle: "amine_jaboune",
-      url: "https://www.instagram.com/amine_jaboune/",
     },
     isVerified: true,
   },
@@ -137,8 +183,10 @@ const itemVariants = {
 // Reusable Pure Card UI used identically in both Desktop Grid and Mobile 3D Coverflow
 function MemberCard({
   member,
+  onOpenBio,
 }: {
   member: TeamMember;
+  onOpenBio: (member: TeamMember) => void;
 }) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -149,13 +197,17 @@ function MemberCard({
     >
       {/* Outer Bezel Content */}
       <div>
-        {/* Pure Portrait Image Frame (No badges or obstructions) */}
-        <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-3 select-none">
+        {/* Pure Portrait Image Frame (Clickable to open full bio) */}
+        <div
+          onClick={() => onOpenBio(member)}
+          className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 mb-3 select-none cursor-pointer"
+        >
           <Image
             src={member.image}
             alt={`${member.name} (${member.nameEn}) - ${member.role}`}
             fill
             sizes="(max-width: 640px) 280px, (max-width: 1024px) 33vw, 240px"
+            referrerPolicy="no-referrer"
             onLoad={() => setIsImageLoaded(true)}
             className={`object-cover object-top group-hover:scale-105 transition-[transform,opacity] duration-500 ease-out ${
               isImageLoaded ? "opacity-100" : "opacity-0"
@@ -167,7 +219,10 @@ function MemberCard({
         <div className="space-y-1.5 px-1 text-right">
           {/* Name + Verified Badge immediately following the name */}
           <div className="flex items-center gap-1.5 justify-start">
-            <h4 className="text-base font-bold text-brand-navy group-hover:text-brand-electric transition-colors duration-200">
+            <h4
+              onClick={() => onOpenBio(member)}
+              className="text-base font-bold text-brand-navy group-hover:text-brand-electric transition-colors duration-200 cursor-pointer"
+            >
               {member.name}
             </h4>
             {member.isVerified && <VerifiedBadge />}
@@ -178,30 +233,53 @@ function MemberCard({
             {member.role}
           </p>
 
-          {/* Tagline / Responsibility */}
-          <p className="text-[11px] text-slate-500 font-normal leading-relaxed pt-0.5">
-            {member.tagline}
-          </p>
+          {/* Academic Credential Pill */}
+          <div className="pt-0.5">
+            <span className="inline-block text-[10.5px] font-medium text-slate-600 bg-slate-100/90 border border-slate-200/70 px-2 py-0.5 rounded-lg leading-tight">
+              {member.degreeBadge}
+            </span>
+          </div>
+
+          {/* Clamped Full Bio Preview + Read More Trigger */}
+          <div
+            onClick={() => onOpenBio(member)}
+            className="pt-1 cursor-pointer group/bio"
+          >
+            <p className="text-[11px] text-slate-500 font-normal leading-relaxed line-clamp-3">
+              {member.bio}
+            </p>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenBio(member);
+              }}
+              className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-brand-electric group-hover/bio:text-brand-navy transition-colors cursor-pointer"
+            >
+              <span>اقرأ النبذة الكاملة</span>
+              <ArrowLeft className="w-3 h-3 transition-transform group-hover/bio:-translate-x-0.5" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Social Profile Footer Pill */}
-      <div className="pt-3 mt-3 border-t border-slate-100 px-1">
+      <div className="pt-3 mt-3 border-t border-slate-100 px-1 flex items-center gap-1.5">
         <a
           href={member.instagram.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between w-full py-1.5 px-2.5 rounded-xl bg-slate-50 hover:bg-blue-50/80 text-slate-600 hover:text-brand-electric transition-colors duration-150 text-[11px] font-semibold group/link"
+          className="flex-1 min-w-0 flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-slate-50 hover:bg-blue-50/80 text-slate-600 hover:text-brand-electric transition-colors duration-150 text-[11px] font-semibold group/link"
           title={`زيارة حساب ${member.name} على انستغرام`}
         >
-          <div className="flex items-center gap-1.5">
-            <InstagramIcon className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-brand-electric transition-colors" />
-            <span dir="ltr" className="tracking-tight">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <InstagramIcon className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-brand-electric transition-colors shrink-0" />
+            <span dir="ltr" className="tracking-tight truncate">
               @{member.instagram.handle}
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {member.instagram.followers && (
               <span className="text-[10px] text-slate-400 font-medium">
                 {member.instagram.followers}
@@ -210,6 +288,19 @@ function MemberCard({
             <ExternalLink className="w-3 h-3 text-slate-300 group-hover/link:text-brand-electric transition-colors" />
           </div>
         </a>
+
+        {member.youtube && (
+          <a
+            href={member.youtube.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`قناة ${member.name} الرسمية على يوتيوب`}
+            title={`قناة ${member.name} على يوتيوب (@${member.youtube.handle})`}
+            className="w-7 h-7 rounded-xl bg-slate-50 hover:bg-red-50 text-slate-500 hover:text-[#DC2626] border border-transparent hover:border-red-100 flex items-center justify-center transition-colors duration-150 shrink-0"
+          >
+            <YoutubeIcon className="w-3.5 h-3.5" />
+          </a>
+        )}
       </div>
     </div>
   );
@@ -219,15 +310,16 @@ export function AboutTeam() {
   const [isMounted, setIsMounted] = useState(false);
   const [activeMobileIndex, setActiveMobileIndex] = useState(0);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const mobileSwiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Lock body scroll when Story Modal is open
+  // Lock body scroll when either Story Modal or Member Bio Modal is open
   useEffect(() => {
-    if (isStoryModalOpen) {
+    if (isStoryModalOpen || selectedMember) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -235,20 +327,21 @@ export function AboutTeam() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isStoryModalOpen]);
+  }, [isStoryModalOpen, selectedMember]);
 
-  // Handle ESC key to dismiss Modal
+  // Handle ESC key to dismiss Modals
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsStoryModalOpen(false);
+        setSelectedMember(null);
       }
     };
-    if (isStoryModalOpen) {
+    if (isStoryModalOpen || selectedMember) {
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isStoryModalOpen]);
+  }, [isStoryModalOpen, selectedMember]);
 
   return (
     <section
@@ -406,7 +499,10 @@ export function AboutTeam() {
                   }}
                   className="h-full"
                 >
-                  <MemberCard member={member} />
+                  <MemberCard
+                    member={member}
+                    onOpenBio={setSelectedMember}
+                  />
                 </motion.div>
               ))}
             </div>
@@ -472,7 +568,10 @@ export function AboutTeam() {
                         key={member.id}
                         className="!w-[272px]"
                       >
-                        <MemberCard member={member} />
+                        <MemberCard
+                          member={member}
+                          onOpenBio={setSelectedMember}
+                        />
                       </SwiperSlide>
                     ))}
                   </Swiper>
@@ -526,6 +625,207 @@ export function AboutTeam() {
         </div>
 
       </div>
+
+      {/* ================================================================= */}
+      {/* EXECUTIVE MEMBER BIO MODAL (FULL VERBATIM PROFILE & SWITCHER)      */}
+      {/* ================================================================= */}
+      <AnimatePresence>
+        {selectedMember && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-6 overflow-x-hidden overflow-y-auto">
+            {/* Backdrop Dimmer */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setSelectedMember(null)}
+              className="fixed inset-0 bg-[#071228]/65 backdrop-blur-sm"
+              aria-hidden="true"
+            />
+
+            {/* Modal Window Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="member-modal-title"
+              className="relative w-full max-w-xl max-h-[90vh] bg-white rounded-3xl sm:rounded-[32px] border border-slate-200/90 shadow-[0_24px_60px_-12px_rgba(11,27,61,0.3)] flex flex-col overflow-hidden text-right z-10"
+              dir="rtl"
+            >
+              {/* Header Bar */}
+              <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 bg-slate-50/70 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-brand-electric" />
+                  <span className="text-xs font-bold text-brand-navy">
+                    البطاقة التعريفية والمهنية
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedMember(null)}
+                  className="p-1.5 rounded-full text-slate-400 hover:text-brand-navy hover:bg-slate-200/70 active:scale-90 transition-all cursor-pointer"
+                  aria-label="إغلاق النافذة"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Quick Team Switcher Tabs */}
+              <div className="px-5 sm:px-6 pt-3.5 pb-1 bg-white border-b border-slate-100/80 shrink-0">
+                <div className="grid grid-cols-3 gap-2">
+                  {teamMembers.map((m) => {
+                    const isActive = m.id === selectedMember.id;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setSelectedMember(m)}
+                        className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-2xl border text-right transition-all cursor-pointer ${
+                          isActive
+                            ? "bg-blue-50/90 border-brand-electric/40 shadow-xs"
+                            : "bg-slate-50/70 border-slate-200/70 hover:bg-slate-100/80 opacity-75 hover:opacity-100"
+                        }`}
+                      >
+                        <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden shrink-0 border border-white shadow-xs">
+                          <Image
+                            src={m.image}
+                            alt={m.name}
+                            fill
+                            sizes="32px"
+                            referrerPolicy="no-referrer"
+                            className="object-cover object-top"
+                          />
+                        </div>
+                        <span
+                          className={`text-[11px] sm:text-xs font-bold truncate ${
+                            isActive ? "text-brand-electric" : "text-brand-navy"
+                          }`}
+                        >
+                          {m.name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Scrollable Member Profile Body */}
+              <div className="p-5 sm:p-6 overflow-y-auto space-y-5">
+                {/* Executive Identity Header */}
+                <div className="flex items-center gap-4">
+                  <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm shrink-0 bg-slate-100">
+                    <Image
+                      src={selectedMember.image}
+                      alt={selectedMember.name}
+                      fill
+                      sizes="80px"
+                      referrerPolicy="no-referrer"
+                      className="object-cover object-top"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <h3
+                        id="member-modal-title"
+                        className="text-lg sm:text-xl font-bold text-brand-navy"
+                      >
+                        {selectedMember.name}
+                      </h3>
+                      {selectedMember.isVerified && <VerifiedBadge />}
+                    </div>
+
+                    <p className="text-xs sm:text-sm font-bold text-brand-electric">
+                      {selectedMember.role}
+                    </p>
+
+                    <span className="inline-block text-[11px] font-medium text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200/80">
+                      {selectedMember.degreeBadge}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Full Verbatim Biography Box */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/90 border border-slate-200/80 space-y-2.5">
+                  <h4 className="text-xs font-bold text-brand-navy flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-electric" />
+                    <span>النبذة المهنية والأكاديمية</span>
+                  </h4>
+                  <p className="text-xs sm:text-[14px] text-slate-700 leading-[1.9] font-normal">
+                    {selectedMember.bio}
+                  </p>
+                </div>
+
+                {/* Key Highlights */}
+                <div className="space-y-2">
+                  <p className="text-[11px] font-bold text-slate-400">
+                    أبرز المؤهلات والمسؤوليات:
+                  </p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {selectedMember.highlights.map((item) => (
+                      <div
+                        key={item}
+                        className="flex items-center gap-2 text-xs text-slate-700 font-medium"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <Link
+                    href="/postuler"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 transition-all shadow-sm"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light" />
+                    <span>احجز استشارتك الآن</span>
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </Link>
+
+                  <a
+                    href={selectedMember.instagram.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric text-xs font-semibold transition-colors"
+                  >
+                    <InstagramIcon className="w-3.5 h-3.5" />
+                    <span dir="ltr">@{selectedMember.instagram.handle}</span>
+                  </a>
+
+                  {selectedMember.youtube && (
+                    <a
+                      href={selectedMember.youtube.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-[#DC2626] hover:border-red-200 text-xs font-semibold transition-colors"
+                    >
+                      <YoutubeIcon className="w-3.5 h-3.5" />
+                      <span dir="ltr">@{selectedMember.youtube.handle}</span>
+                    </a>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedMember(null)}
+                  className="w-full sm:w-auto px-4 py-2 rounded-full text-xs font-semibold text-slate-500 hover:bg-slate-200/70 active:scale-95 transition-all cursor-pointer"
+                >
+                  إغلاق
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ================================================================= */}
       {/* HIGH-END STORY MODAL (APPLE-GRADE LIQUID GLASS OVERLAY)           */}
@@ -594,6 +894,7 @@ export function AboutTeam() {
                           alt={m.name}
                           fill
                           sizes="36px"
+                          referrerPolicy="no-referrer"
                           className="object-cover object-top"
                         />
                       </div>
@@ -605,7 +906,7 @@ export function AboutTeam() {
                       فريق قيادة M&A Overseas Consulting
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
-                      علي بنعمر • مروان بنعمر • محمد أمين جبون
+                      علي بنعمر • محمد أمين جابون • مروان بنعمر
                     </p>
                   </div>
                 </div>
