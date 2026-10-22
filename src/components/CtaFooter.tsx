@@ -252,8 +252,7 @@ export function CtaFooter() {
 
             <p className="text-xs sm:text-base text-blue-50/90 font-normal leading-relaxed max-w-xl">
               من اختيار التخصص واستخراج القبول الجامعي المضمون، إلى غاية
-              استقبالك في المطار وتأمين سكنك في أوروبا — نرافق طلابنا في المغرب
-              والجزائر خطوة بخطوة.
+              استقبالك في المطار وتأمين سكنك في أوروبا — نرافق طلابنا في العالم العربي خطوة بخطوة.
             </p>
 
             {/* Crisp Pure White Pill Action Button */}
@@ -309,22 +308,22 @@ export function CtaFooter() {
             </Link>
 
             <p className="text-xs sm:text-[13px] text-slate-500 font-normal leading-relaxed max-w-sm">
-              وجهتك الأولى والموثوقة للتوجيه الأكاديمي الدولي ومرافقة الطلاب من
-              المغرب والجزائر نحو أفضل الجامعات والمعاهد الأوروبية، بشفافية
+              وجهتك الأولى والموثوقة للتوجيه الأكاديمي الدولي ومرافقة الطلاب في
+              العالم العربي نحو أفضل الجامعات والمعاهد الأوروبية، بشفافية
               مطلقة ومتابعة ميدانية من التوجيه حتى الاستقرار.
             </p>
 
             {/* Social Media Action Row */}
-            <div className="pt-1 flex flex-wrap items-center gap-2">
+            <div className="pt-2 flex flex-wrap items-center gap-2">
               <a
                 href="https://www.instagram.com/overseas_consulting_"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="حساب M&A Overseas Consulting الرسمي على انستغرام"
                 title="@overseas_consulting_"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-pink-50 border border-slate-200/90 hover:border-pink-200 text-slate-600 hover:text-pink-600 shadow-2xs transition-all duration-200 active:scale-95 text-xs font-semibold group"
               >
-                <InstagramIcon className="w-3.5 h-3.5 text-slate-500 group-hover:text-brand-electric transition-colors shrink-0" />
+                <InstagramIcon className="w-3.5 h-3.5 text-pink-500 transition-transform group-hover:scale-110 shrink-0" />
                 <span>انستغرام</span>
               </a>
 
@@ -334,9 +333,9 @@ export function CtaFooter() {
                 rel="noopener noreferrer"
                 aria-label="صفحة M&A Overseas Consulting الرسمية على فيسبوك"
                 title="Centre M&A Consulting على فيسبوك"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-[#1877F2] hover:border-blue-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-blue-50 border border-slate-200/90 hover:border-blue-200 text-slate-600 hover:text-[#1877F2] shadow-2xs transition-all duration-200 active:scale-95 text-xs font-semibold group"
               >
-                <FacebookIcon className="w-3.5 h-3.5 text-slate-500 group-hover:text-[#1877F2] transition-colors shrink-0" />
+                <FacebookIcon className="w-3.5 h-3.5 text-[#1877F2] transition-transform group-hover:scale-110 shrink-0" />
                 <span>فيسبوك</span>
               </a>
 
@@ -346,21 +345,10 @@ export function CtaFooter() {
                 rel="noopener noreferrer"
                 aria-label="القناة الرسمية على يوتيوب @ALI_IN_LITHUANIA"
                 title="@ALI_IN_LITHUANIA على يوتيوب"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-[#DC2626] hover:border-red-200 shadow-sm transition-all duration-200 active:scale-95 text-xs font-bold group"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-red-50 border border-slate-200/90 hover:border-red-200 text-slate-600 hover:text-[#DC2626] shadow-2xs transition-all duration-200 active:scale-95 text-xs font-semibold group"
               >
-                <YoutubeIcon className="w-4 h-4 text-slate-500 group-hover:text-[#DC2626] transition-colors shrink-0" />
+                <YoutubeIcon className="w-4 h-4 text-[#DC2626] transition-transform group-hover:scale-110 shrink-0" />
                 <span>يوتيوب</span>
-              </a>
-
-              <a
-                href="https://wa.me/212775496303"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="التواصل عبر واتساب"
-                title="واتساب مباشر"
-                className="w-9 h-9 rounded-full bg-white border border-slate-200/90 text-slate-600 hover:text-brand-electric hover:border-blue-200 shadow-sm flex items-center justify-center transition-all duration-200 active:scale-95 shrink-0"
-              >
-                <MessageCircle className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -421,18 +409,23 @@ export function CtaFooter() {
               الواتساب لحجز استشارتك الأكاديمية المجانية (حضورياً أو عن بُعد).
             </p>
 
-            {/* Physical Address Info Line */}
-            <div className="flex items-start gap-2 text-xs text-slate-600 font-medium">
-              <MapPin className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
-              <span>
-                المقر الرئيسي: إنزكان - شارع مراكش (أكادير)
-              </span>
-            </div>
-            <div className="flex items-start gap-2 text-xs text-slate-500 font-medium">
-              <MapPin className="w-4 h-4 text-brand-electric/80 shrink-0 mt-0.5" />
-              <span>
-                المكاتب الأوروبية: برشلونة (إسبانيا) · فيلنيوس (ليتوانيا)
-              </span>
+            {/* Physical Address Badges */}
+            <div className="space-y-2">
+              <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs flex items-center gap-2.5 text-xs">
+                <span className="w-2 h-2 rounded-full bg-brand-electric shrink-0" />
+                <div className="flex flex-wrap items-center gap-1.5 text-slate-700">
+                  <span className="font-bold text-brand-navy">المقر الرئيسي:</span>
+                  <span>إنزكان - شارع مراكش (أكادير)</span>
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs flex items-center gap-2.5 text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                <div className="flex flex-wrap items-center gap-1.5 text-slate-700">
+                  <span className="font-bold text-brand-navy">المكاتب الأوروبية:</span>
+                  <span>برشلونة (إسبانيا) · فيلنيوس (ليتوانيا)</span>
+                </div>
+              </div>
             </div>
 
             {/* Interactive Capsule Bar (Matches the exact pill-input aesthetic of the reference image) */}
@@ -467,15 +460,23 @@ export function CtaFooter() {
         </div>
 
         {/* ================================================================= */}
-        {/* 3. BOTTOM SOFT WHITE PILL BAR (EXACT REFERENCE FOOTER STRIP)      */}
+        {/* 3. REFINED BOTTOM SUB-BAR (CLEAN, UNCLUTTERED, RESPONSIVE)        */}
         {/* ================================================================= */}
-        <div className="mt-12 sm:mt-14 px-5 py-4 sm:px-7 sm:py-4 rounded-2xl sm:rounded-full bg-white/90 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right">
+        <div className="mt-12 sm:mt-16 px-6 py-4 sm:px-8 sm:py-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right pl-14 sm:pl-8">
           <p className="text-xs text-slate-500 font-medium">
-            © {new Date().getFullYear()} M&A Overseas Consulting. جميع الحقوق
-            محفوظة.
+            © {new Date().getFullYear()} M&A Overseas Consulting. جميع الحقوق محفوظة.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs text-slate-500 font-medium">
+            <a
+              href="#hero"
+              className="hover:text-brand-electric transition-colors"
+            >
+              الرئيسية
+            </a>
+            <span aria-hidden="true" className="text-slate-300">
+              ·
+            </span>
             <a
               href="#about"
               className="hover:text-brand-electric transition-colors"
@@ -503,36 +504,12 @@ export function CtaFooter() {
             <span aria-hidden="true" className="text-slate-300">
               ·
             </span>
-            <a
-              href="https://www.instagram.com/overseas_consulting_"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-brand-electric transition-colors font-semibold text-brand-navy"
+            <Link
+              href="/postuler"
+              className="text-brand-electric hover:underline font-bold"
             >
-              انستغرام
-            </a>
-            <span aria-hidden="true" className="text-slate-300">
-              ·
-            </span>
-            <a
-              href="https://www.facebook.com/centremaconsulting/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-brand-electric transition-colors font-semibold text-brand-navy"
-            >
-              فيسبوك
-            </a>
-            <span aria-hidden="true" className="text-slate-300">
-              ·
-            </span>
-            <a
-              href="https://www.youtube.com/@ALI_IN_LITHUANIA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-brand-electric transition-colors font-semibold text-brand-navy"
-            >
-              يوتيوب
-            </a>
+              تقديم طلب تسجيل
+            </Link>
           </div>
         </div>
       </div>
