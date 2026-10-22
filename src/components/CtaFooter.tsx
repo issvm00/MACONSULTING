@@ -425,7 +425,13 @@ export function CtaFooter() {
             <div className="flex items-start gap-2 text-xs text-slate-600 font-medium">
               <MapPin className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
               <span>
-                المكتب الرسمي: إنزكان - شارع مراكش (أكادير)، المملكة المغربية
+                المقر الرئيسي: إنزكان - شارع مراكش (أكادير)
+              </span>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-slate-500 font-medium">
+              <MapPin className="w-4 h-4 text-brand-electric/80 shrink-0 mt-0.5" />
+              <span>
+                المكاتب الأوروبية: برشلونة (إسبانيا) · فيلنيوس (ليتوانيا)
               </span>
             </div>
 

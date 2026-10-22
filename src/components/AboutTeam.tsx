@@ -441,7 +441,7 @@ export function AboutTeam() {
                   <div className="flex items-start gap-2.5 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
                     <span>
-                      <strong>حضور مباشر في أوروبا:</strong> إرشاد ميداني واستقبال للطلبة في ليتوانيا وباقي الوجهات.
+                      <strong>حضور مباشر في أوروبا:</strong> مكاتب ومرافقة ميدانية في إسبانيا (برشلونة) وليتوانيا (فيلنيوس).
                     </span>
                   </div>
 

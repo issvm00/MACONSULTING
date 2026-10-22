@@ -388,6 +388,57 @@ const STEP_META = [
   { number: 5, title: "اختيار المستشار والإرسال" },
 ];
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
+function YoutubeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+      <path d="m10 15 5-3-5-3v6Z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function PostulerWizard() {
   const [step, setStep] = useState<number>(1);
   const [isLogoLoaded, setIsLogoLoaded] = useState<boolean>(false);
@@ -1757,46 +1808,76 @@ export function PostulerWizard() {
       {/* =================================================================== */}
       {/* 3. MINIMALIST APPLICATION FOOTER                                    */}
       {/* =================================================================== */}
-      <footer className="bg-white/85 border-t border-slate-200/80 py-5 text-xs text-slate-500 relative z-10 mt-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right">
-          <p className="font-medium">
-            © {new Date().getFullYear()} M&A Overseas Consulting. جميع الحقوق
-            محفوظة.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3 text-slate-500 font-medium">
-            <span className="text-brand-navy font-bold">
-              أكادير - إنزكان (شارع مراكش)
-            </span>
-            <span className="text-slate-300">·</span>
-            <span>فيلنيوس (ليتوانيا - المكتب الأوروبي)</span>
-            <span className="text-slate-300">·</span>
-            <a
-              href="https://www.instagram.com/overseas_consulting_"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-electric hover:underline font-bold"
-            >
-              انستغرام
-            </a>
-            <span className="text-slate-300">·</span>
-            <a
-              href="https://www.facebook.com/centremaconsulting/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-electric hover:underline font-bold"
-            >
-              فيسبوك
-            </a>
-            <span className="text-slate-300">·</span>
-            <a
-              href="https://www.youtube.com/@ALI_IN_LITHUANIA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-electric hover:underline font-bold"
-            >
-              يوتيوب
-            </a>
+      <footer className="bg-white/90 backdrop-blur-md border-t border-slate-200/80 py-6 text-xs text-slate-500 relative z-10 mt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          
+          {/* Row 1: Official Offices & European Branches as Prestigious Pill Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs">
+            {/* Headquarters (Agadir / Inezgane) */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200/90 text-brand-navy shadow-2xs">
+              <CountryFlag code="MA" size="sm" />
+              <span className="font-bold">أكادير - إنزكان</span>
+              <span className="text-[11px] text-slate-500 font-normal">
+                (شارع مراكش - المقر الرئيسي)
+              </span>
+            </div>
+
+            {/* Barcelona European Office */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 text-slate-700 shadow-2xs hover:border-brand-electric/40 transition-colors">
+              <CountryFlag code="ES" size="sm" />
+              <span className="font-bold text-brand-navy">برشلونة</span>
+              <span className="text-[11px] text-slate-500 font-normal">
+                (إسبانيا - المكتب الأوروبي)
+              </span>
+            </div>
+
+            {/* Vilnius European Office */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 text-slate-700 shadow-2xs hover:border-brand-electric/40 transition-colors">
+              <CountryFlag code="LT" size="sm" />
+              <span className="font-bold text-brand-navy">فيلنيوس</span>
+              <span className="text-[11px] text-slate-500 font-normal">
+                (ليتوانيا - المكتب الأوروبي)
+              </span>
+            </div>
           </div>
+
+          {/* Row 2: Bottom Sub-Bar (Copyright + Styled Social Pills) */}
+          <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right">
+            <p className="text-[11px] text-slate-400 font-medium">
+              © {new Date().getFullYear()} M&A Overseas Consulting. جميع الحقوق محفوظة.
+            </p>
+
+            <div className="flex items-center gap-2">
+              <a
+                href="https://www.instagram.com/overseas_consulting_"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 hover:bg-pink-50 text-slate-600 hover:text-pink-600 border border-slate-200/70 text-[11px] font-semibold transition-all hover:scale-105 active:scale-95 shadow-2xs"
+              >
+                <InstagramIcon className="w-3.5 h-3.5 text-pink-500" />
+                <span>انستغرام</span>
+              </a>
+              <a
+                href="https://www.facebook.com/centremaconsulting/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-600 border border-slate-200/70 text-[11px] font-semibold transition-all hover:scale-105 active:scale-95 shadow-2xs"
+              >
+                <FacebookIcon className="w-3.5 h-3.5 text-blue-600" />
+                <span>فيسبوك</span>
+              </a>
+              <a
+                href="https://www.youtube.com/@ALI_IN_LITHUANIA"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200/70 text-[11px] font-semibold transition-all hover:scale-105 active:scale-95 shadow-2xs"
+              >
+                <YoutubeIcon className="w-3.5 h-3.5 text-red-600" />
+                <span>يوتيوب</span>
+              </a>
+            </div>
+          </div>
+
         </div>
       </footer>
     </div>

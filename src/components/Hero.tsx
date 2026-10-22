@@ -271,7 +271,7 @@ export function Hero() {
                 variants={heroItemVariants}
                 className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-xl"
               >
-                معاك خطوة بخطوة لطلابنا في <strong>المغرب</strong> و<strong>الجزائر</strong>: ركّز على مستقبلك واترك الإجراءات علينا: نختار معك أفضل جامعة وتخصص، نستخرج لك القبول الرسمي والمنح، ونسهّل طريقك نحو التأشيرة وحتى الاستقرار في وجهتك الجديدة.
+                معاك خطوة بخطوة لطلابنا في <strong>العالم العربي</strong>: ركّز على مستقبلك واترك الإجراءات علينا: نختار معك أفضل جامعة وتخصص، نستخرج لك القبول الرسمي والمنح، ونسهّل طريقك نحو التأشيرة وحتى الاستقرار في وجهتك الجديدة.
               </motion.p>
 
               {/* Action Buttons (High-Conversion CTAs) */}
@@ -351,14 +351,9 @@ export function Hero() {
                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-electric flex-shrink-0">
                       <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
-                    <div>
-                      <p className="text-[11px] sm:text-xs font-bold text-brand-navy whitespace-nowrap">
-                        قبول جامعي مضمون
-                      </p>
-                      <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">
-                        دورة 2026 / 2027
-                      </p>
-                    </div>
+                    <p className="text-[11px] sm:text-xs font-bold text-brand-navy whitespace-nowrap">
+                      قبول جامعي مضمون
+                    </p>
                   </div>
                 </motion.div>
 

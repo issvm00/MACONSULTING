@@ -19,9 +19,9 @@ const partners: Partner[] = [
     type: "horizontal",
   },
   {
-    id: 6,
-    logo: "/partners/6.jpeg",
-    name: "University of Sopron",
+    id: 11,
+    logo: "/partners/11.png",
+    name: "Vilnius University",
     type: "horizontal",
   },
   {
@@ -30,6 +30,83 @@ const partners: Partner[] = [
     name: "Budapest Metropolitan",
     subtitle: "University",
     type: "badge",
+  },
+  {
+    id: 5,
+    logo: "/partners/5.jpeg",
+    name: "Vilnius Tech",
+    type: "horizontal",
+  },
+  {
+    id: 17,
+    logo: "/partners/17.jpeg",
+    name: "Vytautas Magnus",
+    subtitle: "University",
+    type: "badge",
+  },
+  {
+    id: 15,
+    logo: "/partners/15.jpeg",
+    name: "University of Bucharest",
+    type: "horizontal",
+  },
+  {
+    id: 9,
+    logo: "/partners/9.jpeg",
+    name: "Mykolas Romeris",
+    subtitle: "University",
+    type: "badge",
+  },
+  {
+    id: 6,
+    logo: "/partners/6.jpeg",
+    name: "University of Sopron",
+    type: "horizontal",
+  },
+  {
+    id: 10,
+    logo: "/partners/10.jpeg",
+    name: "SMK College",
+    subtitle: "Applied Sciences",
+    type: "badge",
+  },
+  {
+    id: 16,
+    logo: "/partners/16.jpeg",
+    name: "Universitatea Babeș-Bolyai",
+    type: "horizontal",
+  },
+  {
+    id: 4,
+    logo: "/partners/4.jpeg",
+    name: "SEDA College",
+    subtitle: "Ireland & Malta",
+    type: "badge",
+  },
+  {
+    id: 8,
+    logo: "/partners/8.jpeg",
+    name: "University of Pannonia",
+    type: "horizontal",
+  },
+  {
+    id: 13,
+    logo: "/partners/13.jpeg",
+    name: "Panevėžio Kolegija",
+    subtitle: "Applied Sciences",
+    type: "badge",
+  },
+  {
+    id: 14,
+    logo: "/partners/14.jpeg",
+    name: "inlingua Malta",
+    type: "horizontal",
+  },
+  {
+    id: 18,
+    logo: "/partners/18.jpeg",
+    name: "Kauno Kolegija",
+    type: "horizontal",
   },
   {
     id: 2,
@@ -43,18 +120,10 @@ const partners: Partner[] = [
     name: "Instituto Hispánico de Murcia",
     type: "horizontal",
   },
-  {
-    id: 4,
-    logo: "/partners/4.jpeg",
-    name: "SEDA College",
-    subtitle: "Ireland & Malta",
-    type: "badge",
-  },
 ];
 
-// Two identical sets per half-track (12 items per half = 24 items total)
-// Using two identical half-tracks with trailing padding guarantees -50% is 0.00px exact with zero loop jump
-const halfTrackPartners: Partner[] = [...partners, ...partners];
+// Single complete set per half-track provides over 3,500px width, guaranteeing 0.00px loop jump
+const halfTrackPartners: Partner[] = partners;
 
 export function PartnersMarquee() {
   const sectionRef = React.useRef<HTMLElement | null>(null);
@@ -81,14 +150,14 @@ export function PartnersMarquee() {
       {partner.type === "badge" ? (
         /* Square Emblem Badge with Typography */
         <div className="flex items-center gap-3">
-          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-sm border border-slate-100 flex-shrink-0 bg-slate-50">
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-sm border border-slate-100 flex-shrink-0 bg-white">
             <Image
               src={partner.logo}
               alt={partner.name}
               fill
               sizes="40px"
               referrerPolicy="no-referrer"
-              className="object-cover"
+              className="object-contain p-0.5"
             />
           </div>
           <div className="flex flex-col text-left">
@@ -151,7 +220,10 @@ export function PartnersMarquee() {
         {/* Continuous Seamless Infinite Track (Pauses automatically when offscreen) */}
         <div
           className="animate-marquee-infinite flex items-center py-3"
-          style={{ animationPlayState: isInView ? undefined : "paused" }}
+          style={{
+            animationDuration: "54s",
+            animationPlayState: isInView ? undefined : "paused",
+          }}
         >
           <div className="flex items-center gap-4 sm:gap-5 pr-4 sm:pr-5 shrink-0">
             {halfTrackPartners.map((partner, index) =>

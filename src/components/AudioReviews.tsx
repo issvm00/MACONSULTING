@@ -41,6 +41,9 @@ const reviewImages: string[] = Array.from(
   (_, index) => `/reviewsimage/${index + 1}.webp`
 );
 
+// Total review cards in swiper = audio reviews + 1 final Instagram exploration card
+const TOTAL_SLIDES = audioReviews.length + 1;
+
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   const mins = Math.floor(seconds / 60);
@@ -277,6 +280,129 @@ const AudioReviewCard = memo(function AudioReviewCard({
   );
 });
 
+// Crisp SVG Instagram Icon
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+// Official Instagram Verified Badge SVG
+function VerifiedBadge() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-label="حساب موثق"
+      className="w-3.5 h-3.5 text-brand-electric fill-brand-electric shrink-0"
+    >
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.2 14.6l-3.8-3.8 1.4-1.4 2.4 2.4 5.4-5.4 1.4 1.4-6.8 6.8z" />
+    </svg>
+  );
+}
+
+// Dedicated Final Slide: High-Converting Instagram Discovery Card
+const InstagramReviewCard = memo(function InstagramReviewCard() {
+  return (
+    <div
+      dir="rtl"
+      className="relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-6 py-7 sm:px-8 sm:py-8 bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d] border border-white/15 shadow-[0_18px_36px_-10px_rgba(7,14,28,0.45)] flex flex-col items-center justify-between overflow-hidden transform-gpu [backface-visibility:hidden] select-none text-center"
+    >
+      {/* Zero-Blur-Filter Hardware-Accelerated Radial Halo Behind Center Emblem */}
+      <div
+        aria-hidden="true"
+        className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(225, 48, 108, 0.22) 0%, rgba(37, 99, 235, 0.16) 45%, rgba(11, 27, 61, 0) 70%)",
+        }}
+      />
+
+      {/* Watermark Quote (&rdquo;) Bottom Right */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-6 right-5 text-[150px] leading-none text-white/[0.04] font-serif pointer-events-none select-none"
+      >
+        &rdquo;
+      </div>
+
+      {/* ============================================= */}
+      {/* 1. TOP CENTER: GLASS PILL BADGE IN ARABIC     */}
+      {/* ============================================= */}
+      <div className="relative z-10 flex justify-center w-full">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#09101d]/90 border border-white/10">
+          <span className="w-2 h-2 rounded-full bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] animate-pulse" />
+          <span className="font-sans text-xs font-bold tracking-wide text-slate-200">
+            تجارب وشهادات حية
+          </span>
+        </div>
+      </div>
+
+      {/* ============================================= */}
+      {/* 2. CENTER: CONCENTRIC INSTAGRAM ICON & COPY   */}
+      {/* ============================================= */}
+      <div className="relative z-10 my-auto flex flex-col items-center px-1 space-y-3.5">
+        {/* Concentric Double-Ring Circle matching the Play Button proportions */}
+        <a
+          href="https://www.instagram.com/overseas_consulting_"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="زيارة حساب إنستغرام لـ M&A Overseas Consulting"
+          className="swiper-no-swiping relative w-24 h-24 sm:w-26 sm:h-26 rounded-full border border-pink-500/30 bg-gradient-to-tr from-[#833ab4]/15 via-[#fd1d1d]/15 to-[#fcb045]/15 flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 group cursor-pointer shadow-[0_0_24px_rgba(225,48,108,0.25)]"
+        >
+          <div className="w-[72px] h-[72px] sm:w-[78px] sm:h-[78px] rounded-full border border-white/20 bg-gradient-to-tr from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888] flex items-center justify-center text-white shadow-inner">
+            <InstagramIcon className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.2] drop-shadow-sm" />
+          </div>
+        </a>
+
+        {/* Catchy Headline */}
+        <div className="space-y-1.5 max-w-[270px]">
+          <h4 className="text-sm sm:text-base font-bold text-white leading-snug">
+            واش باغي تشوف شهادات وتجارب طلاب أكثر؟
+          </h4>
+          <p className="text-[11px] sm:text-xs text-slate-300/90 leading-relaxed font-normal">
+            كنوثقوا يومياً فيديوهات حصرية، مقابلات مع الطلبة، وتأشيرات القبول في كبرى جامعات أوروبا عبر حسابنا الرسمي.
+          </p>
+        </div>
+      </div>
+
+      {/* ============================================= */}
+      {/* 3. BOTTOM: INSTAGRAM CTA BUTTON & HANDLE      */}
+      {/* ============================================= */}
+      <div className="relative z-10 w-full flex flex-col items-center gap-2 pt-1">
+        <a
+          href="https://www.instagram.com/overseas_consulting_"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="swiper-no-swiping w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-gradient-to-r from-[#bc1888] via-[#dc2743] to-[#e6683c] text-white text-xs font-bold shadow-[0_6px_20px_rgba(220,39,67,0.35)] hover:shadow-[0_8px_24px_rgba(220,39,67,0.5)] hover:scale-[1.02] active:scale-95 transition-all duration-200 group/btn"
+        >
+          <InstagramIcon className="w-3.5 h-3.5 text-white" />
+          <span>تابعنا على إنستغرام</span>
+          <ArrowLeft className="w-3.5 h-3.5 group-hover/btn:-translate-x-1 transition-transform" />
+        </a>
+
+        <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+          <span dir="ltr" className="tracking-tight text-slate-300">
+            @overseas_consulting_
+          </span>
+          <VerifiedBadge />
+        </div>
+      </div>
+    </div>
+  );
+});
+
 // Single Marquee Document Card with smooth progressive fade-in and eager preloading when near section
 const MarqueeDocumentCard = memo(function MarqueeDocumentCard({
   src,
@@ -454,7 +580,7 @@ export function AudioReviews() {
     const swiper = swiperRef.current;
     if (!swiper) return;
     stopCurrentAudio();
-    if (swiper.activeIndex >= audioReviews.length - 1) {
+    if (swiper.activeIndex >= TOTAL_SLIDES - 1) {
       swiper.slideTo(0);
     } else {
       swiper.slideNext();
@@ -466,7 +592,7 @@ export function AudioReviews() {
     if (!swiper) return;
     stopCurrentAudio();
     if (swiper.activeIndex <= 0) {
-      swiper.slideTo(audioReviews.length - 1);
+      swiper.slideTo(TOTAL_SLIDES - 1);
     } else {
       swiper.slidePrev();
     }
@@ -853,6 +979,14 @@ export function AudioReviews() {
                           </SwiperSlide>
                         );
                       })}
+
+                      {/* Final Slide: High-Converting Instagram Discovery Card */}
+                      <SwiperSlide
+                        key="instagram-card-slide"
+                        className="!w-[288px] sm:!w-[325px] md:!w-[340px]"
+                      >
+                        <InstagramReviewCard />
+                      </SwiperSlide>
                     </Swiper>
                   </div>
 
@@ -872,9 +1006,9 @@ export function AudioReviews() {
                   className="flex items-center justify-center gap-1.5 mt-2"
                   aria-hidden="true"
                 >
-                  {audioReviews.map((r, idx) => (
+                  {Array.from({ length: TOTAL_SLIDES }).map((_, idx) => (
                     <button
-                      key={r.id}
+                      key={`review-dot-${idx}`}
                       type="button"
                       onClick={() => {
                         stopCurrentAudio();
