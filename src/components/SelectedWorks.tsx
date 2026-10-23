@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Play, Eye, Volume2, VolumeX, ChevronLeft, ChevronRight } from "lucide-react";
+import { Play, Volume2, VolumeX, ChevronLeft, ChevronRight } from "lucide-react";
 import { ShaderBackground } from "@/components/ui/ShaderBackground";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow } from "swiper/modules";
@@ -463,16 +463,10 @@ export const SelectedWorks: React.FC = () => {
 
                               {/* Bottom Info Card */}
                               <div className="absolute bottom-0 left-0 right-0 p-2.5 sm:p-3 z-10 pointer-events-none">
-                                <div className="rounded-2xl bg-white/95 border border-white/80 px-3 py-2 flex items-center justify-between shadow-lg">
-                                  <span className="text-[11px] sm:text-xs font-bold text-brand-navy truncate pr-1.5">
+                                <div className="rounded-2xl bg-white/95 backdrop-blur-md border border-white/80 px-3.5 py-2.5 flex items-center justify-center text-center shadow-lg">
+                                  <span className="text-[11px] sm:text-xs font-bold text-brand-navy truncate">
                                     {work.title}
                                   </span>
-                                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-electric/[0.08] border border-brand-electric/15 shrink-0">
-                                    <Eye size={12} className="text-brand-electric" />
-                                    <span className="text-[10px] sm:text-[11px] font-bold text-brand-electric tabular-nums">
-                                      {work.views}
-                                    </span>
-                                  </div>
                                 </div>
                               </div>
                             </>
