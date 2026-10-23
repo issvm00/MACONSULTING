@@ -8,8 +8,10 @@ import {
   MessageCircle,
   GraduationCap,
   ArrowLeft,
+  ArrowRight,
   PlayCircle,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Crisp SVG Country Flag Tokens (Works 100% on Windows, Mac, iOS, Android)
 function FlagCircle({ code, name }: { code: string; name: string }) {
@@ -86,7 +88,7 @@ function FlagCircle({ code, name }: { code: string; name: string }) {
   );
 }
 
-const ROTATING_WORDS = [
+const ROTATING_WORDS_AR = [
   "أوروبا",
   "ليتوانيا",
   "إيطاليا",
@@ -95,15 +97,24 @@ const ROTATING_WORDS = [
   "المجر",
 ];
 
+const ROTATING_WORDS_EN = [
+  "Europe",
+  "Lithuania",
+  "Italy",
+  "Romania",
+  "Spain",
+  "Hungary",
+];
+
 // The 7 official European study destinations
 const DESTINATIONS = [
-  { code: "LT", name: "ليتوانيا" },
-  { code: "RO", name: "رومانيا" },
-  { code: "IT", name: "إيطاليا" },
-  { code: "ES", name: "إسبانيا" },
-  { code: "HU", name: "هنغاريا" },
-  { code: "MT", name: "مالطا" },
-  { code: "IE", name: "أيرلندا" },
+  { code: "LT", nameAr: "ليتوانيا", nameEn: "Lithuania" },
+  { code: "RO", nameAr: "رومانيا", nameEn: "Romania" },
+  { code: "IT", nameAr: "إيطاليا", nameEn: "Italy" },
+  { code: "ES", nameAr: "إسبانيا", nameEn: "Spain" },
+  { code: "HU", nameAr: "هنغاريا", nameEn: "Hungary" },
+  { code: "MT", nameAr: "مالطا", nameEn: "Malta" },
+  { code: "IE", nameAr: "أيرلندا", nameEn: "Ireland" },
 ];
 
 // Strong hardware-accelerated ease-out curve [0.22, 1, 0.36, 1]
@@ -165,10 +176,15 @@ const badgeVariants = (delay: number) => ({
 });
 
 export function Hero() {
+  const { language, isRTL } = useLanguage();
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isHeroImageLoaded, setIsHeroImageLoaded] = useState(false);
   const heroRef = React.useRef<HTMLDivElement | null>(null);
   const [isInView, setIsInView] = useState(true);
+
+  const rotatingWords =
+    language === "ar" ? ROTATING_WORDS_AR : ROTATING_WORDS_EN;
+  const DirectionalArrow = isRTL ? ArrowLeft : ArrowRight;
 
   // Pause word rotation timer when Hero is scrolled out of viewport to prevent offscreen React re-renders during scroll
   useEffect(() => {
@@ -187,7 +203,7 @@ export function Hero() {
   useEffect(() => {
     if (!isInView) return;
     const timer = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
+      setCurrentWordIndex((prev) => (prev + 1) % ROTATING_WORDS_AR.length);
     }, 2600);
     return () => clearInterval(timer);
   }, [isInView]);
@@ -196,32 +212,42 @@ export function Hero() {
     <div
       ref={heroRef}
       id="hero"
+      dir={isRTL ? "rtl" : "ltr"}
       className="relative min-h-screen flex flex-col text-brand-navy overflow-x-clip scroll-mt-20"
     >
       {/* Main Hero Body */}
       <main className="flex-1 flex items-center pt-24 sm:pt-28 lg:pt-28 pb-8 sm:pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
             {/* ======================================================== */}
-            {/* Right Column (Text & Value Proposition)                  */}
+            {/* Start Column (Text & Value Proposition)                  */}
             {/* ======================================================== */}
             <motion.div
               variants={heroTextContainerVariants}
               initial="hidden"
               animate="visible"
-              className="lg:col-span-6 text-right space-y-5 lg:pr-2"
+              className={`lg:col-span-6 ${
+                isRTL ? "text-right lg:pr-2" : "text-left lg:pl-2"
+              } space-y-5`}
             >
-              {/* H1 Heading in IBM Plex Sans Arabic with Dynamic Destination Morph */}
+              {/* H1 Heading in IBM Plex Sans with Dynamic Destination Morph */}
               <motion.h1
                 variants={heroItemVariants}
-                className="text-3xl sm:text-5xl lg:text-[52px] font-bold text-brand-navy tracking-tight leading-[1.3]"
+                className={`${
+                  isRTL
+                    ? "text-3xl sm:text-5xl lg:text-[52px] leading-[1.3]"
+                    : "text-3xl sm:text-[44px] lg:text-[48px] leading-[1.2]"
+                } font-bold text-brand-navy tracking-tight`}
               >
-                <span className="block text-brand-navy">طريقك نحو الدراسة في</span>
+                <span className="block text-brand-navy">
+                  {language === "ar"
+                    ? "طريقك نحو الدراسة في"
+                    : "Your Gateway to Studying in"}
+                </span>
                 <span className="relative inline-flex items-center min-h-[1.35em] mt-1 sm:mt-2">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span
-                      key={ROTATING_WORDS[currentWordIndex]}
+                      key={`${language}-${rotatingWords[currentWordIndex]}`}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
@@ -230,7 +256,7 @@ export function Hero() {
                     >
                       {/* Active Destination Word */}
                       <span className="relative z-10">
-                        {ROTATING_WORDS[currentWordIndex]}
+                        {rotatingWords[currentWordIndex]}
                       </span>
 
                       {/* Subtle radial glow behind rotating word (Zero filter:blur cost) */}
@@ -271,7 +297,23 @@ export function Hero() {
                 variants={heroItemVariants}
                 className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-xl"
               >
-                معاك خطوة بخطوة لطلابنا في <strong>العالم العربي</strong>: ركّز على مستقبلك واترك الإجراءات علينا: نختار معك أفضل جامعة وتخصص، نستخرج لك القبول الرسمي والمنح، ونسهّل طريقك نحو التأشيرة وحتى الاستقرار في وجهتك الجديدة.
+                {language === "ar" ? (
+                  <>
+                    معاك خطوة بخطوة لطلابنا في <strong>العالم العربي</strong>: ركّز
+                    على مستقبلك واترك الإجراءات علينا: نختار معك أفضل جامعة
+                    وتخصص، نستخرج لك القبول الرسمي والمنح، ونسهّل طريقك نحو
+                    التأشيرة وحتى الاستقرار في وجهتك الجديدة.
+                  </>
+                ) : (
+                  <>
+                    Step-by-step guidance for students across the{" "}
+                    <strong>Arab World</strong>: focus on your future and leave
+                    the paperwork to us. Together, we select the right
+                    university and major, secure your official admission and
+                    scholarships, and guide you through your visa all the way to
+                    settling in your new destination.
+                  </>
+                )}
               </motion.p>
 
               {/* Action Buttons (High-Conversion CTAs) */}
@@ -284,8 +326,18 @@ export function Hero() {
                   className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full text-sm sm:text-base font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-lg shadow-brand-navy/10 transition-[background-color,transform,box-shadow] duration-200 group"
                 >
                   <MessageCircle className="w-5 h-5 text-brand-electric-light shrink-0" />
-                  <span>تحدث مع مستشار معتمد</span>
-                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200 shrink-0" />
+                  <span>
+                    {language === "ar"
+                      ? "تحدث مع مستشار معتمد"
+                      : "Speak with a Certified Advisor"}
+                  </span>
+                  <DirectionalArrow
+                    className={`w-4 h-4 ${
+                      isRTL
+                        ? "group-hover:-translate-x-1"
+                        : "group-hover:translate-x-1"
+                    } transition-transform duration-200 shrink-0`}
+                  />
                 </Link>
 
                 <a
@@ -293,13 +345,17 @@ export function Hero() {
                   className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-sm sm:text-base font-bold text-brand-navy bg-white hover:bg-slate-50 active:scale-[0.98] border border-slate-200/90 shadow-sm transition-[background-color,transform,border-color] duration-200"
                 >
                   <PlayCircle className="w-4 h-4 text-brand-electric shrink-0" />
-                  <span>شاهد تجارب الطلاب</span>
+                  <span>
+                    {language === "ar"
+                      ? "شاهد تجارب الطلاب"
+                      : "Watch Student Stories"}
+                  </span>
                 </a>
               </motion.div>
             </motion.div>
 
             {/* ======================================================== */}
-            {/* Left Column (The Architectural Visual Centerpiece)       */}
+            {/* End Column (The Architectural Visual Centerpiece)        */}
             {/* ======================================================== */}
             <motion.div
               variants={visualCardVariants}
@@ -309,7 +365,6 @@ export function Hero() {
             >
               {/* Standalone Visual Unit with dedicated bounds */}
               <div className="relative w-full max-w-[350px] sm:max-w-[390px] lg:max-w-[400px] aspect-[4/4.9] flex items-center justify-center transform-gpu">
-
                 {/* 1. Organic Backdrop Cloud Shape (Pure GPU radial lighting, zero Gaussian blur cost) */}
                 <div
                   className="absolute inset-2 sm:inset-3 rounded-[45px] sm:rounded-[55px] z-0 overflow-hidden border border-white shadow-[0_16px_40px_-12px_rgba(37,99,235,0.09),inset_0_2px_4px_rgba(255,255,255,0.95)]"
@@ -327,7 +382,11 @@ export function Hero() {
                   <div className="relative w-[88%] h-[92%]">
                     <Image
                       src="/hero-image.png"
-                      alt="طالب في أوروبا - M&A Overseas Consulting"
+                      alt={
+                        language === "ar"
+                          ? "طالب في أوروبا - M&A Overseas Consulting"
+                          : "Student in Europe - M&A Overseas Consulting"
+                      }
                       fill
                       sizes="(max-width: 640px) 325px, 360px"
                       referrerPolicy="no-referrer"
@@ -340,52 +399,72 @@ export function Hero() {
                   </div>
                 </div>
 
-                {/* 3. Badge "قبول جامعي مضمون" */}
+                {/* 3. Badge "قبول جامعي مضمون" / "Guaranteed Admission" */}
                 <motion.div
                   variants={badgeVariants(0.22)}
                   initial="hidden"
                   animate="visible"
-                  className="absolute top-[12%] left-0 sm:-left-4 z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card text-right"
+                  className={`absolute z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card ${
+                    isRTL
+                      ? "top-[12%] left-0 sm:-left-4 text-right"
+                      : "top-[10%] -left-1 sm:-left-6 text-left"
+                  }`}
                 >
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-electric flex-shrink-0">
                       <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
                     <p className="text-[11px] sm:text-xs font-bold text-brand-navy whitespace-nowrap">
-                      قبول جامعي مضمون
+                      {language === "ar"
+                        ? "قبول جامعي مضمون"
+                        : "Guaranteed Admission"}
                     </p>
                   </div>
                 </motion.div>
 
-                {/* 4. Badge "7 وجهات أوروبية" */}
+                {/* 4. Badge "7 وجهات أوروبية" / "7 European Destinations" */}
                 <motion.div
                   variants={badgeVariants(0.3)}
                   initial="hidden"
                   animate="visible"
-                  className="absolute top-[40%] right-0 sm:-right-3 z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card text-right"
+                  className={`absolute top-[40%] z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card ${
+                    isRTL
+                      ? "right-0 sm:-right-3 text-right"
+                      : "right-0 sm:-right-4 text-left"
+                  }`}
                 >
                   {/* Clean 7 Flags Row */}
                   <div className="flex items-center gap-1 mb-1">
                     {DESTINATIONS.map((d) => (
-                      <FlagCircle key={d.code} code={d.code} name={d.name} />
+                      <FlagCircle
+                        key={d.code}
+                        code={d.code}
+                        name={language === "ar" ? d.nameAr : d.nameEn}
+                      />
                     ))}
                   </div>
                   <p className="text-[10px] sm:text-[11px] font-bold text-brand-navy whitespace-nowrap">
-                    7 وجهات أوروبية معتمدة
+                    {language === "ar"
+                      ? "7 وجهات أوروبية معتمدة"
+                      : "7 European Destinations"}
                   </p>
                 </motion.div>
 
-                {/* 5. Badge "نسبة قبول التأشيرة" */}
+                {/* 5. Badge "نسبة قبول التأشيرة" / "Visa Approval Rate" */}
                 <motion.div
                   variants={badgeVariants(0.38)}
                   initial="hidden"
                   animate="visible"
-                  className="absolute bottom-4 left-0 sm:-left-3 z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card text-right"
+                  className={`absolute bottom-4 left-0 sm:-left-3 z-20 p-2 sm:p-2.5 px-3 rounded-xl sm:rounded-2xl glass-card ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
                 >
                   <div className="flex items-center justify-between gap-2.5">
                     <div>
                       <p className="text-[9px] sm:text-[10px] font-medium text-slate-500 whitespace-nowrap">
-                        نسبة قبول التأشيرة
+                        {language === "ar"
+                          ? "نسبة قبول التأشيرة"
+                          : "Visa Approval Rate"}
                       </p>
                       <p className="text-xs sm:text-sm font-bold text-brand-navy font-sans tracking-tight tabular-nums">
                         98.4%
@@ -394,7 +473,10 @@ export function Hero() {
 
                     {/* Mini SVG Sparkline Chart */}
                     <div className="w-11 h-6 flex items-end">
-                      <svg viewBox="0 0 60 30" className="w-full h-full overflow-visible">
+                      <svg
+                        viewBox="0 0 60 30"
+                        className="w-full h-full overflow-visible"
+                      >
                         <path
                           d="M 2 24 Q 15 22, 25 14 T 45 12 T 58 4"
                           fill="none"
@@ -407,14 +489,11 @@ export function Hero() {
                     </div>
                   </div>
                 </motion.div>
-
               </div>
             </motion.div>
-
           </div>
         </div>
       </main>
     </div>
   );
 }
-

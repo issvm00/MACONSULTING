@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Star,
   ArrowLeft,
+  ArrowRight,
   X,
   Loader2,
 } from "lucide-react";
@@ -28,6 +29,7 @@ import "swiper/css/effect-coverflow";
 import { AudioReview } from "@/types/audioReview";
 import { audioReviews } from "@/data/audioReviews";
 import { HlsAudio, HlsAudioHandle } from "@/components/ui/HlsAudio";
+import { useLanguage, type Language } from "@/context/LanguageContext";
 
 // 28-bar Simulated Waveform Equalizer heights from technical specification
 const waveHeights = [
@@ -86,6 +88,8 @@ const WaveformEqualizer = memo(function WaveformEqualizer({
 interface AudioReviewCardProps {
   review: AudioReview;
   index: number;
+  language: Language;
+  isRTL: boolean;
   cardIsPlaying: boolean;
   cardIsBuffering: boolean;
   cardCurrentTime: number;
@@ -100,6 +104,8 @@ interface AudioReviewCardProps {
 const AudioReviewCard = memo(function AudioReviewCard({
   review,
   index,
+  language,
+  isRTL,
   cardIsPlaying,
   cardIsBuffering,
   cardCurrentTime,
@@ -154,9 +160,7 @@ const AudioReviewCard = memo(function AudioReviewCard({
   const isAudioActuallyFlowing = cardIsPlaying && !cardIsBuffering;
 
   return (
-    <div
-      className="relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9 bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d] border border-white/15 shadow-[0_18px_36px_-10px_rgba(7,14,28,0.45)] flex flex-col items-center justify-between overflow-hidden transform-gpu [backface-visibility:hidden]"
-    >
+    <div className="relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-7 py-8 sm:px-8 sm:py-9 bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d] border border-white/15 shadow-[0_18px_36px_-10px_rgba(7,14,28,0.45)] flex flex-col items-center justify-between overflow-hidden transform-gpu [backface-visibility:hidden]">
       {/* Zero-Blur-Filter Hardware-Accelerated Radial Halo Behind Center Play Button */}
       <div
         aria-hidden="true"
@@ -176,9 +180,12 @@ const AudioReviewCard = memo(function AudioReviewCard({
       </div>
 
       {/* ============================================= */}
-      {/* 1. TOP CENTER: GLASS PILL BADGE IN ARABIC     */}
+      {/* 1. TOP CENTER: GLASS PILL BADGE               */}
       {/* ============================================= */}
-      <div dir="rtl" className="relative z-10 flex justify-center w-full">
+      <div
+        dir={isRTL ? "rtl" : "ltr"}
+        className="relative z-10 flex justify-center w-full"
+      >
         <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#09101d]/90 border border-white/10">
           <span
             className={`w-2 h-2 rounded-full bg-[#00d2ff] ${
@@ -186,7 +193,7 @@ const AudioReviewCard = memo(function AudioReviewCard({
             }`}
           />
           <span className="font-sans text-xs font-bold tracking-wide text-[#38bdf8]">
-            {review.title}
+            {language === "ar" ? review.title : "Student Testimonial"}
           </span>
         </div>
       </div>
@@ -202,7 +209,13 @@ const AudioReviewCard = memo(function AudioReviewCard({
             onPlayClick(review, index);
           }}
           aria-label={
-            cardIsPlaying ? "إيقاف التسجيل الصوتي" : "تشغيل التسجيل الصوتي"
+            cardIsPlaying
+              ? language === "ar"
+                ? "إيقاف التسجيل الصوتي"
+                : "Pause audio testimonial"
+              : language === "ar"
+              ? "تشغيل التسجيل الصوتي"
+              : "Play audio testimonial"
           }
           className="swiper-no-swiping relative w-28 h-28 sm:w-[118px] sm:h-[118px] rounded-full border border-[#00d2ff]/35 bg-[#0e1b2e]/70 hover:border-[#00d2ff]/60 flex items-center justify-center transition-transform duration-150 active:scale-95 group cursor-pointer"
         >
@@ -300,11 +313,11 @@ function InstagramIcon({ className }: { className?: string }) {
 }
 
 // Official Instagram Verified Badge SVG
-function VerifiedBadge() {
+function VerifiedBadge({ label }: { label: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      aria-label="حساب موثق"
+      aria-label={label}
       className="w-3.5 h-3.5 text-brand-electric fill-brand-electric shrink-0"
     >
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.2 14.6l-3.8-3.8 1.4-1.4 2.4 2.4 5.4-5.4 1.4 1.4-6.8 6.8z" />
@@ -313,10 +326,18 @@ function VerifiedBadge() {
 }
 
 // Dedicated Final Slide: High-Converting Instagram Discovery Card
-const InstagramReviewCard = memo(function InstagramReviewCard() {
+const InstagramReviewCard = memo(function InstagramReviewCard({
+  language,
+  isRTL,
+}: {
+  language: Language;
+  isRTL: boolean;
+}) {
+  const DirectionalArrow = isRTL ? ArrowLeft : ArrowRight;
+
   return (
     <div
-      dir="rtl"
+      dir={isRTL ? "rtl" : "ltr"}
       className="relative w-full h-[400px] sm:h-[430px] rounded-[32px] px-6 py-7 sm:px-8 sm:py-8 bg-gradient-to-b from-[#162338] via-[#101929] to-[#0a101d] border border-white/15 shadow-[0_18px_36px_-10px_rgba(7,14,28,0.45)] flex flex-col items-center justify-between overflow-hidden transform-gpu [backface-visibility:hidden] select-none text-center"
     >
       {/* Zero-Blur-Filter Hardware-Accelerated Radial Halo Behind Center Emblem */}
@@ -338,13 +359,15 @@ const InstagramReviewCard = memo(function InstagramReviewCard() {
       </div>
 
       {/* ============================================= */}
-      {/* 1. TOP CENTER: GLASS PILL BADGE IN ARABIC     */}
+      {/* 1. TOP CENTER: GLASS PILL BADGE               */}
       {/* ============================================= */}
       <div className="relative z-10 flex justify-center w-full">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#09101d]/90 border border-white/10">
           <span className="w-2 h-2 rounded-full bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] animate-pulse" />
           <span className="font-sans text-xs font-bold tracking-wide text-slate-200">
-            تجارب وشهادات حية
+            {language === "ar"
+              ? "تجارب وشهادات حية"
+              : "Live Stories & Testimonials"}
           </span>
         </div>
       </div>
@@ -358,7 +381,11 @@ const InstagramReviewCard = memo(function InstagramReviewCard() {
           href="https://www.instagram.com/overseas_consulting_"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="زيارة حساب إنستغرام لـ M&A Overseas Consulting"
+          aria-label={
+            language === "ar"
+              ? "زيارة حساب إنستغرام لـ M&A Overseas Consulting"
+              : "Visit M&A Overseas Consulting on Instagram"
+          }
           className="swiper-no-swiping relative w-24 h-24 sm:w-26 sm:h-26 rounded-full border border-pink-500/30 bg-gradient-to-tr from-[#833ab4]/15 via-[#fd1d1d]/15 to-[#fcb045]/15 flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 group cursor-pointer shadow-[0_0_24px_rgba(225,48,108,0.25)]"
         >
           <div className="w-[72px] h-[72px] sm:w-[78px] sm:h-[78px] rounded-full border border-white/20 bg-gradient-to-tr from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888] flex items-center justify-center text-white shadow-inner">
@@ -369,10 +396,14 @@ const InstagramReviewCard = memo(function InstagramReviewCard() {
         {/* Catchy Headline */}
         <div className="space-y-1.5 max-w-[270px]">
           <h4 className="text-sm sm:text-base font-bold text-white leading-snug">
-            واش باغي تشوف شهادات وتجارب طلاب أكثر؟
+            {language === "ar"
+              ? "واش باغي تشوف شهادات وتجارب طلاب أكثر؟"
+              : "Want to see more student stories and visa approvals?"}
           </h4>
           <p className="text-[11px] sm:text-xs text-slate-300/90 leading-relaxed font-normal">
-            كنوثقوا يومياً فيديوهات حصرية، مقابلات مع الطلبة، وتأشيرات القبول في كبرى جامعات أوروبا عبر حسابنا الرسمي.
+            {language === "ar"
+              ? "كنوثقوا يومياً فيديوهات حصرية، مقابلات مع الطلبة، وتأشيرات القبول في كبرى جامعات أوروبا عبر حسابنا الرسمي."
+              : "We share daily exclusive videos, student interviews, and official university admissions across Europe on our official Instagram."}
           </p>
         </div>
       </div>
@@ -388,15 +419,25 @@ const InstagramReviewCard = memo(function InstagramReviewCard() {
           className="swiper-no-swiping w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-gradient-to-r from-[#bc1888] via-[#dc2743] to-[#e6683c] text-white text-xs font-bold shadow-[0_6px_20px_rgba(220,39,67,0.35)] hover:shadow-[0_8px_24px_rgba(220,39,67,0.5)] hover:scale-[1.02] active:scale-95 transition-all duration-200 group/btn"
         >
           <InstagramIcon className="w-3.5 h-3.5 text-white" />
-          <span>تابعنا على إنستغرام</span>
-          <ArrowLeft className="w-3.5 h-3.5 group-hover/btn:-translate-x-1 transition-transform" />
+          <span>
+            {language === "ar" ? "تابعنا على إنستغرام" : "Follow Us on Instagram"}
+          </span>
+          <DirectionalArrow
+            className={`w-3.5 h-3.5 ${
+              isRTL
+                ? "group-hover/btn:-translate-x-1"
+                : "group-hover/btn:translate-x-1"
+            } transition-transform`}
+          />
         </a>
 
         <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
           <span dir="ltr" className="tracking-tight text-slate-300">
             @overseas_consulting_
           </span>
-          <VerifiedBadge />
+          <VerifiedBadge
+            label={language === "ar" ? "حساب موثق" : "Verified Account"}
+          />
         </div>
       </div>
     </div>
@@ -407,11 +448,13 @@ const InstagramReviewCard = memo(function InstagramReviewCard() {
 const MarqueeDocumentCard = memo(function MarqueeDocumentCard({
   src,
   index,
+  language,
   shouldEagerLoad,
   onSelectImage,
 }: {
   src: string;
   index: number;
+  language: Language;
   shouldEagerLoad: boolean;
   onSelectImage: (src: string) => void;
 }) {
@@ -431,7 +474,11 @@ const MarqueeDocumentCard = memo(function MarqueeDocumentCard({
         )}
         <Image
           src={src}
-          alt={`وثيقة قبول جامعي ${index + 1}`}
+          alt={
+            language === "ar"
+              ? `وثيقة قبول جامعي ${index + 1}`
+              : `Official University Admission Document ${index + 1}`
+          }
           fill
           sizes="(max-width: 640px) 185px, 225px"
           loading={shouldEagerLoad ? "eager" : "lazy"}
@@ -449,11 +496,13 @@ const MarqueeDocumentCard = memo(function MarqueeDocumentCard({
 // Memoized Infinite Loop Marquee with direct DOM ref so we can freeze it in 0ms during touch-swipe
 const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
   trackRef,
+  language,
   isPaused,
   shouldEagerLoad,
   onSelectImage,
 }: {
   trackRef: React.RefObject<HTMLDivElement | null>;
+  language: Language;
   isPaused: boolean;
   shouldEagerLoad: boolean;
   onSelectImage: (src: string) => void;
@@ -488,6 +537,7 @@ const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
               key={`reviews-track-a-${index}`}
               src={src}
               index={index}
+              language={language}
               shouldEagerLoad={shouldEagerLoad}
               onSelectImage={onSelectImage}
             />
@@ -502,6 +552,7 @@ const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
               key={`reviews-track-b-${index}`}
               src={src}
               index={index}
+              language={language}
               shouldEagerLoad={shouldEagerLoad}
               onSelectImage={onSelectImage}
             />
@@ -513,6 +564,7 @@ const ReviewImagesMarquee = memo(function ReviewImagesMarquee({
 });
 
 export function AudioReviews() {
+  const { language, isRTL } = useLanguage();
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [isMarqueeInView, setIsMarqueeInView] = useState<boolean>(true);
   const [shouldPreloadMarquee, setShouldPreloadMarquee] =
@@ -535,6 +587,8 @@ export function AudioReviews() {
   const activeAudioIdRef = useRef<number | null>(null);
   const isMarqueeInViewRef = useRef<boolean>(true);
   const hasPreviewRef = useRef<boolean>(false);
+
+  const DirectionalArrow = isRTL ? ArrowLeft : ArrowRight;
 
   useEffect(() => {
     activeAudioIdRef.current = activeAudioId;
@@ -780,7 +834,7 @@ export function AudioReviews() {
     <section
       ref={sectionRef}
       id="reviews"
-      dir="rtl"
+      dir={isRTL ? "rtl" : "ltr"}
       className="relative w-full pt-4 sm:pt-6 lg:pt-8 pb-14 sm:pb-20 lg:pb-24 bg-transparent overflow-hidden select-none scroll-mt-20"
     >
       {/* Zero-Blur-Filter Ambient Radial Lighting (0ms Mobile GPU Cost) */}
@@ -816,25 +870,38 @@ export function AudioReviews() {
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-8 items-center">
           {/* =============================================================== */}
-          {/* RIGHT COLUMN (RTL): ARABIC CALLIGRAPHIC TYPOGRAPHY & PROMPT     */}
+          {/* START COLUMN: CALLIGRAPHIC / EDITORIAL TYPOGRAPHY & PROMPT      */}
           {/* =============================================================== */}
-          <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-right">
-            {/* Top Kicker in Arabic with Blue Dot */}
+          <div
+            className={`lg:col-span-5 flex flex-col items-center lg:items-start text-center ${
+              isRTL ? "lg:text-right" : "lg:text-left"
+            }`}
+          >
+            {/* Top Kicker with Blue Dot */}
             <div className="inline-flex items-center gap-2 mb-4">
               <span className="w-2 h-2 rounded-full bg-[#0066FF] shadow-[0_0_8px_rgba(0,102,255,0.6)]" />
               <span className="text-xs font-bold tracking-wide text-[#0066FF]">
-                شهادات وتجارب موثقة
+                {language === "ar"
+                  ? "شهادات وتجارب موثقة"
+                  : "Verified Testimonials & Stories"}
               </span>
             </div>
 
-            {/* Decorative Calligraphic Arabic Title (Aref Ruqaa) with Swash Flourish */}
+            {/* Decorative Calligraphic Arabic Title (Aref Ruqaa) or Editorial English Display Title */}
             <div className="relative mb-7">
-              <h2 className="font-calligraphy text-6xl sm:text-7xl lg:text-[88px] leading-[1.12] font-normal text-[#0d1626] select-none">
-                <span className="block">آرَاءُ</span>
-                <span className="block -mt-1 text-[#0B1B3D] pr-2 sm:pr-4">
-                  طُلَّابِنَا
-                </span>
-              </h2>
+              {language === "ar" ? (
+                <h2 className="font-calligraphy text-6xl sm:text-7xl lg:text-[88px] leading-[1.12] font-normal text-[#0d1626] select-none">
+                  <span className="block">آرَاءُ</span>
+                  <span className="block -mt-1 text-[#0B1B3D] pr-2 sm:pr-4">
+                    طُلَّابِنَا
+                  </span>
+                </h2>
+              ) : (
+                <h2 className="font-sans text-5xl sm:text-6xl lg:text-[68px] leading-[1.04] font-extrabold tracking-tight text-[#0d1626] select-none">
+                  <span className="block">Student</span>
+                  <span className="block text-[#0B1B3D]">Voices</span>
+                </h2>
+              )}
 
               {/* Subtle Calligraphic Decorative Swash Flourish Underneath */}
               <svg
@@ -859,25 +926,40 @@ export function AudioReviews() {
               </svg>
             </div>
 
-            {/* Description Paragraph in Arabic */}
-            <p className="text-sm sm:text-[15px] text-slate-600 font-normal leading-relaxed max-w-md mb-8 text-center lg:text-right">
-              استمع لآراء وتجارب الطلاب وأولياء الأمور الذين رافقناهم نحو أفضل
-              الجامعات الأوروبية. نتائج حقيقية، وأصوات حقيقية.
+            {/* Description Paragraph */}
+            <p
+              className={`text-sm sm:text-[15px] text-slate-600 font-normal leading-relaxed max-w-md mb-8 text-center ${
+                isRTL ? "lg:text-right" : "lg:text-left"
+              }`}
+            >
+              {language === "ar"
+                ? "استمع لآراء وتجارب الطلاب وأولياء الأمور الذين رافقناهم نحو أفضل الجامعات الأوروبية. نتائج حقيقية، وأصوات حقيقية."
+                : "Listen to real feedback and experiences from students and parents we guided to top European universities. Real results, real voices."}
             </p>
 
-            {/* Bottom Interactive Swipe / Click Prompt in Arabic RTL */}
+            {/* Bottom Interactive Swipe / Click Prompt */}
             <button
               type="button"
               onClick={handleNext}
               className="inline-flex items-center gap-2.5 text-xs sm:text-[13px] font-bold text-[#0066FF] hover:text-[#0B1B3D] transition-colors duration-200 group cursor-pointer"
             >
-              <span>اسحب للاستماع للتجارب</span>
-              <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
+              <span>
+                {language === "ar"
+                  ? "اسحب للاستماع للتجارب"
+                  : "Swipe to listen to experiences"}
+              </span>
+              <DirectionalArrow
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  isRTL
+                    ? "group-hover:-translate-x-1"
+                    : "group-hover:translate-x-1"
+                }`}
+              />
             </button>
           </div>
 
           {/* =============================================================== */}
-          {/* LEFT COLUMN (RTL): 3D COVERFLOW SWIPER (PC & PHONE)             */}
+          {/* END COLUMN: 3D COVERFLOW SWIPER (PC & PHONE)                    */}
           {/* =============================================================== */}
           <div className="lg:col-span-7 w-full flex flex-col items-center justify-center">
             {isMounted && (
@@ -890,7 +972,9 @@ export function AudioReviews() {
                   <button
                     type="button"
                     onClick={handlePrev}
-                    aria-label="التقييم السابق"
+                    aria-label={
+                      language === "ar" ? "التقييم السابق" : "Previous review"
+                    }
                     className="hidden sm:flex w-12 h-12 rounded-full bg-white hover:bg-slate-50 text-[#0B1B3D] items-center justify-center transition-all duration-200 active:scale-95 shadow-[0_6px_20px_rgba(11,27,61,0.08)] border border-slate-100 shrink-0 mr-3 md:mr-5 cursor-pointer z-30 group"
                   >
                     <ChevronLeft className="w-5 h-5 stroke-[2.2] transition-transform duration-200 group-hover:-translate-x-0.5" />
@@ -969,6 +1053,8 @@ export function AudioReviews() {
                             <AudioReviewCard
                               review={review}
                               index={index}
+                              language={language}
+                              isRTL={isRTL}
                               cardIsPlaying={cardIsPlaying}
                               cardIsBuffering={cardIsBuffering}
                               cardCurrentTime={cardCurrentTime}
@@ -985,7 +1071,10 @@ export function AudioReviews() {
                         key="instagram-card-slide"
                         className="!w-[288px] sm:!w-[325px] md:!w-[340px]"
                       >
-                        <InstagramReviewCard />
+                        <InstagramReviewCard
+                          language={language}
+                          isRTL={isRTL}
+                        />
                       </SwiperSlide>
                     </Swiper>
                   </div>
@@ -994,7 +1083,9 @@ export function AudioReviews() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    aria-label="التقييم التالي"
+                    aria-label={
+                      language === "ar" ? "التقييم التالي" : "Next review"
+                    }
                     className="hidden sm:flex w-12 h-12 rounded-full bg-[#0066FF] hover:bg-[#2563EB] text-white items-center justify-center transition-all duration-200 active:scale-95 shadow-[0_8px_24px_rgba(0,102,255,0.38)] shrink-0 ml-3 md:ml-5 cursor-pointer z-30 group"
                   >
                     <ChevronRight className="w-5 h-5 stroke-[2.2] transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -1014,7 +1105,11 @@ export function AudioReviews() {
                         stopCurrentAudio();
                         swiperRef.current?.slideTo(idx);
                       }}
-                      aria-label={`عرض التقييم ${idx + 1}`}
+                      aria-label={
+                        language === "ar"
+                          ? `عرض التقييم ${idx + 1}`
+                          : `View review ${idx + 1}`
+                      }
                       className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                         currentIndex === idx
                           ? "w-6 bg-brand-electric"
@@ -1029,7 +1124,9 @@ export function AudioReviews() {
                   <button
                     type="button"
                     onClick={handlePrev}
-                    aria-label="التقييم السابق"
+                    aria-label={
+                      language === "ar" ? "التقييم السابق" : "Previous review"
+                    }
                     className="w-11 h-11 rounded-full bg-white text-[#0B1B3D] flex items-center justify-center transition-all duration-200 active:scale-95 shadow-[0_6px_20px_rgba(11,27,61,0.08)] border border-slate-100 cursor-pointer"
                   >
                     <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
@@ -1038,7 +1135,9 @@ export function AudioReviews() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    aria-label="التقييم التالي"
+                    aria-label={
+                      language === "ar" ? "التقييم التالي" : "Next review"
+                    }
                     className="w-11 h-11 rounded-full bg-[#0066FF] text-white flex items-center justify-center transition-all duration-200 active:scale-95 shadow-[0_8px_24px_rgba(0,102,255,0.38)] cursor-pointer"
                   >
                     <ChevronRight className="w-5 h-5 stroke-[2.2]" />
@@ -1055,6 +1154,7 @@ export function AudioReviews() {
       {/* =================================================================== */}
       <ReviewImagesMarquee
         trackRef={marqueeTrackRef}
+        language={language}
         isPaused={!isMarqueeInView || Boolean(previewImage)}
         shouldEagerLoad={shouldPreloadMarquee}
         onSelectImage={handleSelectPreviewImage}
@@ -1069,7 +1169,7 @@ export function AudioReviews() {
           <button
             type="button"
             onClick={() => setPreviewImage(null)}
-            aria-label="إغلاق"
+            aria-label={language === "ar" ? "إغلاق" : "Close"}
             className="absolute top-5 right-5 sm:top-7 sm:right-7 w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors cursor-pointer z-10"
           >
             <X className="w-5 h-5" />
@@ -1082,7 +1182,11 @@ export function AudioReviews() {
               {/* Layer 1: Instant 0ms Cached Thumbnail from Marquee */}
               <Image
                 src={previewImage}
-                alt="وثيقة قبول جامعي"
+                alt={
+                  language === "ar"
+                    ? "وثيقة قبول جامعي"
+                    : "University Admission Document"
+                }
                 fill
                 sizes="(max-width: 640px) 185px, 225px"
                 referrerPolicy="no-referrer"
@@ -1092,7 +1196,11 @@ export function AudioReviews() {
               {/* Layer 2: High-Resolution Version Crossfading Over Top */}
               <Image
                 src={previewImage}
-                alt="وثيقة قبول جامعي عالية الدقة"
+                alt={
+                  language === "ar"
+                    ? "وثيقة قبول جامعي عالية الدقة"
+                    : "High-Resolution University Admission Document"
+                }
                 fill
                 sizes="(max-width: 768px) 95vw, 672px"
                 priority

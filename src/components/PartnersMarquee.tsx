@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Partner {
   id: number;
@@ -126,6 +127,7 @@ const partners: Partner[] = [
 const halfTrackPartners: Partner[] = partners;
 
 export function PartnersMarquee() {
+  const { language, isRTL } = useLanguage();
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const [isInView, setIsInView] = React.useState(true);
 
@@ -191,17 +193,22 @@ export function PartnersMarquee() {
     <section
       ref={sectionRef}
       id="partners"
+      dir={isRTL ? "rtl" : "ltr"}
       className="relative w-full pt-4 pb-8 sm:pb-10 overflow-x-clip scroll-mt-24 sm:scroll-mt-28"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 text-center">
         {/* Section Title */}
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-brand-navy tracking-tight">
-          شراكات رسمية مع أفضل الجامعات والمعاهد الأوروبية
+          {language === "ar"
+            ? "شراكات رسمية مع أفضل الجامعات والمعاهد الأوروبية"
+            : "Official Partnerships with Leading European Universities & Institutes"}
         </h2>
 
         {/* Subtitle */}
         <p className="mt-2 text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto leading-relaxed">
-          شهادات جامعية ودبلومات معترف بها رسمياً في المغرب، الجزائر، وكافة دول أوروبا.
+          {language === "ar"
+            ? "شهادات جامعية ودبلومات معترف بها رسمياً في المغرب، الجزائر، وكافة دول أوروبا."
+            : "Officially accredited university degrees and diplomas recognized in Morocco, Algeria, and across all of Europe."}
         </p>
       </div>
 

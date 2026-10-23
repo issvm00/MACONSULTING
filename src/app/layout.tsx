@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { IBM_Plex_Sans_Arabic, Aref_Ruqaa } from "next/font/google";
 import "./globals.css";
 import { AmbientBackground } from "@/components/AmbientBackground";
+import { LanguageProvider, type Language } from "@/context/LanguageContext";
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
@@ -26,20 +28,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const savedLang = cookieStore.get("ma_overseas_lang")?.value;
+  const initialLanguage: Language = savedLang === "en" ? "en" : "ar";
+  const initialDir = initialLanguage === "ar" ? "rtl" : "ltr";
+
   return (
     <html
-      lang="ar"
-      dir="rtl"
+      lang={initialLanguage}
+      dir={initialDir}
       className={`${ibmPlexArabic.variable} ${arefRuqaa.variable} scroll-smooth`}
     >
-      <body className="antialiased selection:bg-brand-electric selection:text-white min-h-screen flex flex-col relative text-brand-navy bg-[#FAFBFD]">
-        <AmbientBackground />
-        {children}
+      <body
+        dir={initialDir}
+        className="antialiased selection:bg-brand-electric selection:text-white min-h-screen flex flex-col relative text-brand-navy bg-[#FAFBFD]"
+      >
+        <LanguageProvider initialLanguage={initialLanguage}>
+          <AmbientBackground />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

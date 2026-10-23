@@ -13,6 +13,7 @@ import "swiper/css/effect-coverflow";
 
 import { portfolioVideos } from "@/data/portfolio";
 import HlsVideo from "@/components/ui/HlsVideo";
+import { useLanguage } from "@/context/LanguageContext";
 
 // High-performance slim progress bar (updates directly via DOM for 60fps without React re-renders)
 interface VideoProgressBarProps {
@@ -81,6 +82,7 @@ const itemVariants = {
 };
 
 export const SelectedWorks: React.FC = () => {
+  const { language } = useLanguage();
   const [playingSlideIndex, setPlayingSlideIndex] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isVideoLoading, setIsVideoLoading] = useState<boolean>(false);
@@ -293,7 +295,7 @@ export const SelectedWorks: React.FC = () => {
                     type="button"
                     onClick={() => swiperRef.current?.slidePrev()}
                     className="pointer-events-auto group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0B1B3D]/85 hover:bg-[#132D63] active:scale-92 border border-white/25 hover:border-blue-400/80 text-white flex items-center justify-center transition-[background-color,border-color,transform,box-shadow] duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer"
-                    aria-label="السابق"
+                    aria-label={language === "ar" ? "السابق" : "Previous"}
                   >
                     <ChevronLeft
                       className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-white/90 group-hover:text-white transition-transform duration-200 group-hover:-translate-x-0.5"
@@ -305,7 +307,7 @@ export const SelectedWorks: React.FC = () => {
                     type="button"
                     onClick={() => swiperRef.current?.slideNext()}
                     className="pointer-events-auto group relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0B1B3D]/85 hover:bg-[#132D63] active:scale-92 border border-white/25 hover:border-blue-400/80 text-white flex items-center justify-center transition-[background-color,border-color,transform,box-shadow] duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer"
-                    aria-label="التالي"
+                    aria-label={language === "ar" ? "التالي" : "Next"}
                   >
                     <ChevronRight
                       className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 text-white/90 group-hover:text-white transition-transform duration-200 group-hover:translate-x-0.5"

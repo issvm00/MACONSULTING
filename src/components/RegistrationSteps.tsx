@@ -21,12 +21,16 @@ import {
   Luggage,
   MessageCircle,
   ArrowLeft,
+  ArrowRight,
 } from "lucide-react";
+import { useLanguage, type Language } from "@/context/LanguageContext";
 
 interface StepItem {
   number: string;
-  title: string;
-  description: string;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
   icon: React.ElementType;
   badgePosition: "top" | "bottom";
   variant: "solid" | "outline";
@@ -36,72 +40,96 @@ interface StepItem {
 const allSteps: StepItem[] = [
   {
     number: "01",
-    title: "إستشارة مجانية وتوجيه",
-    description:
+    titleAr: "إستشارة مجانية وتوجيه",
+    titleEn: "Free Consultation & Guidance",
+    descriptionAr:
       "نرافق طلابنا في اختيار الجامعة المناسبة، التخصص المثالي، والمدينة الأنسب.",
+    descriptionEn:
+      "We guide our students in choosing the right university, ideal major, and best-fit European city.",
     icon: Headphones,
     badgePosition: "bottom",
     variant: "solid",
   },
   {
     number: "02",
-    title: "إعداد الملف",
-    description:
+    titleAr: "إعداد الملف",
+    titleEn: "Application File Preparation",
+    descriptionAr:
       "نتولى إجراءات تقديم الطلبات لطلابنا ومطابقتها للشروط الأكاديمية.",
+    descriptionEn:
+      "We handle the entire application process and ensure full compliance with academic admission standards.",
     icon: FileText,
     badgePosition: "top",
     variant: "outline",
   },
   {
     number: "03",
-    title: "الجامعات والمنح",
-    description:
+    titleAr: "الجامعات والمنح",
+    titleEn: "Universities & Scholarships",
+    descriptionAr:
       "نساعد طلابنا في التسجيل بالجامعات وتأمين منحة دراسية مخفّضة أو كاملة.",
+    descriptionEn:
+      "We assist our students with university enrollment and securing partial or full tuition scholarships.",
     icon: GraduationCap,
     badgePosition: "bottom",
     variant: "solid",
   },
   {
     number: "04",
-    title: "100% القبول الجامعي",
-    description:
+    titleAr: "100% القبول الجامعي",
+    titleEn: "100% Guaranteed Admission",
+    descriptionAr:
       "نضمن استخراج القبول الجامعي الرسمي في فترة تتراوح بين 10 إلى 20 يوماً.",
+    descriptionEn:
+      "We guarantee issuing your official university admission letter within 10 to 20 business days.",
     icon: BadgeCheck,
     badgePosition: "top",
     variant: "outline",
   },
   {
     number: "05",
-    title: "التقديم للحصول على تأشيرة",
-    description:
+    titleAr: "التقديم للحصول على تأشيرة",
+    titleEn: "Visa Application & Consular File",
+    descriptionAr:
       "نعد ملف التأشيرة بواسطة خبير ونقوم بحجز موعد مع القنصلية مع ضمان تأشيرة بنسبة 100%.",
+    descriptionEn:
+      "Our experts prepare your complete consular visa file and book your embassy appointment with full visa guidance.",
     icon: ShieldCheck,
     badgePosition: "bottom",
     variant: "solid",
   },
   {
     number: "06",
-    title: "حجز تذاكر الطيران",
-    description:
+    titleAr: "حجز تذاكر الطيران",
+    titleEn: "Flight Ticket Booking",
+    descriptionAr:
       "نحجز تذاكر الطيران لجميع الطلبة من نفس الجامعة للسفر معاً في رحلة مريحة.",
+    descriptionEn:
+      "We coordinate flight tickets for students heading to the same university to travel together comfortably.",
     icon: Plane,
     badgePosition: "top",
     variant: "outline",
   },
   {
     number: "07",
-    title: "السكن الجامعي",
-    description:
+    titleAr: "السكن الجامعي",
+    titleEn: "Student Accommodation",
+    descriptionAr:
       "نقوم بحجز مسبق ومضمون لإقامة الطالب في السكن الجامعي أو استوديو مستقل.",
+    descriptionEn:
+      "We secure pre-arranged, guaranteed housing in university dormitories or private student studios.",
     icon: Building2,
     badgePosition: "bottom",
     variant: "solid",
   },
   {
     number: "08",
-    title: "استقبال في المطار",
-    description:
+    titleAr: "استقبال في المطار",
+    titleEn: "Airport Pickup & Settlement",
+    descriptionAr:
       "نستقبل الطلبة في المطار من قبل المرافق، ثم ننقلهم للإقامة للاستقرار وبدء الدراسة.",
+    descriptionEn:
+      "Our on-ground coordinator welcomes students at the airport and transfers them to their residence to settle in and begin their studies.",
     icon: Luggage,
     badgePosition: "top",
     variant: "outline",
@@ -112,10 +140,12 @@ function DesktopStepMilestone({
   step,
   index,
   desktopShift,
+  language,
 }: {
   step: StepItem;
   index: number;
   desktopShift: MotionValue<number>;
+  language: Language;
 }) {
   const Icon = step.icon;
   const isSolid = step.variant === "solid";
@@ -178,10 +208,10 @@ function DesktopStepMilestone({
       {/* Title & Description underneath */}
       <div className="mt-7 space-y-1.5 max-w-[235px]">
         <h3 className="text-base lg:text-lg font-bold text-brand-navy group-hover:text-brand-electric transition-colors duration-200 leading-snug">
-          {step.title}
+          {language === "ar" ? step.titleAr : step.titleEn}
         </h3>
         <p className="text-xs lg:text-sm text-slate-500 font-normal leading-relaxed">
-          {step.description}
+          {language === "ar" ? step.descriptionAr : step.descriptionEn}
         </p>
       </div>
     </motion.div>
@@ -192,9 +222,11 @@ function DesktopStepMilestone({
 function MobileStepMilestone({
   step,
   globalIndex,
+  language,
 }: {
   step: StepItem;
   globalIndex: number;
+  language: Language;
 }) {
   const Icon = step.icon;
   const isSolid = step.variant === "solid";
@@ -243,10 +275,10 @@ function MobileStepMilestone({
       {/* Title & Description underneath */}
       <div className="mt-6 space-y-1.5 max-w-[240px]">
         <h3 className="text-base font-extrabold text-brand-navy group-hover:text-brand-electric transition-colors">
-          {step.title}
+          {language === "ar" ? step.titleAr : step.titleEn}
         </h3>
         <p className="text-xs text-slate-500 font-normal leading-relaxed">
-          {step.description}
+          {language === "ar" ? step.descriptionAr : step.descriptionEn}
         </p>
       </div>
     </motion.div>
@@ -257,9 +289,13 @@ function MobileStepMilestone({
 function ScrollStepCounter({
   desktopShift,
   desktopProgressScale,
+  language,
+  isRTL,
 }: {
   desktopShift: MotionValue<number>;
   desktopProgressScale: MotionValue<number>;
+  language: Language;
+  isRTL: boolean;
 }) {
   const [reachedStep, setReachedStep] = useState<number>(3);
 
@@ -272,21 +308,24 @@ function ScrollStepCounter({
     setReachedStep((prev) => (prev !== nextStep ? nextStep : prev));
   });
 
-  const formattedCurrent = reachedStep < 10 ? `0${reachedStep}` : `${reachedStep}`;
+  const formattedCurrent =
+    reachedStep < 10 ? `0${reachedStep}` : `${reachedStep}`;
 
   return (
     <div className="mt-6 flex flex-col items-center gap-2 select-none">
       {/* Dynamic Step Counter Pill + 8 Micro Dots */}
       <div className="flex items-center gap-3 px-3.5 py-1 rounded-full bg-white/95 border border-slate-200/85 shadow-sm">
         <span className="text-xs font-bold text-brand-navy tabular-nums">
-          المرحلة{" "}
+          {language === "ar" ? "المرحلة " : "Step "}
           <span className="text-brand-electric">{formattedCurrent}</span>{" "}
-          <span className="text-slate-400 font-medium">من 08</span>
+          <span className="text-slate-400 font-medium">
+            {language === "ar" ? "من 08" : "of 08"}
+          </span>
         </span>
 
         <span className="w-[1px] h-3 bg-slate-200" aria-hidden="true" />
 
-        {/* 8 Step Dots (RTL right-to-left) */}
+        {/* 8 Step Dots */}
         <div className="flex items-center gap-1" aria-hidden="true">
           {allSteps.map((s, idx) => {
             const stepNum = idx + 1;
@@ -313,7 +352,7 @@ function ScrollStepCounter({
         <motion.div
           style={{
             scaleX: desktopProgressScale,
-            transformOrigin: "right",
+            transformOrigin: isRTL ? "right" : "left",
           }}
           className="w-full h-full rounded-full bg-brand-electric"
         />
@@ -326,7 +365,9 @@ const row1Steps = allSteps.slice(0, 4);
 const row2Steps = allSteps.slice(4, 8);
 
 export function RegistrationSteps() {
+  const { language, isRTL } = useLanguage();
   const scrollTrackRef = useRef<HTMLDivElement | null>(null);
+  const DirectionalArrow = isRTL ? ArrowLeft : ArrowRight;
 
   // Desktop scroll tracking
   const { scrollYProgress } = useScroll({
@@ -349,17 +390,25 @@ export function RegistrationSteps() {
     [0, 0, 5, 5]
   );
 
-  // Desktop horizontal translation in RTL (5/8 = 62.5%)
-  const xPercent = useTransform(desktopShift, [0, 5], ["0%", "62.5%"]);
+  // Desktop horizontal translation: in RTL (+62.5% rightward), in LTR (-62.5% leftward)
+  const xPercent = useTransform(
+    desktopShift,
+    [0, 5],
+    ["0%", isRTL ? "62.5%" : "-62.5%"]
+  );
 
-  // Desktop active blue line along the connector between circles (grows right to left in RTL)
+  // Desktop active blue line along the connector between circles
   const lineProgressScale = useTransform(desktopShift, [0, 5], [0.28, 1]);
 
   // Dedicated progress bar MotionValue for Desktop
   const desktopProgressScale = useTransform(desktopShift, [0, 5], [0.375, 1]);
 
   return (
-    <section id="processus" className="relative w-full scroll-mt-20">
+    <section
+      id="processus"
+      dir={isRTL ? "rtl" : "ltr"}
+      className="relative w-full scroll-mt-20"
+    >
       {/* ===================================================================== */}
       {/* MOBILE VERSION (<640px): Exact UI/UX from commit c53dae0              */}
       {/* ===================================================================== */}
@@ -368,11 +417,22 @@ export function RegistrationSteps() {
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
             <h2 className="text-2xl font-extrabold text-brand-navy tracking-tight leading-[1.25]">
-              مراحل التسجيل والمرافقة{" "}
-              <span className="text-brand-electric">خطوة بخطوة</span>
+              {language === "ar" ? (
+                <>
+                  مراحل التسجيل والمرافقة{" "}
+                  <span className="text-brand-electric">خطوة بخطوة</span>
+                </>
+              ) : (
+                <>
+                  Admission & Guidance Process{" "}
+                  <span className="text-brand-electric">Step by Step</span>
+                </>
+              )}
             </h2>
             <p className="text-sm text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
-              مرافقة قانونية وأكاديمية دقيقة تضمن لك ولعائلتك راحة البال التامة من أول جلسة استشارة إلى غاية استقرارك في بلد دراستك.
+              {language === "ar"
+                ? "مرافقة قانونية وأكاديمية دقيقة تضمن لك ولعائلتك راحة البال التامة من أول جلسة استشارة إلى غاية استقرارك في بلد دراستك."
+                : "Precise legal and academic guidance ensuring complete peace of mind for you and your family—from your first consultation all the way to settling in your study destination."}
             </p>
           </div>
 
@@ -384,6 +444,7 @@ export function RegistrationSteps() {
                   key={step.number}
                   step={step}
                   globalIndex={index}
+                  language={language}
                 />
               ))}
             </div>
@@ -397,6 +458,7 @@ export function RegistrationSteps() {
                   key={step.number}
                   step={step}
                   globalIndex={index + 4}
+                  language={language}
                 />
               ))}
             </div>
@@ -416,11 +478,12 @@ export function RegistrationSteps() {
               `,
             }}
           >
-
             <div className="relative z-10 flex flex-col items-center justify-between gap-6 text-center">
               <div className="max-w-2xl">
                 <h3 className="text-xl font-black text-brand-navy">
-                  مستعد لبدء خطوتك الأولى نحو جامعات أوروبا؟
+                  {language === "ar"
+                    ? "مستعد لبدء خطوتك الأولى نحو جامعات أوروبا؟"
+                    : "Ready to take your first step toward European universities?"}
                 </h3>
               </div>
 
@@ -430,8 +493,18 @@ export function RegistrationSteps() {
                   className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full text-sm font-bold text-white bg-brand-navy hover:bg-brand-electric shadow-lg shadow-navy/15 hover:shadow-glow-blue transition-all duration-300 group"
                 >
                   <MessageCircle className="w-4 h-4 text-brand-electric-light" />
-                  <span>احجز استشارة مجانية</span>
-                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  <span>
+                    {language === "ar"
+                      ? "احجز استشارة مجانية"
+                      : "Book a Free Consultation"}
+                  </span>
+                  <DirectionalArrow
+                    className={`w-4 h-4 transition-transform ${
+                      isRTL
+                        ? "group-hover:-translate-x-1"
+                        : "group-hover:translate-x-1"
+                    }`}
+                  />
                 </Link>
               </div>
             </div>
@@ -440,29 +513,38 @@ export function RegistrationSteps() {
       </div>
 
       {/* ===================================================================== */}
-      {/* DESKTOP & TABLET VERSION (>=640px): 100% Untouched Sticky Timeline    */}
+      {/* DESKTOP & TABLET VERSION (>=640px): Sticky Timeline                   */}
       {/* ===================================================================== */}
       <div className="hidden sm:block">
-        <div
-          ref={scrollTrackRef}
-          className="relative h-[360vh] w-full"
-        >
+        <div ref={scrollTrackRef} className="relative h-[360vh] w-full">
           <div className="sticky top-0 h-screen supports-[height:100dvh]:h-[100dvh] w-full flex flex-col justify-center overflow-x-clip pt-24 pb-10">
             <div className="max-w-7xl w-full mx-auto px-6 lg:px-8">
               {/* Section Header */}
               <div className="text-center max-w-3xl mx-auto mb-10 lg:mb-12 space-y-3">
                 <h2 className="text-4xl lg:text-[42px] font-bold text-brand-navy tracking-tight leading-[1.25]">
-                  مراحل التسجيل والمرافقة{" "}
-                  <span className="text-brand-electric">خطوة بخطوة</span>
+                  {language === "ar" ? (
+                    <>
+                      مراحل التسجيل والمرافقة{" "}
+                      <span className="text-brand-electric">خطوة بخطوة</span>
+                    </>
+                  ) : (
+                    <>
+                      Admission & Guidance Process{" "}
+                      <span className="text-brand-electric">Step by Step</span>
+                    </>
+                  )}
                 </h2>
                 <p className="text-base text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
-                  مرافقة قانونية وأكاديمية دقيقة تضمن لك ولعائلتك راحة البال التامة من أول جلسة استشارة إلى غاية استقرارك في بلد دراستك.
+                  {language === "ar"
+                    ? "مرافقة قانونية وأكاديمية دقيقة تضمن لك ولعائلتك راحة البال التامة من أول جلسة استشارة إلى غاية استقرارك في بلد دراستك."
+                    : "Precise legal and academic guidance ensuring complete peace of mind for you and your family—from your first consultation all the way to settling in your study destination."}
                 </p>
               </div>
 
               {/* Horizontal 3-Step Sliding Timeline */}
               <div className="relative w-full overflow-hidden pt-6 pb-4 [mask-image:linear-gradient(to_right,transparent_0%,black_4%,black_96%,transparent_100%)]">
                 <motion.div
+                  key={language}
                   style={{ x: xPercent }}
                   className="relative flex flex-row items-start w-[266.6667%] will-change-transform transform-gpu"
                 >
@@ -478,16 +560,23 @@ export function RegistrationSteps() {
                     aria-hidden="true"
                   />
 
-                  {/* Active Electric-Blue Connector Line that fills right-to-left with scroll */}
+                  {/* Active Electric-Blue Connector Line that fills with scroll */}
                   <motion.div
-                    style={{ scaleX: lineProgressScale, transformOrigin: "right" }}
-                    className="
+                    style={{
+                      scaleX: lineProgressScale,
+                      transformOrigin: isRTL ? "right" : "left",
+                    }}
+                    className={`
                       absolute
                       top-[56px] lg:top-[64px]
                       right-[6.25%] left-[6.25%]
-                      h-[2px] bg-gradient-to-l from-brand-electric via-blue-500 to-blue-400/60
+                      h-[2px] ${
+                        isRTL
+                          ? "bg-gradient-to-l"
+                          : "bg-gradient-to-r"
+                      } from-brand-electric via-blue-500 to-blue-400/60
                       pointer-events-none z-0 will-change-transform transform-gpu
-                    "
+                    `}
                     aria-hidden="true"
                   />
 
@@ -497,6 +586,7 @@ export function RegistrationSteps() {
                       step={step}
                       index={index}
                       desktopShift={desktopShift}
+                      language={language}
                     />
                   ))}
                 </motion.div>
@@ -506,6 +596,8 @@ export function RegistrationSteps() {
               <ScrollStepCounter
                 desktopShift={desktopShift}
                 desktopProgressScale={desktopProgressScale}
+                language={language}
+                isRTL={isRTL}
               />
             </div>
           </div>
@@ -526,10 +618,16 @@ export function RegistrationSteps() {
               `,
             }}
           >
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 text-center lg:text-right">
+            <div
+              className={`relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 text-center ${
+                isRTL ? "lg:text-right" : "lg:text-left"
+              }`}
+            >
               <div className="max-w-2xl">
                 <h3 className="text-xl sm:text-2xl font-bold text-brand-navy">
-                  مستعد لبدء خطوتك الأولى نحو جامعات أوروبا؟
+                  {language === "ar"
+                    ? "مستعد لبدء خطوتك الأولى نحو جامعات أوروبا؟"
+                    : "Ready to take your first step toward European universities?"}
                 </h3>
               </div>
 
@@ -540,8 +638,18 @@ export function RegistrationSteps() {
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full text-sm sm:text-base font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-lg shadow-brand-navy/15 transition-[background-color,transform,box-shadow] duration-200 group"
                 >
                   <MessageCircle className="w-4 h-4 text-brand-electric-light shrink-0" />
-                  <span>احجز استشارة مجانية</span>
-                  <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1 shrink-0" />
+                  <span>
+                    {language === "ar"
+                      ? "احجز استشارة مجانية"
+                      : "Book a Free Consultation"}
+                  </span>
+                  <DirectionalArrow
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      isRTL
+                        ? "group-hover:-translate-x-1"
+                        : "group-hover:translate-x-1"
+                    } shrink-0`}
+                  />
                 </Link>
               </div>
             </div>
@@ -551,5 +659,3 @@ export function RegistrationSteps() {
     </section>
   );
 }
-
-

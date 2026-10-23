@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck,
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   ExternalLink,
   Users,
@@ -22,6 +23,7 @@ import type { Swiper as SwiperType } from "swiper";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
+import { useLanguage, type Language } from "@/context/LanguageContext";
 
 // Crisp SVG Instagram Icon
 function InstagramIcon({ className }: { className?: string }) {
@@ -61,11 +63,11 @@ function YoutubeIcon({ className }: { className?: string }) {
 }
 
 // Official Instagram Verified Badge SVG
-function VerifiedBadge() {
+function VerifiedBadge({ label }: { label: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      aria-label="حساب موثق"
+      aria-label={label}
       className="w-4 h-4 text-brand-electric fill-brand-electric shrink-0"
     >
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.2 14.6l-3.8-3.8 1.4-1.4 2.4 2.4 5.4-5.4 1.4 1.4-6.8 6.8z" />
@@ -75,12 +77,16 @@ function VerifiedBadge() {
 
 interface TeamMember {
   id: string;
-  name: string;
+  nameAr: string;
   nameEn: string;
-  role: string;
-  degreeBadge: string;
-  highlights: string[];
-  bio: string;
+  roleAr: string;
+  roleEn: string;
+  degreeBadgeAr: string;
+  degreeBadgeEn: string;
+  highlightsAr: string[];
+  highlightsEn: string[];
+  bioAr: string;
+  bioEn: string;
   image: string;
   instagram: {
     handle: string;
@@ -97,16 +103,26 @@ interface TeamMember {
 const teamMembers: TeamMember[] = [
   {
     id: "ali",
-    name: "علي بنعمر",
+    nameAr: "علي بنعمر",
     nameEn: "Ali Benamar",
-    role: "المؤسس ومستشار التعليم الدولي",
-    degreeBadge: "ماجستير في التسويق والتجارة الدولية",
-    highlights: [
+    roleAr: "المؤسس ومستشار التعليم الدولي",
+    roleEn: "Founder & International Education Advisor",
+    degreeBadgeAr: "ماجستير في التسويق والتجارة الدولية",
+    degreeBadgeEn: "M.Sc. in International Marketing & Trade",
+    highlightsAr: [
       "ماجستير في التسويق والتجارة الدولية",
       "رئيس قسم الامتثال في شركة دولية",
       "خبير في إعداد ومراجعة الوثائق الأكاديمية والإدارية",
     ],
-    bio: "يحمل علي بنعمر شهادة الماجستير في التسويق والتجارة الدولية، ويشغل حاليًا منصب رئيس قسم الامتثال في شركة دولية، حيث يتمتع بخبرة في مجال الأعمال الدولية والامتثال التنظيمي والإدارة الاستراتيجية، إضافةً إلى خبرته في إعداد الوثائق الإدارية والأكاديمية ومراجعتها ومتابعة الملفات. ومن خلال تأسيسه لشركة M&A Overseas Consulting، يسعى إلى مرافقة الطلبة وتوجيههم نحو الفرص الأكاديمية المناسبة في أوروبا، مع توفير الدعم اللازم لإعداد الوثائق واستكمال إجراءات التقديم والقبول الجامعي.",
+    highlightsEn: [
+      "M.Sc. in International Marketing & Trade",
+      "Head of Compliance at an International Company",
+      "Expert in Academic & Administrative Document Review",
+    ],
+    bioAr:
+      "يحمل علي بنعمر شهادة الماجستير في التسويق والتجارة الدولية، ويشغل حاليًا منصب رئيس قسم الامتثال في شركة دولية، حيث يتمتع بخبرة في مجال الأعمال الدولية والامتثال التنظيمي والإدارة الاستراتيجية، إضافةً إلى خبرته في إعداد الوثائق الإدارية والأكاديمية ومراجعتها ومتابعة الملفات. ومن خلال تأسيسه لشركة M&A Overseas Consulting، يسعى إلى مرافقة الطلبة وتوجيههم نحو الفرص الأكاديمية المناسبة في أوروبا، مع توفير الدعم اللازم لإعداد الوثائق واستكمال إجراءات التقديم والقبول الجامعي.",
+    bioEn:
+      "Ali Benamar holds a Master's degree in International Marketing and Trade and currently serves as Head of Compliance at an international company. He brings extensive expertise in international business, regulatory compliance, and strategic management, alongside deep hands-on experience in preparing, reviewing, and tracking administrative and academic files. Through founding M&A Overseas Consulting, he is dedicated to guiding students toward the right academic opportunities in Europe while providing full support in document preparation, university applications, and admission procedures.",
     image: "/team/ali_benamar.jpg",
     instagram: {
       handle: "benamar_a34",
@@ -121,16 +137,26 @@ const teamMembers: TeamMember[] = [
   },
   {
     id: "amine",
-    name: "محمد أمين جابون",
+    nameAr: "محمد أمين جابون",
     nameEn: "M'Amine Jaboune",
-    role: "المدير التنفيذي ومستشار التعليم الدولي",
-    degreeBadge: "باحث دكتوراه • ماجستير علاقات دولية",
-    highlights: [
+    roleAr: "المدير التنفيذي ومستشار التعليم الدولي",
+    roleEn: "Managing Director & International Education Advisor",
+    degreeBadgeAr: "باحث دكتوراه • ماجستير علاقات دولية",
+    degreeBadgeEn: "PhD Researcher • M.A. in International Relations",
+    highlightsAr: [
       "باحث بسلك الدكتوراه في علوم التربية",
       "ماجستير في العلاقات الدولية",
       "مسؤول الشراكات الجامعية والتخطيط الأكاديمي",
     ],
-    bio: "يحمل محمد أمين جابون شهادة الماجستير في العلاقات الدولية، ويواصل حاليًا دراسته لنيل شهادة الدكتوراه في علوم التربية. وبصفته شريكًا مؤسسًا لشركة M&A Overseas Consulting، يساهم في رسم رؤيتها الاستراتيجية وتطوير خدماتها في مجال التعليم الدولي. كما يتولى مسؤولية بناء وتطوير الشراكات مع الجامعات والمؤسسات التعليمية الدولية، وتعزيز علاقات التعاون الأكاديمي بما يفتح آفاقًا تعليمية جديدة أمام الطلبة. ويشارك كذلك في التخطيط الأكاديمي وتوجيه الطلبة خلال مراحل التقديم والقبول الجامعي، ومساعدتهم على اختيار المسارات التعليمية التي تتناسب مع مؤهلاتهم وطموحاتهم المستقبلية.",
+    highlightsEn: [
+      "PhD Researcher in Education Sciences",
+      "Master's Degree in International Relations",
+      "Head of University Partnerships & Academic Planning",
+    ],
+    bioAr:
+      "يحمل محمد أمين جابون شهادة الماجستير في العلاقات الدولية، ويواصل حاليًا دراسته لنيل شهادة الدكتوراه في علوم التربية. وبصفته شريكًا مؤسسًا لشركة M&A Overseas Consulting، يساهم في رسم رؤيتها الاستراتيجية وتطوير خدماتها في مجال التعليم الدولي. كما يتولى مسؤولية بناء وتطوير الشراكات مع الجامعات والمؤسسات التعليمية الدولية، وتعزيز علاقات التعاون الأكاديمي بما يفتح آفاقًا تعليمية جديدة أمام الطلبة. ويشارك كذلك في التخطيط الأكاديمي وتوجيه الطلبة خلال مراحل التقديم والقبول الجامعي، ومساعدتهم على اختيار المسارات التعليمية التي تتناسب مع مؤهلاتهم وطموحاتهم المستقبلية.",
+    bioEn:
+      "M'Amine Jaboune holds a Master's degree in International Relations and is currently pursuing his PhD in Education Sciences. As Co-Founder of M&A Overseas Consulting, he helps shape the firm's strategic vision and expand its international education services. He leads the development of official partnerships with international universities and educational institutions, fostering academic cooperation that opens new horizons for students. He also participates in academic planning and guides students through every stage of application and admission to choose educational pathways aligned with their qualifications and future ambitions.",
     image: "/team/amine_jaboune.jpg",
     instagram: {
       handle: "amine_jaboune",
@@ -140,16 +166,26 @@ const teamMembers: TeamMember[] = [
   },
   {
     id: "marouan",
-    name: "مروان بنعمر",
+    nameAr: "مروان بنعمر",
     nameEn: "Marouan Ben Amar",
-    role: "مدير العمليات والتنسيق الإداري",
-    degreeBadge: "ليسانس في العلوم الاقتصادية",
-    highlights: [
+    roleAr: "مدير العمليات والتنسيق الإداري",
+    roleEn: "Director of Operations & Administrative Coordination",
+    degreeBadgeAr: "ليسانس في العلوم الاقتصادية",
+    degreeBadgeEn: "B.A. in Economic Sciences",
+    highlightsAr: [
       "شهادة الليسانس في العلوم الاقتصادية",
       "الإشراف على تنسيق العمليات والإجراءات الإدارية",
       "متابعة ملفات القبول والتواصل مع الطلبة وعائلاتهم",
     ],
-    bio: "يحمل مروان بنعمر شهادة الليسانس في العلوم الاقتصادية، ويتولى الإشراف على تنسيق العمليات ومتابعة الإجراءات الإدارية داخل الشركة. ويساهم في تنظيم ملفات الطلبة، ومتابعة وثائق القبول والتسجيل، وتنسيق التواصل مع الطلبة وعائلاتهم، بما يضمن سير الإجراءات بكفاءة وسلاسة ويوفر تجربة مرافقة منظمة طوال رحلتهم الدراسية.",
+    highlightsEn: [
+      "Bachelor's Degree in Economic Sciences",
+      "Oversight of Operations & Administrative Procedures",
+      "Admission File Tracking & Student/Family Coordination",
+    ],
+    bioAr:
+      "يحمل مروان بنعمر شهادة الليسانس في العلوم الاقتصادية، ويتولى الإشراف على تنسيق العمليات ومتابعة الإجراءات الإدارية داخل الشركة. ويساهم في تنظيم ملفات الطلبة، ومتابعة وثائق القبول والتسجيل، وتنسيق التواصل مع الطلبة وعائلاتهم، بما يضمن سير الإجراءات بكفاءة وسلاسة ويوفر تجربة مرافقة منظمة طوال رحلتهم الدراسية.",
+    bioEn:
+      "Marouan Ben Amar holds a Bachelor's degree in Economic Sciences and oversees operational coordination and administrative procedures within the company. He manages the organization of student files, tracks admission and enrollment documents, and coordinates direct communication with students and their families—ensuring all procedures run smoothly and providing a well-structured guidance experience throughout their academic journey.",
     image: "/team/marouan_ben_amar.jpg",
     instagram: {
       handle: "marouan.ben.amar",
@@ -183,17 +219,29 @@ const itemVariants = {
 // Reusable Pure Card UI used identically in both Desktop Grid and Mobile 3D Coverflow
 function MemberCard({
   member,
+  language,
+  isRTL,
   onOpenBio,
 }: {
   member: TeamMember;
+  language: Language;
+  isRTL: boolean;
   onOpenBio: (member: TeamMember) => void;
 }) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const displayName = language === "ar" ? member.nameAr : member.nameEn;
+  const displayRole = language === "ar" ? member.roleAr : member.roleEn;
+  const displayDegree =
+    language === "ar" ? member.degreeBadgeAr : member.degreeBadgeEn;
+  const displayBio = language === "ar" ? member.bioAr : member.bioEn;
+  const DirectionalArrow = isRTL ? ArrowLeft : ArrowRight;
 
   return (
     <div
-      dir="rtl"
-      className="apple-glass rounded-3xl p-3 sm:p-3.5 flex flex-col justify-between h-full group hover:border-blue-300 hover:shadow-[0_16px_36px_-10px_rgba(37,99,235,0.14)] transition-all duration-300 select-none text-right"
+      dir={isRTL ? "rtl" : "ltr"}
+      className={`apple-glass rounded-3xl p-3 sm:p-3.5 flex flex-col justify-between h-full group hover:border-blue-300 hover:shadow-[0_16px_36px_-10px_rgba(37,99,235,0.14)] transition-all duration-300 select-none ${
+        isRTL ? "text-right" : "text-left"
+      }`}
     >
       {/* Outer Bezel Content */}
       <div>
@@ -204,7 +252,7 @@ function MemberCard({
         >
           <Image
             src={member.image}
-            alt={`${member.name} (${member.nameEn}) - ${member.role}`}
+            alt={`${displayName} - ${displayRole}`}
             fill
             sizes="(max-width: 640px) 280px, (max-width: 1024px) 33vw, 240px"
             referrerPolicy="no-referrer"
@@ -216,27 +264,33 @@ function MemberCard({
         </div>
 
         {/* Member Meta */}
-        <div className="space-y-1.5 px-1 text-right">
+        <div
+          className={`space-y-1.5 px-1 ${isRTL ? "text-right" : "text-left"}`}
+        >
           {/* Name + Verified Badge immediately following the name */}
           <div className="flex items-center gap-1.5 justify-start">
             <h4
               onClick={() => onOpenBio(member)}
               className="text-base font-bold text-brand-navy group-hover:text-brand-electric transition-colors duration-200 cursor-pointer"
             >
-              {member.name}
+              {displayName}
             </h4>
-            {member.isVerified && <VerifiedBadge />}
+            {member.isVerified && (
+              <VerifiedBadge
+                label={language === "ar" ? "حساب موثق" : "Verified Profile"}
+              />
+            )}
           </div>
 
           {/* Official Role */}
           <p className="text-xs font-semibold text-brand-electric leading-snug">
-            {member.role}
+            {displayRole}
           </p>
 
           {/* Academic Credential Pill */}
           <div className="pt-0.5">
             <span className="inline-block text-[10.5px] font-medium text-slate-600 bg-slate-100/90 border border-slate-200/70 px-2 py-0.5 rounded-lg leading-tight">
-              {member.degreeBadge}
+              {displayDegree}
             </span>
           </div>
 
@@ -246,7 +300,7 @@ function MemberCard({
             className="pt-1 cursor-pointer group/bio"
           >
             <p className="text-[11px] text-slate-500 font-normal leading-relaxed line-clamp-3">
-              {member.bio}
+              {displayBio}
             </p>
             <button
               type="button"
@@ -256,8 +310,16 @@ function MemberCard({
               }}
               className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-brand-electric group-hover/bio:text-brand-navy transition-colors cursor-pointer"
             >
-              <span>اقرأ النبذة الكاملة</span>
-              <ArrowLeft className="w-3 h-3 transition-transform group-hover/bio:-translate-x-0.5" />
+              <span>
+                {language === "ar" ? "اقرأ النبذة الكاملة" : "Read Full Bio"}
+              </span>
+              <DirectionalArrow
+                className={`w-3 h-3 transition-transform ${
+                  isRTL
+                    ? "group-hover/bio:-translate-x-0.5"
+                    : "group-hover/bio:translate-x-0.5"
+                }`}
+              />
             </button>
           </div>
         </div>
@@ -270,7 +332,11 @@ function MemberCard({
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 min-w-0 flex items-center justify-between py-1.5 px-2.5 rounded-xl bg-slate-50 hover:bg-blue-50/80 text-slate-600 hover:text-brand-electric transition-colors duration-150 text-[11px] font-semibold group/link"
-          title={`زيارة حساب ${member.name} على انستغرام`}
+          title={
+            language === "ar"
+              ? `زيارة حساب ${member.nameAr} على انستغرام`
+              : `Visit ${member.nameEn}'s Instagram`
+          }
         >
           <div className="flex items-center gap-1.5 min-w-0">
             <InstagramIcon className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-brand-electric transition-colors shrink-0" />
@@ -294,8 +360,16 @@ function MemberCard({
             href={member.youtube.url}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`قناة ${member.name} الرسمية على يوتيوب`}
-            title={`قناة ${member.name} على يوتيوب (@${member.youtube.handle})`}
+            aria-label={
+              language === "ar"
+                ? `قناة ${member.nameAr} الرسمية على يوتيوب`
+                : `${member.nameEn}'s Official YouTube Channel`
+            }
+            title={
+              language === "ar"
+                ? `قناة ${member.nameAr} على يوتيوب (@${member.youtube.handle})`
+                : `${member.nameEn} on YouTube (@${member.youtube.handle})`
+            }
             className="w-7 h-7 rounded-xl bg-slate-50 hover:bg-red-50 text-slate-500 hover:text-[#DC2626] border border-transparent hover:border-red-100 flex items-center justify-center transition-colors duration-150 shrink-0"
           >
             <YoutubeIcon className="w-3.5 h-3.5" />
@@ -307,11 +381,14 @@ function MemberCard({
 }
 
 export function AboutTeam() {
+  const { language, isRTL } = useLanguage();
   const [isMounted, setIsMounted] = useState(false);
   const [activeMobileIndex, setActiveMobileIndex] = useState(0);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const mobileSwiperRef = useRef<SwiperType | null>(null);
+
+  const DirectionalArrow = isRTL ? ArrowLeft : ArrowRight;
 
   useEffect(() => {
     setIsMounted(true);
@@ -346,10 +423,10 @@ export function AboutTeam() {
   return (
     <section
       id="about"
+      dir={isRTL ? "rtl" : "ltr"}
       className="relative w-full pt-4 sm:pt-6 pb-12 sm:pb-16 overflow-hidden scroll-mt-20"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        
         {/* ================================================================= */}
         {/* TOP EDITORIAL HEADER & VALUE PROPOSITION                          */}
         {/* ================================================================= */}
@@ -365,7 +442,9 @@ export function AboutTeam() {
             variants={itemVariants}
             className="text-xl sm:text-2xl lg:text-3xl font-bold text-brand-navy tracking-tight"
           >
-            خلف كل قبول جامعي ناجح... فريق ميداني يرافقك
+            {language === "ar"
+              ? "خلف كل قبول جامعي ناجح... فريق ميداني يرافقك"
+              : "Behind Every Successful Admission... An On-Ground Team Guiding You"}
           </motion.h2>
 
           {/* Subtitle (Exact PartnersMarquee typographic style) */}
@@ -373,7 +452,9 @@ export function AboutTeam() {
             variants={itemVariants}
             className="mt-2 text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto leading-relaxed"
           >
-            مستشارون متواجدون ميدانياً بين المغرب وأوروبا لتأمين قبولك ومرافقتك باحترافية كاملة.
+            {language === "ar"
+              ? "مستشارون متواجدون ميدانياً بين المغرب وأوروبا لتأمين قبولك ومرافقتك باحترافية كاملة."
+              : "Advisors operating on the ground between Morocco and Europe to secure your admission and guide you with complete professionalism."}
           </motion.p>
         </motion.div>
 
@@ -381,12 +462,11 @@ export function AboutTeam() {
         {/* THE ASYMMETRICAL ARCHITECTURAL BENTO GRID                         */}
         {/* ================================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          
           {/* --------------------------------------------------------------- */}
-          {/* RIGHT COLUMN (Bento Authority & Trust Anchor - 5 cols)           */}
+          {/* START COLUMN (Bento Authority & Trust Anchor - 5 cols)           */}
           {/* --------------------------------------------------------------- */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
@@ -397,24 +477,34 @@ export function AboutTeam() {
               {/* Subtle Ambient Radial Glow (Zero filter:blur GPU cost) */}
               <div
                 aria-hidden="true"
-                className="absolute top-0 right-0 w-48 h-48 rounded-full pointer-events-none"
+                className={`absolute top-0 ${
+                  isRTL ? "right-0" : "left-0"
+                } w-48 h-48 rounded-full pointer-events-none`}
                 style={{
                   background:
                     "radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0) 70%)",
                 }}
               />
 
-              <div className="relative z-10 space-y-4 text-right">
+              <div
+                className={`relative z-10 space-y-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-electric">
                   <ShieldCheck className="w-5 h-5 stroke-[2]" />
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-lg sm:text-xl font-bold text-brand-navy">
-                    من واقع التجربة إلى التأسيس
+                    {language === "ar"
+                      ? "من واقع التجربة إلى التأسيس"
+                      : "Born from First-Hand Experience"}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                    لم تُبنَ M&A Overseas Consulting من فراغ، بل انطلقت من تجربة ذاتية خاضها مؤسسونا (علي ومحمد أمين) خلال رحلتهما الدراسية في أوروبا. اختبرا حجم التحديات في أوراق القبول ومساطر التأشيرة، فجعلا من تلك المعاناة جسراً أميناً نرافق به مئات الطلاب اليوم خطوة بخطوة نحو مقاعدهم الجامعية.
+                    {language === "ar"
+                      ? "لم تُبنَ M&A Overseas Consulting من فراغ، بل انطلقت من تجربة ذاتية خاضها مؤسسونا (علي ومحمد أمين) خلال رحلتهما الدراسية في أوروبا. اختبرا حجم التحديات في أوراق القبول ومساطر التأشيرة، فجعلا من تلك المعاناة جسراً أميناً نرافق به مئات الطلاب اليوم خطوة بخطوة نحو مقاعدهم الجامعية."
+                      : "M&A Overseas Consulting was born from the personal study-abroad journey of our founders (Ali and M'Amine) in Europe. Having experienced firsthand the complexities of admission paperwork and visa procedures, they turned those challenges into a trusted bridge—guiding hundreds of students step by step to their university seats today."}
                   </p>
 
                   <div className="pt-0.5">
@@ -423,8 +513,18 @@ export function AboutTeam() {
                       onClick={() => setIsStoryModalOpen(true)}
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-electric hover:text-brand-navy active:scale-95 transition-all group cursor-pointer"
                     >
-                      <span>اقرأ قصة التأسيس الكاملة</span>
-                      <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                      <span>
+                        {language === "ar"
+                          ? "اقرأ قصة التأسيس الكاملة"
+                          : "Read Our Full Founding Story"}
+                      </span>
+                      <DirectionalArrow
+                        className={`w-3.5 h-3.5 ${
+                          isRTL
+                            ? "group-hover:-translate-x-1"
+                            : "group-hover:translate-x-1"
+                        } transition-transform`}
+                      />
                     </button>
                   </div>
                 </div>
@@ -434,21 +534,53 @@ export function AboutTeam() {
                   <div className="flex items-start gap-2.5 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
                     <span>
-                      <strong>مقر رسمي مرخص:</strong> إنزكان - شارع مراكش (أكادير).
+                      {language === "ar" ? (
+                        <>
+                          <strong>مقر رسمي مرخص:</strong> إنزكان - شارع مراكش
+                          (أكادير).
+                        </>
+                      ) : (
+                        <>
+                          <strong>Licensed Official HQ:</strong> Inezgane -
+                          Marrakech Ave (Agadir).
+                        </>
+                      )}
                     </span>
                   </div>
 
                   <div className="flex items-start gap-2.5 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
                     <span>
-                      <strong>حضور مباشر في أوروبا:</strong> مكاتب ومرافقة ميدانية في إسبانيا (برشلونة) وليتوانيا (فيلنيوس).
+                      {language === "ar" ? (
+                        <>
+                          <strong>حضور مباشر في أوروبا:</strong> مكاتب ومرافقة
+                          ميدانية في إسبانيا (برشلونة) وليتوانيا (فيلنيوس).
+                        </>
+                      ) : (
+                        <>
+                          <strong>Direct Presence in Europe:</strong> On-ground
+                          offices and support in Spain (Barcelona) and Lithuania
+                          (Vilnius).
+                        </>
+                      )}
                     </span>
                   </div>
 
                   <div className="flex items-start gap-2.5 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-brand-electric shrink-0 mt-0.5" />
                     <span>
-                      <strong>مرافقة شخصية دون وسطاء:</strong> نأخذ بيدك من التوجيه واختيار التخصص حتى الاستقرار.
+                      {language === "ar" ? (
+                        <>
+                          <strong>مرافقة شخصية دون وسطاء:</strong> نأخذ بيدك من
+                          التوجيه واختيار التخصص حتى الاستقرار.
+                        </>
+                      ) : (
+                        <>
+                          <strong>Direct 1-on-1 Guidance:</strong> No
+                          intermediaries—supporting you from choosing your major
+                          until settling in.
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -457,13 +589,21 @@ export function AboutTeam() {
 
             {/* Micro Quick CTA Card (Desktop / PC View: exactly as originally designed) */}
             <div className="hidden sm:flex p-5 rounded-2xl bg-gradient-to-br from-brand-navy to-brand-navy-light text-white relative overflow-hidden shadow-sm items-center justify-between gap-4">
-              <div className="space-y-1 text-right">
+              <div
+                className={`space-y-1 ${isRTL ? "text-right" : "text-left"}`}
+              >
                 <span className="text-[11px] font-bold text-brand-electric-light flex items-center gap-1.5">
                   <Users className="w-3.5 h-3.5" />
-                  <span>تواصل مباشر مع المؤسسين</span>
+                  <span>
+                    {language === "ar"
+                      ? "تواصل مباشر مع المؤسسين"
+                      : "Direct Contact with the Founders"}
+                  </span>
                 </span>
                 <p className="text-xs text-slate-200 font-medium">
-                  احجز جلسة توجيه مجانية لمناقشة تخصصك المناسب في أوروبا.
+                  {language === "ar"
+                    ? "احجز جلسة توجيه مجانية لمناقشة تخصصك المناسب في أوروبا."
+                    : "Book a free counseling session to discuss your ideal major in Europe."}
                 </p>
               </div>
 
@@ -471,17 +611,22 @@ export function AboutTeam() {
                 href="/postuler"
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-white text-brand-navy hover:bg-brand-electric hover:text-white text-xs font-bold transition-all duration-200 shrink-0 group shadow-sm active:scale-95"
               >
-                <span>احجز الآن</span>
-                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                <span>{language === "ar" ? "احجز الآن" : "Book Now"}</span>
+                <DirectionalArrow
+                  className={`w-3.5 h-3.5 ${
+                    isRTL
+                      ? "group-hover:-translate-x-1"
+                      : "group-hover:translate-x-1"
+                  } transition-transform`}
+                />
               </Link>
             </div>
           </motion.div>
 
           {/* --------------------------------------------------------------- */}
-          {/* LEFT COLUMN (The Leadership Trio - 7 cols)                      */}
+          {/* END COLUMN (The Leadership Trio - 7 cols)                        */}
           {/* --------------------------------------------------------------- */}
           <div className="lg:col-span-7 w-full">
-            
             {/* ============================================================= */}
             {/* 1. DESKTOP & TABLET VIEW: Fixed 3-Column Bento Grid (>= 640px) */}
             {/* ============================================================= */}
@@ -501,6 +646,8 @@ export function AboutTeam() {
                 >
                   <MemberCard
                     member={member}
+                    language={language}
+                    isRTL={isRTL}
                     onOpenBio={setSelectedMember}
                   />
                 </motion.div>
@@ -512,28 +659,35 @@ export function AboutTeam() {
             {/* ============================================================= */}
             <div className="block sm:hidden w-full">
               {isMounted && (
-                <div dir="ltr" className="relative w-full overflow-hidden select-none py-1">
-                  
+                <div
+                  dir="ltr"
+                  className="relative w-full overflow-hidden select-none py-1"
+                >
                   {/* Top Minimalist Prev / Next Micro Arrows for Mobile */}
                   <div className="flex items-center justify-between px-2 mb-2">
                     <button
                       type="button"
                       onClick={() => mobileSwiperRef.current?.slidePrev()}
                       className="w-8 h-8 rounded-full bg-white border border-slate-200/90 text-brand-navy flex items-center justify-center active:scale-90 shadow-sm transition-transform"
-                      aria-label="السابق"
+                      aria-label={language === "ar" ? "السابق" : "Previous"}
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
 
-                    <span className="text-[11px] font-bold text-slate-500 tabular-nums" dir="rtl">
-                      {activeMobileIndex + 1} من {teamMembers.length}
+                    <span
+                      className="text-[11px] font-bold text-slate-500 tabular-nums"
+                      dir={isRTL ? "rtl" : "ltr"}
+                    >
+                      {language === "ar"
+                        ? `${activeMobileIndex + 1} من ${teamMembers.length}`
+                        : `${activeMobileIndex + 1} of ${teamMembers.length}`}
                     </span>
 
                     <button
                       type="button"
                       onClick={() => mobileSwiperRef.current?.slideNext()}
                       className="w-8 h-8 rounded-full bg-white border border-slate-200/90 text-brand-navy flex items-center justify-center active:scale-90 shadow-sm transition-transform"
-                      aria-label="التالي"
+                      aria-label={language === "ar" ? "التالي" : "Next"}
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -561,15 +715,16 @@ export function AboutTeam() {
                     }}
                     modules={[EffectCoverflow]}
                     className="w-full !overflow-visible [touch-action:pan-y]"
-                    onSlideChange={(swiper) => setActiveMobileIndex(swiper.activeIndex)}
+                    onSlideChange={(swiper) =>
+                      setActiveMobileIndex(swiper.activeIndex)
+                    }
                   >
                     {teamMembers.map((member) => (
-                      <SwiperSlide
-                        key={member.id}
-                        className="!w-[272px]"
-                      >
+                      <SwiperSlide key={member.id} className="!w-[272px]">
                         <MemberCard
                           member={member}
+                          language={language}
+                          isRTL={isRTL}
                           onOpenBio={setSelectedMember}
                         />
                       </SwiperSlide>
@@ -577,13 +732,20 @@ export function AboutTeam() {
                   </Swiper>
 
                   {/* 3 Interactive Pagination Dots Indicator */}
-                  <div className="flex items-center justify-center gap-1.5 mt-4" aria-hidden="true">
+                  <div
+                    className="flex items-center justify-center gap-1.5 mt-4"
+                    aria-hidden="true"
+                  >
                     {teamMembers.map((m, idx) => (
                       <button
                         key={m.id}
                         type="button"
                         onClick={() => mobileSwiperRef.current?.slideTo(idx)}
-                        aria-label={`عرض بطاقة ${m.name}`}
+                        aria-label={
+                          language === "ar"
+                            ? `عرض بطاقة ${m.nameAr}`
+                            : `View ${m.nameEn}`
+                        }
                         className={`h-1.5 rounded-full transition-all duration-300 ${
                           activeMobileIndex === idx
                             ? "w-6 bg-brand-electric"
@@ -592,7 +754,6 @@ export function AboutTeam() {
                       />
                     ))}
                   </div>
-
                 </div>
               )}
             </div>
@@ -603,10 +764,16 @@ export function AboutTeam() {
                 <div className="space-y-1">
                   <span className="text-[11px] font-bold text-brand-electric-light flex items-center justify-center gap-1.5">
                     <Users className="w-3.5 h-3.5" />
-                    <span>تواصل مباشر مع المؤسسين</span>
+                    <span>
+                      {language === "ar"
+                        ? "تواصل مباشر مع المؤسسين"
+                        : "Direct Contact with the Founders"}
+                    </span>
                   </span>
                   <p className="text-xs text-slate-200 font-medium">
-                    احجز جلسة توجيه مجانية لمناقشة تخصصك المناسب في أوروبا.
+                    {language === "ar"
+                      ? "احجز جلسة توجيه مجانية لمناقشة تخصصك المناسب في أوروبا."
+                      : "Book a free counseling session to discuss your ideal major in Europe."}
                   </p>
                 </div>
 
@@ -614,16 +781,19 @@ export function AboutTeam() {
                   href="/postuler"
                   className="w-full inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-white text-brand-navy hover:bg-brand-electric hover:text-white text-xs font-bold transition-all duration-200 shrink-0 group shadow-sm active:scale-95"
                 >
-                  <span>احجز الآن</span>
-                  <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                  <span>{language === "ar" ? "احجز الآن" : "Book Now"}</span>
+                  <DirectionalArrow
+                    className={`w-3.5 h-3.5 ${
+                      isRTL
+                        ? "group-hover:-translate-x-1"
+                        : "group-hover:translate-x-1"
+                    } transition-transform`}
+                  />
                 </Link>
               </div>
             </div>
-
           </div>
-
         </div>
-
       </div>
 
       {/* ================================================================= */}
@@ -652,15 +822,19 @@ export function AboutTeam() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="member-modal-title"
-              className="relative w-full max-w-xl max-h-[90vh] bg-white rounded-3xl sm:rounded-[32px] border border-slate-200/90 shadow-[0_24px_60px_-12px_rgba(11,27,61,0.3)] flex flex-col overflow-hidden text-right z-10"
-              dir="rtl"
+              className={`relative w-full max-w-xl max-h-[90vh] bg-white rounded-3xl sm:rounded-[32px] border border-slate-200/90 shadow-[0_24px_60px_-12px_rgba(11,27,61,0.3)] flex flex-col overflow-hidden ${
+                isRTL ? "text-right" : "text-left"
+              } z-10`}
+              dir={isRTL ? "rtl" : "ltr"}
             >
               {/* Header Bar */}
               <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 bg-slate-50/70 shrink-0">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-brand-electric" />
                   <span className="text-xs font-bold text-brand-navy">
-                    البطاقة التعريفية والمهنية
+                    {language === "ar"
+                      ? "البطاقة التعريفية والمهنية"
+                      : "Executive & Academic Profile"}
                   </span>
                 </div>
 
@@ -668,7 +842,7 @@ export function AboutTeam() {
                   type="button"
                   onClick={() => setSelectedMember(null)}
                   className="p-1.5 rounded-full text-slate-400 hover:text-brand-navy hover:bg-slate-200/70 active:scale-90 transition-all cursor-pointer"
-                  aria-label="إغلاق النافذة"
+                  aria-label={language === "ar" ? "إغلاق النافذة" : "Close modal"}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -679,12 +853,15 @@ export function AboutTeam() {
                 <div className="grid grid-cols-3 gap-2">
                   {teamMembers.map((m) => {
                     const isActive = m.id === selectedMember.id;
+                    const tabName = language === "ar" ? m.nameAr : m.nameEn;
                     return (
                       <button
                         key={m.id}
                         type="button"
                         onClick={() => setSelectedMember(m)}
-                        className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-2xl border text-right transition-all cursor-pointer ${
+                        className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-2xl border ${
+                          isRTL ? "text-right" : "text-left"
+                        } transition-all cursor-pointer ${
                           isActive
                             ? "bg-blue-50/90 border-brand-electric/40 shadow-xs"
                             : "bg-slate-50/70 border-slate-200/70 hover:bg-slate-100/80 opacity-75 hover:opacity-100"
@@ -693,7 +870,7 @@ export function AboutTeam() {
                         <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden shrink-0 border border-white shadow-xs">
                           <Image
                             src={m.image}
-                            alt={m.name}
+                            alt={tabName}
                             fill
                             sizes="32px"
                             referrerPolicy="no-referrer"
@@ -705,7 +882,7 @@ export function AboutTeam() {
                             isActive ? "text-brand-electric" : "text-brand-navy"
                           }`}
                         >
-                          {m.name}
+                          {tabName}
                         </span>
                       </button>
                     );
@@ -720,7 +897,11 @@ export function AboutTeam() {
                   <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm shrink-0 bg-slate-100">
                     <Image
                       src={selectedMember.image}
-                      alt={selectedMember.name}
+                      alt={
+                        language === "ar"
+                          ? selectedMember.nameAr
+                          : selectedMember.nameEn
+                      }
                       fill
                       sizes="80px"
                       referrerPolicy="no-referrer"
@@ -734,17 +915,29 @@ export function AboutTeam() {
                         id="member-modal-title"
                         className="text-lg sm:text-xl font-bold text-brand-navy"
                       >
-                        {selectedMember.name}
+                        {language === "ar"
+                          ? selectedMember.nameAr
+                          : selectedMember.nameEn}
                       </h3>
-                      {selectedMember.isVerified && <VerifiedBadge />}
+                      {selectedMember.isVerified && (
+                        <VerifiedBadge
+                          label={
+                            language === "ar" ? "حساب موثق" : "Verified Profile"
+                          }
+                        />
+                      )}
                     </div>
 
                     <p className="text-xs sm:text-sm font-bold text-brand-electric">
-                      {selectedMember.role}
+                      {language === "ar"
+                        ? selectedMember.roleAr
+                        : selectedMember.roleEn}
                     </p>
 
                     <span className="inline-block text-[11px] font-medium text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200/80">
-                      {selectedMember.degreeBadge}
+                      {language === "ar"
+                        ? selectedMember.degreeBadgeAr
+                        : selectedMember.degreeBadgeEn}
                     </span>
                   </div>
                 </div>
@@ -753,20 +946,31 @@ export function AboutTeam() {
                 <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/90 border border-slate-200/80 space-y-2.5">
                   <h4 className="text-xs font-bold text-brand-navy flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-brand-electric" />
-                    <span>النبذة المهنية والأكاديمية</span>
+                    <span>
+                      {language === "ar"
+                        ? "النبذة المهنية والأكاديمية"
+                        : "Professional & Academic Biography"}
+                    </span>
                   </h4>
                   <p className="text-xs sm:text-[14px] text-slate-700 leading-[1.9] font-normal">
-                    {selectedMember.bio}
+                    {language === "ar"
+                      ? selectedMember.bioAr
+                      : selectedMember.bioEn}
                   </p>
                 </div>
 
                 {/* Key Highlights */}
                 <div className="space-y-2">
                   <p className="text-[11px] font-bold text-slate-400">
-                    أبرز المؤهلات والمسؤوليات:
+                    {language === "ar"
+                      ? "أبرز المؤهلات والمسؤوليات:"
+                      : "Key Qualifications & Responsibilities:"}
                   </p>
                   <div className="grid grid-cols-1 gap-2">
-                    {selectedMember.highlights.map((item) => (
+                    {(language === "ar"
+                      ? selectedMember.highlightsAr
+                      : selectedMember.highlightsEn
+                    ).map((item) => (
                       <div
                         key={item}
                         className="flex items-center gap-2 text-xs text-slate-700 font-medium"
@@ -787,8 +991,12 @@ export function AboutTeam() {
                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 transition-all shadow-sm"
                   >
                     <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light" />
-                    <span>احجز استشارتك الآن</span>
-                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>
+                      {language === "ar"
+                        ? "احجز استشارتك الآن"
+                        : "Book Your Consultation"}
+                    </span>
+                    <DirectionalArrow className="w-3.5 h-3.5" />
                   </Link>
 
                   <a
@@ -819,7 +1027,7 @@ export function AboutTeam() {
                   onClick={() => setSelectedMember(null)}
                   className="w-full sm:w-auto px-4 py-2 rounded-full text-xs font-semibold text-slate-500 hover:bg-slate-200/70 active:scale-95 transition-all cursor-pointer"
                 >
-                  إغلاق
+                  {language === "ar" ? "إغلاق" : "Close"}
                 </button>
               </div>
             </motion.div>
@@ -853,19 +1061,23 @@ export function AboutTeam() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="story-modal-title"
-              className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl sm:rounded-[32px] border border-slate-200/90 shadow-[0_24px_60px_-12px_rgba(11,27,61,0.3)] flex flex-col overflow-hidden text-right z-10"
-              dir="rtl"
+              className={`relative w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl sm:rounded-[32px] border border-slate-200/90 shadow-[0_24px_60px_-12px_rgba(11,27,61,0.3)] flex flex-col overflow-hidden ${
+                isRTL ? "text-right" : "text-left"
+              } z-10`}
+              dir={isRTL ? "rtl" : "ltr"}
             >
               {/* Header Bar */}
               <div className="flex items-center justify-between px-5 sm:px-7 py-4 sm:py-5 border-b border-slate-100 bg-slate-50/70 shrink-0">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-brand-electric animate-pulse" />
                   <span className="text-xs font-bold text-brand-navy">
-                    عن M&A Overseas Consulting
+                    {language === "ar"
+                      ? "عن M&A Overseas Consulting"
+                      : "About M&A Overseas Consulting"}
                   </span>
                   <span className="text-slate-300">•</span>
                   <span className="text-[11px] font-semibold text-slate-500">
-                    قصة التأسيس
+                    {language === "ar" ? "قصة التأسيس" : "Our Founding Story"}
                   </span>
                 </div>
 
@@ -873,7 +1085,7 @@ export function AboutTeam() {
                   type="button"
                   onClick={() => setIsStoryModalOpen(false)}
                   className="p-1.5 rounded-full text-slate-400 hover:text-brand-navy hover:bg-slate-200/70 active:scale-90 transition-all cursor-pointer"
-                  aria-label="إغلاق النافذة"
+                  aria-label={language === "ar" ? "إغلاق النافذة" : "Close modal"}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -883,7 +1095,11 @@ export function AboutTeam() {
               <div className="p-5 sm:p-7 overflow-y-auto space-y-5">
                 {/* Visual Identity Capsule: Founders Cluster */}
                 <div className="flex items-center gap-3 p-3 rounded-2xl bg-blue-50/70 border border-blue-100/80">
-                  <div className="flex -space-x-2 space-x-reverse overflow-hidden shrink-0">
+                  <div
+                    className={`flex ${
+                      isRTL ? "-space-x-2 space-x-reverse" : "-space-x-2"
+                    } overflow-hidden shrink-0`}
+                  >
                     {teamMembers.map((m) => (
                       <div
                         key={m.id}
@@ -891,7 +1107,7 @@ export function AboutTeam() {
                       >
                         <Image
                           src={m.image}
-                          alt={m.name}
+                          alt={language === "ar" ? m.nameAr : m.nameEn}
                           fill
                           sizes="36px"
                           referrerPolicy="no-referrer"
@@ -903,10 +1119,14 @@ export function AboutTeam() {
 
                   <div className="space-y-0.5">
                     <p className="text-xs font-bold text-brand-navy">
-                      فريق قيادة M&A Overseas Consulting
+                      {language === "ar"
+                        ? "فريق قيادة M&A Overseas Consulting"
+                        : "M&A Overseas Consulting Leadership Team"}
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
-                      علي بنعمر • محمد أمين جابون • مروان بنعمر
+                      {language === "ar"
+                        ? "علي بنعمر • محمد أمين جابون • مروان بنعمر"
+                        : "Ali Benamar • M'Amine Jaboune • Marouan Ben Amar"}
                     </p>
                   </div>
                 </div>
@@ -916,25 +1136,59 @@ export function AboutTeam() {
                   id="story-modal-title"
                   className="text-lg sm:text-2xl font-bold text-brand-navy tracking-tight leading-snug"
                 >
-                  من واقع التجربة إلى التأسيس: كيف تحولت المعاناة إلى جسر أمين؟
+                  {language === "ar"
+                    ? "من واقع التجربة إلى التأسيس: كيف تحولت المعاناة إلى جسر أمين؟"
+                    : "From Personal Experience to Foundation: Turning Challenges into a Trusted Bridge"}
                 </h3>
 
-                {/* Paragraphs from the client */}
+                {/* Paragraphs */}
                 <div className="space-y-3.5 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                   <p>
-                    تُعتبر <strong>M&A Overseas Consulting</strong> وجهتك الأولى والموثوقة للتوجيه الأكاديمي الدولي، حيث نكرس خبراتنا الميدانية لمساعدة الطلاب على الالتحاق بأبرز الجامعات والأكاديميات الأوروبية. تسعى رؤيتنا إلى جعل التعليم العالي عالمي المستوى في متناول اليد، عبر تقديم حلول متكاملة واستشارات مخصصة تلبي طموح كل طالب وعائلته.
+                    {language === "ar" ? (
+                      <>
+                        تُعتبر <strong>M&A Overseas Consulting</strong> وجهتك
+                        الأولى والموثوقة للتوجيه الأكاديمي الدولي، حيث نكرس
+                        خبراتنا الميدانية لمساعدة الطلاب على الالتحاق بأبرز
+                        الجامعات والأكاديميات الأوروبية. تسعى رؤيتنا إلى جعل
+                        التعليم العالي عالمي المستوى في متناول اليد، عبر تقديم
+                        حلول متكاملة واستشارات مخصصة تلبي طموح كل طالب وعائلته.
+                      </>
+                    ) : (
+                      <>
+                        <strong>M&A Overseas Consulting</strong> is your premier
+                        and trusted partner for international academic guidance,
+                        dedicating our on-ground expertise to helping students
+                        enroll at leading European universities and academies.
+                        Our vision is to make world-class higher education
+                        accessible through end-to-end solutions and tailored
+                        counseling that fulfill the ambitions of every student
+                        and their family.
+                      </>
+                    )}
                   </p>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border-r-4 border-brand-electric border-y border-l border-slate-100 text-slate-700 italic">
-                    «لم تُبْنَ M&A من فراغ، بل انطلقت من واقع تجربة ذاتية خاضها كل من علي ومحمد أمين أثناء رحلتهما الدراسية في الخارج. فقد اختبرا بنفسيهما حجم التحديات والمتاعب التي تواجه الشباب الراغبين في الهجرة التعليمية — بدءاً من تعقيدات أوراق القبول، ووصولاً إلى مساطر الفيزا وخطوات الاستقرار الأولية.»
+                  <div
+                    className={`p-3.5 rounded-2xl bg-slate-50 ${
+                      isRTL
+                        ? "border-r-4 border-brand-electric border-y border-l"
+                        : "border-l-4 border-brand-electric border-y border-r"
+                    } border-slate-100 text-slate-700 italic`}
+                  >
+                    {language === "ar"
+                      ? "«لم تُبْنَ M&A من فراغ، بل انطلقت من واقع تجربة ذاتية خاضها كل من علي ومحمد أمين أثناء رحلتهما الدراسية في الخارج. فقد اختبرا بنفسيهما حجم التحديات والمتاعب التي تواجه الشباب الراغبين في الهجرة التعليمية — بدءاً من تعقيدات أوراق القبول، ووصولاً إلى مساطر الفيزا وخطوات الاستقرار الأولية.»"
+                      : "“M&A was not built out of nowhere—it grew directly out of the personal journey experienced by Ali and M'Amine during their own studies abroad. They experienced firsthand the obstacles facing young students pursuing international education—from complex admission paperwork to visa procedures and initial settlement challenges.”"}
                   </div>
 
                   <p>
-                    دفعهما هذا التحدي الشخصي إلى تأسيس منصة استشارية متخصصة تُشكل جسراً أميناً بين الطلاب وأحلامهم الأكاديمية في أوروبا. نحن لا نكتفي بتقديم النصح النظري، بل نأخذ بيد الطالب خطوة بخطوة، بدءاً من رسم الخطة الدراسية المناسبة واختيار التخصص والجامعة، ووصولاً إلى تأمين المقعد الجامعي والمنح التنافسية وتجهيز ملف التأشيرة باحترافية تامة.
+                    {language === "ar"
+                      ? "دفعهما هذا التحدي الشخصي إلى تأسيس منصة استشارية متخصصة تُشكل جسراً أميناً بين الطلاب وأحلامهم الأكاديمية في أوروبا. نحن لا نكتفي بتقديم النصح النظري، بل نأخذ بيد الطالب خطوة بخطوة، بدءاً من رسم الخطة الدراسية المناسبة واختيار التخصص والجامعة، ووصولاً إلى تأمين المقعد الجامعي والمنح التنافسية وتجهيز ملف التأشيرة باحترافية تامة."
+                      : "This personal challenge inspired them to establish a specialized consulting agency that serves as a reliable bridge between students and their academic dreams in Europe. We go far beyond theoretical advice—guiding each student step by step from designing the right study plan and selecting the ideal major and university, to securing official admission, competitive scholarships, and a professionally prepared visa file."}
                   </p>
 
                   <p>
-                    بفضل هذه الرؤية الميدانية الشاملة وتواجدنا الفعلي بين المغرب وأوروبا، تفخر مؤسستنا اليوم بتقديم الدعم لمئات الطلاب مع المحافظة على نسبة نجاح عالية في استصدار القبولات وتأشيرات السفر، لنظل الخيار الأمثل والداعم الأول لرحلتك نحو النجاح والتميز.
+                    {language === "ar"
+                      ? "بفضل هذه الرؤية الميدانية الشاملة وتواجدنا الفعلي بين المغرب وأوروبا، تفخر مؤسستنا اليوم بتقديم الدعم لمئات الطلاب مع المحافظة على نسبة نجاح عالية في استصدار القبولات وتأشيرات السفر، لنظل الخيار الأمثل والداعم الأول لرحلتك نحو النجاح والتميز."
+                      : "Thanks to this comprehensive on-ground approach and our active presence across both Morocco and Europe, we are proud to support hundreds of students while maintaining an exceptional success rate in university admissions and student visas—remaining your trusted partner on the path to academic excellence."}
                   </p>
                 </div>
               </div>
@@ -946,8 +1200,12 @@ export function AboutTeam() {
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 transition-all shadow-sm"
                 >
                   <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light" />
-                  <span>احجز استشارتك مع المؤسسين</span>
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>
+                    {language === "ar"
+                      ? "احجز استشارتك مع المؤسسين"
+                      : "Book a Consultation with the Founders"}
+                  </span>
+                  <DirectionalArrow className="w-3.5 h-3.5" />
                 </Link>
 
                 <button
@@ -955,7 +1213,7 @@ export function AboutTeam() {
                   onClick={() => setIsStoryModalOpen(false)}
                   className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-200/70 active:scale-95 transition-all cursor-pointer"
                 >
-                  إغلاق
+                  {language === "ar" ? "إغلاق" : "Close"}
                 </button>
               </div>
             </motion.div>

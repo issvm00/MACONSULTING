@@ -10,22 +10,46 @@ import {
   X,
   MapPin,
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
+  Globe,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface NavItem {
   id: string;
-  label: string;
+  labelAr: string;
+  labelEn: string;
   href: string;
 }
 
 const NAV_LINKS: NavItem[] = [
-  { id: "hero", label: "الرئيسية", href: "#hero" },
-  { id: "partners", label: "الجامعات الشريكة", href: "#partners" },
-  { id: "about", label: "من نحن وفريقنا", href: "#about" },
-  { id: "results", label: "تجارب الطلاب", href: "#results" },
-  { id: "processus", label: "مراحل التسجيل", href: "#processus" },
-  { id: "faq", label: "الأسئلة الشائعة", href: "#faq" },
+  { id: "hero", labelAr: "الرئيسية", labelEn: "Home", href: "#hero" },
+  {
+    id: "partners",
+    labelAr: "الجامعات الشريكة",
+    labelEn: "Partner Universities",
+    href: "#partners",
+  },
+  {
+    id: "about",
+    labelAr: "من نحن وفريقنا",
+    labelEn: "About & Team",
+    href: "#about",
+  },
+  {
+    id: "results",
+    labelAr: "تجارب الطلاب",
+    labelEn: "Student Stories",
+    href: "#results",
+  },
+  {
+    id: "processus",
+    labelAr: "مراحل التسجيل",
+    labelEn: "Admission Process",
+    href: "#processus",
+  },
+  { id: "faq", labelAr: "الأسئلة الشائعة", labelEn: "FAQ", href: "#faq" },
 ];
 
 const SECTION_IDS = [
@@ -39,6 +63,7 @@ const SECTION_IDS = [
 ] as const;
 
 export function Navbar() {
+  const { language, isRTL, toggleLanguage } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("hero");
@@ -141,9 +166,11 @@ export function Navbar() {
     setIsMobileMenuOpen(false);
   }, []);
 
+  const DirectionalArrow = isRTL ? ArrowLeft : ArrowRight;
+
   return (
     <header
-      dir="rtl"
+      dir={isRTL ? "rtl" : "ltr"}
       className="fixed top-0 left-0 right-0 z-50 pointer-events-none pt-2.5 sm:pt-3.5 px-3 sm:px-6 lg:px-8 transform-gpu"
     >
       {/* 
@@ -151,36 +178,76 @@ export function Navbar() {
         Dimensions remain 100% constant during scroll. Only paint/compositor properties transition.
       */}
       <div
-        className={`max-w-7xl mx-auto h-[58px] sm:h-[66px] rounded-full pr-4 pl-2.5 sm:px-5 lg:px-6 flex items-center justify-between gap-3 pointer-events-auto transform-gpu transition-[background-color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] relative ${
+        className={`max-w-7xl mx-auto h-[58px] sm:h-[66px] rounded-full ${
+          isRTL ? "pr-4 pl-2.5" : "pl-4 pr-2.5"
+        } sm:px-5 lg:px-6 flex items-center justify-between gap-2 sm:gap-3 pointer-events-auto transform-gpu transition-[background-color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] relative ${
           isScrolled
             ? "bg-white/95 md:backdrop-blur-md border border-slate-200/90 shadow-[0_12px_32px_-8px_rgba(11,27,61,0.12),0_2px_6px_rgba(11,27,61,0.04)]"
             : "bg-white/90 md:backdrop-blur-md border border-slate-200/80 shadow-[0_6px_24px_-6px_rgba(11,27,61,0.06)]"
         }`}
       >
         {/* ========================================================= */}
-        {/* ZONE 1 (Right): Pure Brand Logo (Zero Text Clutter)       */}
+        {/* ZONE 1 (Start): Brand Logo + Desktop Language Switcher     */}
         {/* ========================================================= */}
-        <Link
-          href="#hero"
-          onClick={() => handleNavClick("hero")}
-          className="flex items-center select-none active:scale-[0.98] transition-transform duration-150 ease-out shrink-0 pr-1"
-        >
-          <Image
-            src="/logo/logo.png"
-            alt="M&A OVERSEAS CONSULTING"
-            width={352}
-            height={163}
-            referrerPolicy="no-referrer"
-            className="w-auto object-contain h-8 sm:h-9 lg:h-10"
-            priority
-          />
-        </Link>
+        <div className="flex items-center gap-3 xl:gap-3.5 shrink-0">
+          <Link
+            href="#hero"
+            onClick={() => handleNavClick("hero")}
+            className={`flex items-center select-none active:scale-[0.98] transition-transform duration-150 ease-out shrink-0 ${
+              isRTL ? "pr-1" : "pl-1"
+            }`}
+          >
+            <Image
+              src="/logo/logo.png"
+              alt="M&A OVERSEAS CONSULTING"
+              width={352}
+              height={163}
+              referrerPolicy="no-referrer"
+              className="w-auto object-contain h-8 sm:h-9 lg:h-10"
+              priority
+            />
+          </Link>
+
+          {/* Desktop Language Switcher Pill next to Logo (Matches reference design) */}
+          <button
+            type="button"
+            dir="ltr"
+            onClick={toggleLanguage}
+            title={
+              language === "ar" ? "Switch to English" : "التبديل إلى العربية"
+            }
+            aria-label={
+              language === "ar" ? "Switch to English" : "التبديل إلى العربية"
+            }
+            className="hidden lg:inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-full bg-[#F3F6FB] hover:bg-[#EBF1FA] border border-[#DCE5F2] shadow-[0_2px_6px_rgba(11,27,61,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] active:scale-[0.97] transition-all duration-200 cursor-pointer select-none shrink-0"
+          >
+            <Globe className="w-4 h-4 text-[#7A92B4] stroke-[1.9] shrink-0" />
+            <span
+              className={`px-2.5 py-0.5 rounded-full text-[11px] xl:text-xs font-extrabold tracking-tight transition-all duration-200 ${
+                language === "en"
+                  ? "bg-[#0044CC] text-white shadow-[0_2px_6px_rgba(0,68,204,0.28)]"
+                  : "text-[#334E68] hover:text-brand-navy"
+              }`}
+            >
+              EN
+            </span>
+            <span
+              className={`px-2.5 py-0.5 rounded-full text-[11px] xl:text-xs font-bold transition-all duration-200 ${
+                language === "ar"
+                  ? "bg-[#0044CC] text-white shadow-[0_2px_6px_rgba(0,68,204,0.28)]"
+                  : "text-[#334E68] hover:text-brand-navy"
+              }`}
+            >
+              العربية
+            </span>
+          </button>
+        </div>
 
         {/* ========================================================= */}
         {/* ZONE 2 (Center - Desktop lg+): Capsule Navigation Track   */}
         {/* ========================================================= */}
         <nav
-          aria-label="التنقل الرئيسي"
+          aria-label={isRTL ? "التنقل الرئيسي" : "Main Navigation"}
           className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-slate-100/80 border border-slate-200/70"
         >
           {NAV_LINKS.map((link) => {
@@ -190,20 +257,20 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => handleNavClick(link.id)}
-                className={`relative px-3.5 xl:px-4 py-1.5 rounded-full text-xs xl:text-[13px] font-bold transition-[background-color,color,box-shadow,transform] duration-200 whitespace-nowrap shrink-0 active:scale-[0.97] ${
+                className={`relative px-2.5 xl:px-3.5 py-1.5 rounded-full text-xs xl:text-[13px] font-bold transition-[background-color,color,box-shadow,transform] duration-200 whitespace-nowrap shrink-0 active:scale-[0.97] ${
                   isActive
                     ? "bg-white text-brand-electric shadow-sm"
                     : "text-slate-600 hover:text-brand-navy hover:bg-white/55"
                 }`}
               >
-                {link.label}
+                {language === "ar" ? link.labelAr : link.labelEn}
               </a>
             );
           })}
         </nav>
 
         {/* ========================================================= */}
-        {/* ZONE 3A (Left - Desktop lg+): Pure Focused Primary CTA    */}
+        {/* ZONE 3A (End - Desktop lg+): Pure Primary CTA             */}
         {/* ========================================================= */}
         <div className="hidden lg:flex items-center shrink-0">
           <Link
@@ -211,22 +278,34 @@ export function Navbar() {
             className="inline-flex items-center gap-2 px-5 xl:px-6 py-2.5 rounded-full text-xs xl:text-[13px] font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.97] shadow-sm transition-[background-color,transform,box-shadow] duration-200 group whitespace-nowrap"
           >
             <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light shrink-0" />
-            <span>احجز استشارة مجانية</span>
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover:-translate-x-1 shrink-0" />
+            <span>
+              {language === "ar"
+                ? "احجز استشارة مجانية"
+                : "Book a Free Consultation"}
+            </span>
+            <DirectionalArrow
+              className={`w-3.5 h-3.5 transition-transform duration-200 ease-out ${
+                isRTL
+                  ? "group-hover:-translate-x-1"
+                  : "group-hover:translate-x-1"
+              } shrink-0`}
+            />
           </Link>
         </div>
 
         {/* ========================================================= */}
-        {/* ZONE 3B (Left - Mobile & Tablet <lg): Action + Menu Pill  */}
+        {/* ZONE 3B (End - Mobile & Tablet <lg): Clean Action + Menu  */}
         {/* ========================================================= */}
         <div className="flex lg:hidden items-center gap-2 shrink-0">
           {/* Quick Consultation Funnel Pill */}
           <Link
             href="/postuler"
-            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-[11px] sm:text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 shadow-sm transition-[background-color,transform] duration-150 whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-95 shadow-sm transition-[background-color,transform] duration-150 whitespace-nowrap"
           >
             <MessageCircle className="w-3.5 h-3.5 text-brand-electric-light shrink-0" />
-            <span>استشارة مجانية</span>
+            <span>
+              {language === "ar" ? "استشارة مجانية" : "Free Consultation"}
+            </span>
           </Link>
 
           {/* Tactile Circular Menu Trigger Button */}
@@ -235,7 +314,13 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             aria-expanded={isMobileMenuOpen}
             aria-label={
-              isMobileMenuOpen ? "إغلاق القائمة" : "فتح القائمة الرئيسية"
+              isMobileMenuOpen
+                ? language === "ar"
+                  ? "إغلاق القائمة"
+                  : "Close menu"
+                : language === "ar"
+                ? "فتح القائمة الرئيسية"
+                : "Open main menu"
             }
             className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center active:scale-90 transition-[background-color,border-color,color,transform] duration-150 cursor-pointer shrink-0 ${
               isMobileMenuOpen
@@ -276,23 +361,57 @@ export function Navbar() {
               className="pointer-events-auto lg:hidden pt-2.5 relative z-50 transform-gpu"
             >
               <div className="max-w-7xl mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[0_24px_54px_rgba(11,27,61,0.18)] p-5 sm:p-6 space-y-4">
-                {/* Drawer Top Identity Strip */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs sm:text-sm text-brand-navy flex items-center gap-1.5">
-                      <span>M&A OVERSEAS CONSULTING</span>
+                {/* Drawer Top Identity Strip + Language Switcher */}
+                <div className="flex items-center justify-between gap-2 pb-3.5 border-b border-slate-100">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-bold text-xs sm:text-sm text-brand-navy flex items-center gap-1.5 truncate">
+                      <span className="truncate">M&A OVERSEAS CONSULTING</span>
                       <CheckCircle2 className="w-3.5 h-3.5 text-brand-electric shrink-0" />
                     </span>
                   </div>
-                  <span className="text-[11px] font-semibold text-brand-electric bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
-                    مكتب معتمد
-                  </span>
+
+                  {/* Segmented Language Switcher inside Mobile Menu */}
+                  <button
+                    type="button"
+                    dir="ltr"
+                    onClick={toggleLanguage}
+                    aria-label={
+                      language === "ar"
+                        ? "Switch to English"
+                        : "التبديل إلى العربية"
+                    }
+                    className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-full bg-[#F3F6FB] border border-[#DCE5F2] shadow-[0_2px_6px_rgba(11,27,61,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] shrink-0 cursor-pointer active:scale-95 transition-transform select-none"
+                  >
+                    <Globe className="w-3.5 h-3.5 text-[#7A92B4] stroke-[1.9] shrink-0" />
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold tracking-tight transition-all duration-200 ${
+                        language === "en"
+                          ? "bg-[#0044CC] text-white shadow-[0_2px_6px_rgba(0,68,204,0.28)]"
+                          : "text-[#334E68] hover:text-brand-navy"
+                      }`}
+                    >
+                      EN
+                    </span>
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all duration-200 ${
+                        language === "ar"
+                          ? "bg-[#0044CC] text-white shadow-[0_2px_6px_rgba(0,68,204,0.28)]"
+                          : "text-[#334E68] hover:text-brand-navy"
+                      }`}
+                    >
+                      العربية
+                    </span>
+                  </button>
                 </div>
 
                 {/* Navigation Links Grid (Clean 1-col on phone, 2-col on tablet) */}
                 <nav
-                  aria-label="قائمة الموبايل"
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-right"
+                  aria-label={
+                    language === "ar" ? "قائمة الموبايل" : "Mobile Navigation"
+                  }
+                  className={`grid grid-cols-1 sm:grid-cols-2 gap-1.5 ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
                 >
                   {NAV_LINKS.map((link) => {
                     const isActive = activeSection === link.id;
@@ -307,8 +426,10 @@ export function Navbar() {
                             : "text-slate-700 hover:bg-slate-50 hover:text-brand-electric border border-transparent"
                         }`}
                       >
-                        <span>{link.label}</span>
-                        <ArrowLeft
+                        <span>
+                          {language === "ar" ? link.labelAr : link.labelEn}
+                        </span>
+                        <DirectionalArrow
                           className={`w-4 h-4 transition-transform ${
                             isActive ? "text-brand-electric" : "text-slate-300"
                           }`}
@@ -329,15 +450,23 @@ export function Navbar() {
                     className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-full text-sm font-bold text-white bg-brand-navy hover:bg-brand-electric active:scale-[0.98] shadow-md shadow-brand-navy/15 transition-[background-color,transform]"
                   >
                     <MessageCircle className="w-4 h-4 text-brand-electric-light shrink-0" />
-                    <span>تقييم الملف وحجز استشارة مجانية</span>
-                    <ArrowLeft className="w-4 h-4 shrink-0" />
+                    <span>
+                      {language === "ar"
+                        ? "تقييم الملف وحجز استشارة مجانية"
+                        : "Profile Assessment & Free Consultation"}
+                    </span>
+                    <DirectionalArrow className="w-4 h-4 shrink-0" />
                   </Link>
                 </div>
 
                 {/* Official Office Address Footnote inside Mobile Drawer */}
                 <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-center gap-1.5 text-center font-medium">
                   <MapPin className="w-3.5 h-3.5 text-brand-electric shrink-0" />
-                  <span>المكتب الرسمي: إنزكان - شارع مراكش (أكادير)</span>
+                  <span>
+                    {language === "ar"
+                      ? "المكتب الرسمي: إنزكان - شارع مراكش (أكادير)"
+                      : "Official HQ: Inezgane - Marrakech Ave (Agadir)"}
+                  </span>
                 </div>
               </div>
             </motion.div>
