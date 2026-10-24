@@ -506,7 +506,7 @@ export function CtaFooter() {
             {/* Interactive Capsule Bar */}
             <div className="p-1.5 rounded-full bg-white border border-slate-200/90 shadow-[0_8px_24px_-6px_rgba(11,27,61,0.05)] flex items-center justify-between gap-2 max-w-md">
               <a
-                href="tel:+212775496303"
+                href="tel:+37066059704"
                 className={`flex items-center gap-2 ${
                   isRTL ? "pr-3" : "pl-3"
                 } hover:text-brand-electric transition-colors`}
@@ -521,12 +521,12 @@ export function CtaFooter() {
                   dir="ltr"
                   className="text-xs sm:text-[13px] font-bold text-brand-navy hover:text-brand-electric tabular-nums whitespace-nowrap transition-colors"
                 >
-                  +212 775-496303
+                  +370 660 59704
                 </span>
               </a>
 
               <a
-                href="https://wa.me/212775496303"
+                href="https://wa.me/37066059704"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand-electric hover:bg-brand-navy text-white text-xs font-bold transition-all duration-200 active:scale-95 shrink-0 shadow-sm group whitespace-nowrap"

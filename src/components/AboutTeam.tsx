@@ -111,18 +111,18 @@ const teamMembers: TeamMember[] = [
     degreeBadgeEn: "M.Sc. in International Marketing & Trade",
     highlightsAr: [
       "ماجستير في التسويق والتجارة الدولية",
-      "رئيس قسم الامتثال في شركة دولية",
+      "منسق أول لتنفيذ الوكلاء في شركة دولية",
       "خبير في إعداد ومراجعة الوثائق الأكاديمية والإدارية",
     ],
     highlightsEn: [
       "M.Sc. in International Marketing & Trade",
-      "Head of Compliance at an International Company",
+      "Senior Coordinator, Agent implementation in an international company",
       "Expert in Academic & Administrative Document Review",
     ],
     bioAr:
-      "يحمل علي بنعمر شهادة الماجستير في التسويق والتجارة الدولية، ويشغل حاليًا منصب رئيس قسم الامتثال في شركة دولية، حيث يتمتع بخبرة في مجال الأعمال الدولية والامتثال التنظيمي والإدارة الاستراتيجية، إضافةً إلى خبرته في إعداد الوثائق الإدارية والأكاديمية ومراجعتها ومتابعة الملفات. ومن خلال تأسيسه لشركة M&A Overseas Consulting، يسعى إلى مرافقة الطلبة وتوجيههم نحو الفرص الأكاديمية المناسبة في أوروبا، مع توفير الدعم اللازم لإعداد الوثائق واستكمال إجراءات التقديم والقبول الجامعي.",
+      "يحمل علي بنعمر شهادة الماجستير في التسويق والتجارة الدولية، ويشغل حاليًا منصب منسق أول لتنفيذ الوكلاء (Senior Coordinator, Agent implementation) في شركة دولية، حيث يتمتع بخبرة في مجال الأعمال الدولية والامتثال التنظيمي والإدارة الاستراتيجية، إضافةً إلى خبرته في إعداد الوثائق الإدارية والأكاديمية ومراجعتها ومتابعة الملفات. ومن خلال تأسيسه لشركة M&A Overseas Consulting، يسعى إلى مرافقة الطلبة وتوجيههم نحو الفرص الأكاديمية المناسبة في أوروبا، مع توفير الدعم اللازم لإعداد الوثائق واستكمال إجراءات التقديم والقبول الجامعي.",
     bioEn:
-      "Ali Benamar holds a Master's degree in International Marketing and Trade and currently serves as Head of Compliance at an international company. He brings extensive expertise in international business, regulatory compliance, and strategic management, alongside deep hands-on experience in preparing, reviewing, and tracking administrative and academic files. Through founding M&A Overseas Consulting, he is dedicated to guiding students toward the right academic opportunities in Europe while providing full support in document preparation, university applications, and admission procedures.",
+      "Ali Benamar holds a Master's degree in International Marketing and Trade and currently serves as Senior Coordinator, Agent implementation in an international company. He brings extensive expertise in international business, regulatory compliance, and strategic management, alongside deep hands-on experience in preparing, reviewing, and tracking administrative and academic files. Through founding M&A Overseas Consulting, he is dedicated to guiding students toward the right academic opportunities in Europe while providing full support in document preparation, university applications, and admission procedures.",
     image: "/team/ali_benamar.jpg",
     instagram: {
       handle: "benamar_a34",
