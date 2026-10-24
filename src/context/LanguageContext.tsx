@@ -90,8 +90,8 @@ export function LanguageProvider({
     } else {
       document.title =
         language === "ar"
-          ? "M&A OVERSEAS CONSULTING | الدراسة في أوروبا"
-          : "M&A OVERSEAS CONSULTING | Study in Europe";
+          ? "M&A OVERSEAS CONSULTING | الدراسة في أوروبا - قبول جامعي مضمون وفيزا"
+          : "M&A OVERSEAS CONSULTING | Study in Europe - Guaranteed Admission & Visa";
     }
   }, [language]);
 

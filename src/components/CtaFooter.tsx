@@ -472,19 +472,29 @@ export function CtaFooter() {
 
             {/* Physical Address Badges */}
             <div className="space-y-2">
-              <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs flex items-center gap-2.5 text-xs">
+              <a
+                href="https://maps.app.goo.gl/6TZ6Wq55QJyhE9yf7"
+                target="_blank"
+                rel="noopener noreferrer"
+                title={
+                  language === "ar"
+                    ? "فتح موقع المقر الرئيسي على خرائط جوجل"
+                    : "Open Headquarters Location on Google Maps"
+                }
+                className="p-2.5 rounded-xl bg-white/90 hover:bg-blue-50/70 border border-slate-200/80 hover:border-blue-200 shadow-2xs flex items-center gap-2.5 text-xs transition-colors group"
+              >
                 <span className="w-2 h-2 rounded-full bg-brand-electric shrink-0" />
                 <div className="flex flex-wrap items-center gap-1.5 text-slate-700">
-                  <span className="font-bold text-brand-navy">
+                  <span className="font-bold text-brand-navy group-hover:text-brand-electric transition-colors">
                     {language === "ar" ? "المقر الرئيسي:" : "Headquarters:"}
                   </span>
-                  <span>
+                  <span className="group-hover:text-brand-navy transition-colors">
                     {language === "ar"
                       ? "إنزكان - شارع مراكش (أكادير)"
                       : "Inezgane - Marrakech Ave (Agadir)"}
                   </span>
                 </div>
-              </div>
+              </a>
 
               <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs flex items-center gap-2.5 text-xs">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
