@@ -21,6 +21,7 @@ import {
   Globe,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { trackFbEvent } from "@/lib/fbpixel";
 
 const TRANSITION_EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -719,6 +720,11 @@ export function PostulerWizard() {
       setBacStream("intl_sci");
       setConsultMode("remote_intl_full");
     }
+    trackFbEvent("ViewContent", {
+      content_name: "Postuler Consultation Wizard",
+      content_category: "Study Abroad Application",
+      destination: destParam || "LT",
+    });
     return () => {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
     };
@@ -775,6 +781,13 @@ export function PostulerWizard() {
     if (!fullName.trim() || !phone.trim() || !studentCity.trim()) {
       return;
     }
+    trackFbEvent("InitiateCheckout", {
+      content_name: "Step 4 Personal Details Completed",
+      destination: destination,
+      study_level: studyLevel,
+      target_field: targetField,
+      country: studentCountry,
+    });
     goToStep(5);
   };
 
@@ -896,6 +909,29 @@ export function PostulerWizard() {
     setGeneratedMessageText(fullText);
     setGeneratedWhatsappUrl(whatsappUrl);
     setSubmittedRef(refCode);
+
+    // Fire Meta Pixel Lead & CompleteRegistration conversion events
+    trackFbEvent("Lead", {
+      content_name: "Study in Europe Consultation Request",
+      content_category: "Admissions Consultation",
+      application_ref: refCode,
+      student_country: studentCountry,
+      student_city: cleanCity,
+      destination: destination,
+      study_level: studyLevel,
+      target_field: targetField,
+      english_level: englishLevel,
+      budget_range: budgetRange,
+      consult_mode: consultMode,
+      advisor: selectedAdvisorId,
+    });
+
+    trackFbEvent("CompleteRegistration", {
+      content_name: "Postuler Wizard Completed",
+      status: "submitted",
+      destination: destination,
+      advisor: selectedAdvisorId,
+    });
 
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });

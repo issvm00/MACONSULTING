@@ -5,6 +5,7 @@ import "./globals.css";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { LanguageProvider, type Language } from "@/context/LanguageContext";
 import { JsonLdSchema } from "@/components/JsonLdSchema";
+import { MetaPixel } from "@/components/MetaPixel";
 import {
   SITE_URL,
   SITE_NAME,
@@ -33,6 +34,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: "#0B1B3D",
 };
+
+const fbDomainVerification = process.env.NEXT_PUBLIC_FB_DOMAIN_VERIFICATION;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -107,6 +110,13 @@ export const metadata: Metadata = {
     apple: [{ url: "/logo/logo-icon.png", type: "image/png" }],
   },
   manifest: "/manifest.webmanifest",
+  ...(fbDomainVerification
+    ? {
+        other: {
+          "facebook-domain-verification": fbDomainVerification,
+        },
+      }
+    : {}),
 };
 
 export default async function RootLayout({
@@ -129,6 +139,7 @@ export default async function RootLayout({
         dir={initialDir}
         className="antialiased selection:bg-brand-electric selection:text-white min-h-screen flex flex-col relative text-brand-navy bg-[#FAFBFD]"
       >
+        <MetaPixel />
         <JsonLdSchema data={getHomeJsonLd()} />
         <LanguageProvider initialLanguage={initialLanguage}>
           <AmbientBackground />
