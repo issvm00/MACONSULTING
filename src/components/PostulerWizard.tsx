@@ -1002,7 +1002,7 @@ export function PostulerWizard() {
           {/* Center: Official Brand Logo */}
           <Link
             href="/"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center active:scale-95 transition-transform"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center active:scale-95 transition-transform pointer-events-auto"
           >
             <Image
               src="/logo/logo.png"
@@ -1011,14 +1011,14 @@ export function PostulerWizard() {
               height={163}
               referrerPolicy="no-referrer"
               onLoad={() => setIsLogoLoaded(true)}
-              className={`h-8 sm:h-9 w-auto object-contain transition-opacity duration-500 ease-out ${
+              className={`h-7 sm:h-9 w-auto object-contain transition-opacity duration-500 ease-out ${
                 isLogoLoaded ? "opacity-100" : "opacity-0"
               }`}
               priority
             />
           </Link>
 
-          {/* End: Language Toggle + Direct WhatsApp Support Capsule */}
+          {/* End: Language Toggle (Mobile & Desktop) + Direct WhatsApp Support Capsule (Tablet/Desktop only) */}
           <div className="flex items-center gap-1.5 sm:gap-2.5">
             <button
               type="button"
@@ -1026,11 +1026,11 @@ export function PostulerWizard() {
               onClick={toggleLanguage}
               title={isRTL ? "Switch to English" : "التبديل إلى العربية"}
               aria-label={isRTL ? "Switch to English" : "التبديل إلى العربية"}
-              className="inline-flex items-center gap-1 sm:gap-1.5 pl-2 sm:pl-2.5 pr-1 sm:pr-1.5 py-1 rounded-full bg-[#F3F6FB] hover:bg-[#EBF1FA] border border-[#DCE5F2] shadow-[0_2px_6px_rgba(11,27,61,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] active:scale-95 transition-all duration-200 cursor-pointer select-none shrink-0"
+              className="inline-flex items-center gap-1 sm:gap-1.5 pl-1.5 sm:pl-2.5 pr-1 sm:pr-1.5 py-1 rounded-full bg-[#F3F6FB] hover:bg-[#EBF1FA] border border-[#DCE5F2] shadow-[0_2px_6px_rgba(11,27,61,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] active:scale-95 transition-all duration-200 cursor-pointer select-none shrink-0"
             >
-              <Globe className="w-3.5 h-3.5 text-[#7A92B4] stroke-[1.9] shrink-0" />
+              <Globe className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#7A92B4] stroke-[1.9] shrink-0" />
               <span
-                className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold tracking-tight transition-all duration-200 ${
+                className={`px-1.5 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold tracking-tight transition-all duration-200 ${
                   !isRTL
                     ? "bg-[#0044CC] text-white shadow-[0_2px_6px_rgba(0,68,204,0.28)]"
                     : "text-[#334E68] hover:text-brand-navy"
@@ -1039,7 +1039,7 @@ export function PostulerWizard() {
                 EN
               </span>
               <span
-                className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold transition-all duration-200 ${
+                className={`px-1.5 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold transition-all duration-200 ${
                   isRTL
                     ? "bg-[#0044CC] text-white shadow-[0_2px_6px_rgba(0,68,204,0.28)]"
                     : "text-[#334E68] hover:text-brand-navy"
@@ -1053,13 +1053,10 @@ export function PostulerWizard() {
               href={`https://wa.me/${selectedAdvisorObj.rawPhone}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-blue-50/90 hover:bg-brand-electric text-brand-navy hover:text-white border border-blue-200/75 text-[11px] sm:text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap group"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50/90 hover:bg-brand-electric text-brand-navy hover:text-white border border-blue-200/75 text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap group"
             >
               <MessageCircle className="w-3.5 h-3.5 text-brand-electric group-hover:text-white transition-colors shrink-0" />
-              <span className="sm:hidden">
-                {isRTL ? "مساعدة" : "Help"}
-              </span>
-              <span className="hidden sm:inline">
+              <span>
                 {isRTL ? "تحتاج مساعدة؟" : "Need Help?"}
               </span>
             </a>
