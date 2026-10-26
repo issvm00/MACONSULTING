@@ -152,7 +152,7 @@ const QUICK_LINKS = [
     labelEn: "About & Leadership",
     href: "#about",
   },
-  { labelAr: "تجارب الطلاب", labelEn: "Student Stories", href: "#results" },
+  { labelAr: "دليل الوجهات", labelEn: "Destination Guides", href: "#results" },
   {
     labelAr: "مراحل التسجيل",
     labelEn: "Admission Process",

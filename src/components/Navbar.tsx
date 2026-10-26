@@ -39,8 +39,8 @@ const NAV_LINKS: NavItem[] = [
   },
   {
     id: "results",
-    labelAr: "تجارب الطلاب",
-    labelEn: "Student Stories",
+    labelAr: "دليل الوجهات",
+    labelEn: "Destination Guides",
     href: "#results",
   },
   {

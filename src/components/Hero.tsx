@@ -347,8 +347,8 @@ export function Hero() {
                   <PlayCircle className="w-4 h-4 text-brand-electric shrink-0" />
                   <span>
                     {language === "ar"
-                      ? "شاهد تجارب الطلاب"
-                      : "Watch Student Stories"}
+                      ? "اكتشف الوجهات بالفيديو"
+                      : "Watch Destination Guides"}
                   </span>
                 </a>
               </motion.div>
