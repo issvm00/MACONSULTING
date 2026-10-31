@@ -184,7 +184,7 @@ export function CtaFooter() {
   return (
     <footer
       dir={isRTL ? "rtl" : "ltr"}
-      className="relative w-full pt-2 sm:pt-6 pb-8 sm:pb-12 overflow-x-clip select-none"
+      className="relative w-full pt-2 sm:pt-6 pb-6 sm:pb-3 overflow-x-clip select-none"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* ================================================================= */}
@@ -560,34 +560,17 @@ export function CtaFooter() {
         {/* 3. REFINED BOTTOM SUB-BAR (CLEAN, UNCLUTTERED, RESPONSIVE)        */}
         {/* ================================================================= */}
         <div
-          className={`mt-12 sm:mt-16 px-6 py-4 sm:px-8 sm:py-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3.5 sm:gap-4 text-center ${
-            isRTL ? "md:text-right" : "md:text-left"
+          className={`mt-12 sm:mt-16 px-6 py-4 sm:px-8 sm:py-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-center ${
+            isRTL ? "sm:text-right" : "sm:text-left"
           }`}
         >
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-slate-500 font-medium leading-relaxed">
             © {new Date().getFullYear()} M&A Overseas Consulting.{" "}
             {language === "ar" ? "جميع الحقوق محفوظة." : "All rights reserved."}
           </p>
 
-          {/* Powered by UIDevelop */}
-          <a
-            href="https://wa.me/212659349471"
-            target="_blank"
-            rel="noopener noreferrer"
-            dir="ltr"
-            className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50/80 hover:bg-sky-100/90 border border-sky-200/70 hover:border-sky-300 text-xs transition-all duration-200 shadow-2xs hover:shadow-xs order-last md:order-none cursor-pointer"
-            title="UIDevelop (WhatsApp: +212 659-349471)"
-          >
-            <span className="text-[11px] sm:text-xs text-slate-500 font-medium">
-              Powered by
-            </span>
-            <span className="font-bold text-sky-500 group-hover:text-sky-600 transition-colors inline-flex items-center gap-1">
-              UIDevelop
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 group-hover:bg-sky-500 animate-pulse" />
-            </span>
-          </a>
-
-          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs text-slate-500 font-medium">
+          {/* Desktop Navigation Links (Unchanged on PC) */}
+          <div className="hidden sm:flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs text-slate-500 font-medium">
             <a
               href="#hero"
               className="hover:text-brand-electric transition-colors"
@@ -632,6 +615,63 @@ export function CtaFooter() {
             >
               {language === "ar" ? "تقديم طلب تسجيل" : "Apply Now"}
             </Link>
+          </div>
+        </div>
+
+        {/* ================================================================= */}
+        {/* 4. DEVELOPER ATTRIBUTION (POWERED BY UIDEVELOP)                   */}
+        {/* ================================================================= */}
+        <div
+          className={`mt-2 sm:mt-2.5 px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 ${
+            isRTL ? "sm:text-right" : "sm:text-left"
+          }`}
+        >
+          {/* Phantom Spacer matching Copyright width for exact alignment under the gap */}
+          <p
+            aria-hidden="true"
+            tabIndex={-1}
+            className="hidden sm:block invisible select-none pointer-events-none text-xs font-medium shrink-0"
+          >
+            © {new Date().getFullYear()} M&A Overseas Consulting.{" "}
+            {language === "ar" ? "جميع الحقوق محفوظة." : "All rights reserved."}
+          </p>
+
+          {/* Centered directly beneath the empty gap */}
+          <a
+            href="https://wa.me/212659349471"
+            target="_blank"
+            rel="noopener noreferrer"
+            dir="ltr"
+            className="group inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/70 hover:bg-white border border-slate-200/70 hover:border-sky-300 text-xs transition-all duration-200 shadow-2xs hover:shadow-xs cursor-pointer"
+            title="UIDevelop (WhatsApp: +212 659-349471)"
+          >
+            <span className="text-[11px] sm:text-xs text-slate-500 font-medium">
+              Powered by
+            </span>
+            <span className="font-bold text-sky-500 group-hover:text-sky-600 transition-colors">
+              UIDevelop
+            </span>
+          </a>
+
+          {/* Phantom Spacer matching Navigation Links width for exact alignment under the gap */}
+          <div
+            aria-hidden="true"
+            tabIndex={-1}
+            className="hidden sm:flex invisible select-none pointer-events-none flex-wrap items-center gap-2.5 sm:gap-4 text-xs font-medium shrink-0"
+          >
+            <span>{language === "ar" ? "الرئيسية" : "Home"}</span>
+            <span>·</span>
+            <span>{language === "ar" ? "قصة التأسيس" : "Our Story"}</span>
+            <span>·</span>
+            <span>
+              {language === "ar"
+                ? "مراحل القبول والتأشيرة"
+                : "Admission & Visa Process"}
+            </span>
+            <span>·</span>
+            <span>{language === "ar" ? "الأسئلة الشائعة" : "FAQ"}</span>
+            <span>·</span>
+            <span>{language === "ar" ? "تقديم طلب تسجيل" : "Apply Now"}</span>
           </div>
         </div>
       </div>
