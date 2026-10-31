@@ -560,14 +560,32 @@ export function CtaFooter() {
         {/* 3. REFINED BOTTOM SUB-BAR (CLEAN, UNCLUTTERED, RESPONSIVE)        */}
         {/* ================================================================= */}
         <div
-          className={`mt-12 sm:mt-16 px-6 py-4 sm:px-8 sm:py-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-center ${
-            isRTL ? "sm:text-right" : "sm:text-left"
+          className={`mt-12 sm:mt-16 px-6 py-4 sm:px-8 sm:py-4 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3.5 sm:gap-4 text-center ${
+            isRTL ? "md:text-right" : "md:text-left"
           }`}
         >
           <p className="text-xs text-slate-500 font-medium">
             © {new Date().getFullYear()} M&A Overseas Consulting.{" "}
             {language === "ar" ? "جميع الحقوق محفوظة." : "All rights reserved."}
           </p>
+
+          {/* Powered by UIDevelop */}
+          <a
+            href="https://wa.me/212659349471"
+            target="_blank"
+            rel="noopener noreferrer"
+            dir="ltr"
+            className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50/80 hover:bg-sky-100/90 border border-sky-200/70 hover:border-sky-300 text-xs transition-all duration-200 shadow-2xs hover:shadow-xs order-last md:order-none cursor-pointer"
+            title="UIDevelop (WhatsApp: +212 659-349471)"
+          >
+            <span className="text-[11px] sm:text-xs text-slate-500 font-medium">
+              Powered by
+            </span>
+            <span className="font-bold text-sky-500 group-hover:text-sky-600 transition-colors inline-flex items-center gap-1">
+              UIDevelop
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 group-hover:bg-sky-500 animate-pulse" />
+            </span>
+          </a>
 
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs text-slate-500 font-medium">
             <a
